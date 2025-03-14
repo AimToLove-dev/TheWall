@@ -1,3 +1,17 @@
+## Installation
+
+```
+npm i
+
+# Replace XXXX's with your own Firebase config keys
+API_KEY=XXXX
+AUTH_DOMAIN=XXXX
+PROJECT_ID=XXXX
+STORAGE_BUCKET=XXXX
+MESSAGING_SENDER_ID=XXXX
+APP_ID=XXXX
+```
+
 ## Run project
 
 To start the development server and run your project:
