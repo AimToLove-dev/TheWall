@@ -5,7 +5,7 @@ export default {
     name: "Expo Firebase Starter",
     slug: "expo-firebase",
     privacy: "public",
-    platforms: ["ios", "android"],
+    platforms: ["web", "ios", "android"],
     version: "0.19.0",
     orientation: "portrait",
     icon: "./assets/flame.png",

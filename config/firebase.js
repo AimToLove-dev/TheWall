@@ -1,7 +1,8 @@
 import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import Constants from "expo-constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
+let auth;
 
 // add firebase config
 const firebaseConfig = {
@@ -16,9 +17,21 @@ const firebaseConfig = {
 // initialize firebase
 const app = initializeApp(firebaseConfig);
 
-// initialize auth; only for native platforms (Android and iOS)
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+// initialize auth
+if (typeof window !== "undefined") {
+  // Web
+  auth = getAuth(app);
+} else {
+  // React Native
+  const {
+    initializeAuth,
+    getReactNativePersistence,
+  } = require("firebase/auth");
+  const AsyncStorage =
+    require("@react-native-async-storage/async-storage").default;
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+}
 
 export { auth };

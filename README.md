@@ -1,8 +1,23 @@
-# expo-firebase-starter 🔥
+## Run project
 
-![Supports Expo iOS](https://img.shields.io/badge/iOS-4630EB.svg?style=flat-square&logo=APPLE&labelColor=999999&logoColor=fff)
-![Supports Expo Android](https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff)
-[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.dev/client)
+To start the development server and run your project:
+
+```
+npx http-server ./dist
+
+```
+
+To locally compile your app, run:
+
+```
+# Build
+npx expo export
+
+#Deploy Web
+firebase deploy
+```
+
+# Forked expo-firebase-starter 🔥
 
 Is a quicker way to start with Expo + Firebase (using JS SDK) projects. It includes:
 
@@ -21,48 +36,6 @@ Is a quicker way to start with Expo + Firebase (using JS SDK) projects. It inclu
 - uses [KeyboardAwareScrollView](https://github.com/APSL/react-native-keyboard-aware-scroll-view) package to handle keyboard appearance and automatically scrolls to focused TextInput
 - uses `dotenv` and `expo-constants` packages to manage environment variables (so that they are not exposed on public repositories)
 - all components are now functional components and use [React Hooks](https://reactjs.org/docs/hooks-intro.html)
-
-## Installation
-
-1. Create a new project using the firebase starter template.
-
-```bash
-npx create-react-native-app --template https://github.com/expo-community/expo-firebase-starter
-```
-
-2. Rename the file `example.env` to `.env`
-3. Update `.env` with your own configuration, e.g.:
-
-```shell
-# Rename this file to ".env" before use
-# Replace XXXX's with your own Firebase config keys
-API_KEY=XXXX
-AUTH_DOMAIN=XXXX
-PROJECT_ID=XXXX
-STORAGE_BUCKET=XXXX
-MESSAGING_SENDER_ID=XXXX
-APP_ID=XXXX
-```
-
-## Run project
-
-To start the development server and run your project:
-
-```
-npx expo start
-```
-
-Alternate to using Expo Go, if you are building more than a hobby project or a prototype, make sure you [create a development build](https://docs.expo.dev/develop/development-builds/introduction/). You can either [locally compile your project](https://docs.expo.dev/guides/local-app-development/#local-builds-with-expo-dev-client) or [use EAS](https://docs.expo.dev/develop/development-builds/create-a-build/).
-
-To locally compile your app, run:
-
-```
-# Build native Android project
-npx expo run:android
-
-# Build native iOS project
-npx expo run:ios
-```
 
 ## File Structure
 
@@ -98,23 +71,6 @@ Expo Firebase Starter
 ├── app.config.js ➡️ Expo config file
 └── babel.config.js ➡️ Babel config (should be using `babel-preset-expo`)
 ```
-
-## Screens
-
-Main screens:
-
-- Login
-- Signup
-- Forgot password
-- Home (Bare Minimum) with a logout button
-
-<img src="./screenshots/img1.png" height="640" alt="Login screen with validation">
-
-<img src="./screenshots/img2.png" height="640" alt="Successful sign up attempt">
-
-<img src="./screenshots/img3.png" height="640" alt="Forgot password screen">
-
-<img src="./screenshots/img4.png" height="640" alt="Validation on Signup screens">
 
 ## Development builds and React Native Firebase library
 
