@@ -1,38 +1,29 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { StyleSheet, useColorScheme, useWindowDimensions } from "react-native";
+import { StyleSheet, useColorScheme, View as RNView } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { View } from "../View";
 import { AuthenticatedUserContext } from "../../providers";
 import { CustomInput, CustomButton } from "../";
-import { SubtitleText, ErrorText } from "../Typography";
-import { ScreenHeader } from "../ScreenHeader";
-import { CustomDialog } from "../CustomDialog";
+import { ErrorText } from "../Typography";
 import { getThemeColors, spacing } from "../../styles/theme";
 import { addSoul, canAddMoreSouls } from "../../utils/firebaseUtils";
-import { DatabaseErrorScreen } from "../DatabaseErrorScreen";
+import { Ionicons } from "@expo/vector-icons";
 
 const soulValidationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
-  contact: Yup.string().required("Phone or email is required"),
 });
 
 export const AddSoul = ({ onSuccess, onCancel }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
-  const [dbError, setDbError] = useState(null);
-  const [successDialogVisible, setSuccessDialogVisible] = useState(false);
-  const [addedSoul, setAddedSoul] = useState(null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
-  const { width } = useWindowDimensions();
-  const isLargeScreen = width > 768;
 
-  const handleAddSoul = async (values) => {
+  const handleAddSoul = async (values, { resetForm }) => {
     if (!user) {
       setErrorState("You must be logged in to add a soul");
       return;
@@ -51,78 +42,47 @@ export const AddSoul = ({ onSuccess, onCancel }) => {
         return;
       }
 
-      // Determine if contact is email or phone
-      const isEmail = values.contact.includes("@");
-
-      // Add soul to Firestore
+      // Add soul to Firestore with just the name for now
       const soulData = {
         name: values.name,
-        ...(isEmail ? { email: values.contact } : { phone: values.contact }),
         userId: user.uid,
+        isPublic: true, // Default to public
       };
 
       const soulId = await addSoul(soulData);
-      setAddedSoul({ id: soulId, ...soulData });
-      setSuccessDialogVisible(true);
+
+      // Reset the form
+      resetForm();
+
+      // Call onSuccess with the new soul data
+      if (onSuccess) {
+        onSuccess({ id: soulId, ...soulData });
+      }
     } catch (error) {
       console.error("Error adding soul:", error);
-      if (
-        error.message?.includes("Firebase") ||
-        error.message?.includes("firestore")
-      ) {
-        setDbError(error);
-      } else {
-        setErrorState("Failed to add soul. Please try again.");
-      }
+      setErrorState("Failed to add soul. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSuccessConfirm = () => {
-    setSuccessDialogVisible(false);
-    if (onSuccess && addedSoul) {
-      onSuccess(addedSoul);
-    }
-  };
-
-  // If there's a database error, show the database error screen
-  if (dbError) {
-    return (
-      <DatabaseErrorScreen onRetry={() => setDbError(null)} error={dbError} />
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <ScreenHeader title="Add to Wailing Wall" showBackButton={false} />
-
-      <SubtitleText style={styles.subtitle}>
-        Enter the name and contact information of the person you want to add to
-        the wall
-      </SubtitleText>
-
-      <Formik
-        initialValues={{ name: "", contact: "" }}
-        validationSchema={soulValidationSchema}
-        onSubmit={handleAddSoul}
-      >
-        {({
-          values,
-          touched,
-          errors,
-          handleChange,
-          handleSubmit,
-          handleBlur,
-        }) => (
-          <View
-            style={[
-              styles.formContainer,
-              isLargeScreen && styles.formContainerLarge,
-            ]}
-          >
+    <Formik
+      initialValues={{ name: "" }}
+      validationSchema={soulValidationSchema}
+      onSubmit={handleAddSoul}
+    >
+      {({
+        values,
+        touched,
+        errors,
+        handleChange,
+        handleBlur,
+        handleSubmit,
+      }) => (
+        <RNView style={styles.container}>
+          <RNView style={styles.inputContainer}>
             <CustomInput
-              label="Name"
               placeholder="Enter name"
               value={values.name}
               onChangeText={handleChange("name")}
@@ -130,84 +90,62 @@ export const AddSoul = ({ onSuccess, onCancel }) => {
               error={errors.name}
               touched={touched.name}
               leftIconName="person-outline"
+              containerStyle={styles.input}
             />
 
-            <CustomInput
-              label="Phone or Email"
-              placeholder="Enter phone or email"
-              value={values.contact}
-              onChangeText={handleChange("contact")}
-              onBlur={handleBlur("contact")}
-              error={errors.contact}
-              touched={touched.contact}
-              leftIconName="call-outline"
+            <CustomButton
+              title="Add"
+              onPress={handleSubmit}
+              loading={loading}
+              variant="primary"
+              size="medium"
+              style={styles.addButton}
+              leftIcon={<Ionicons name="add" size={18} color="#FFFFFF" />}
             />
+          </RNView>
 
-            {errorState !== "" && <ErrorText>{errorState}</ErrorText>}
+          {errorState !== "" && (
+            <ErrorText style={styles.error}>{errorState}</ErrorText>
+          )}
 
-            <View style={styles.buttonContainer}>
-              {onCancel && (
-                <CustomButton
-                  title="Cancel"
-                  onPress={onCancel}
-                  variant="outline"
-                  size="large"
-                  style={styles.cancelButton}
-                />
-              )}
-
-              <CustomButton
-                title="Add to Wall"
-                onPress={() => handleSubmit()}
-                loading={loading}
-                variant="primary"
-                size="large"
-                style={styles.submitButton}
-              />
-            </View>
-          </View>
-        )}
-      </Formik>
-
-      <CustomDialog
-        visible={successDialogVisible}
-        title="Soul Added"
-        message={`${
-          addedSoul?.name || "Soul"
-        } has been added to the Wailing Wall`}
-        confirmText="OK"
-        onConfirm={handleSuccessConfirm}
-      />
-    </View>
+          {onCancel && (
+            <CustomButton
+              title="Cancel"
+              onPress={onCancel}
+              variant="outline"
+              size="small"
+              style={styles.cancelButton}
+            />
+          )}
+        </RNView>
+      )}
+    </Formik>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  subtitle: {
-    marginBottom: spacing.xl,
-  },
-  formContainer: {
+    marginBottom: spacing.md,
     width: "100%",
   },
-  formContainerLarge: {
-    maxWidth: 500,
-    alignSelf: "center",
-  },
-  buttonContainer: {
+  inputContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    marginTop: spacing.lg,
+    alignItems: "flex-start",
+  },
+  input: {
+    flex: 1,
+    marginRight: spacing.sm,
+    marginBottom: 0,
+  },
+  addButton: {
+    marginTop: 22, // To align with input when it has a label
+  },
+  error: {
+    marginTop: spacing.xs,
+    marginLeft: 0,
   },
   cancelButton: {
-    marginRight: spacing.md,
-    borderRadius: 12,
-    flex: 1,
-  },
-  submitButton: {
-    borderRadius: 12,
-    flex: 1,
+    marginTop: spacing.xs,
+    alignSelf: "flex-start",
   },
 });

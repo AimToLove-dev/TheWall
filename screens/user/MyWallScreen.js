@@ -9,7 +9,6 @@ import {
   ScrollView,
 } from "react-native";
 import { View } from "../../components/View";
-import { auth } from "config";
 import { AuthenticatedUserContext } from "../../providers";
 import { CustomButton } from "../../components/CustomButton";
 import { SubtitleText, BodyText } from "../../components/Typography";
@@ -39,7 +38,7 @@ export const MyWallScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSouls, setSelectedSouls] = useState([]);
-  const [showAddSoul, setShowAddSoul] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [dialogAction, setDialogAction] = useState(null);
   const [canAddMore, setCanAddMore] = useState(false);
@@ -80,7 +79,7 @@ export const MyWallScreen = ({ navigation }) => {
 
   const handleAddSoulSuccess = (newSoul) => {
     setSouls([...souls, newSoul]);
-    setShowAddSoul(false);
+    setShowAddForm(false);
     checkCanAddMore();
   };
 
@@ -191,7 +190,7 @@ export const MyWallScreen = ({ navigation }) => {
           styles.addBadge,
           { borderColor: colors.primary },
         ]}
-        onPress={() => setShowAddSoul(true)}
+        onPress={() => setShowAddForm(true)}
       >
         <Ionicons name="add" size={20} color={colors.primary} />
         <BodyText style={[styles.soulName, { color: colors.primary }]}>
@@ -208,16 +207,6 @@ export const MyWallScreen = ({ navigation }) => {
         onRetry={fetchUserSouls}
         error={error}
         navigation={navigation}
-      />
-    );
-  }
-
-  // If showing add soul form
-  if (showAddSoul) {
-    return (
-      <AddSoul
-        onSuccess={handleAddSoulSuccess}
-        onCancel={() => setShowAddSoul(false)}
       />
     );
   }
@@ -263,12 +252,21 @@ export const MyWallScreen = ({ navigation }) => {
           </BodyText>
         </View>
 
+        {showAddForm ? (
+          <View style={styles.addFormContainer}>
+            <AddSoul
+              onSuccess={handleAddSoulSuccess}
+              onCancel={() => setShowAddForm(false)}
+            />
+          </View>
+        ) : null}
+
         <ScrollView
           style={styles.scrollContainer}
           contentContainerStyle={styles.badgesContainer}
         >
           {souls.map(renderSoulBadge)}
-          {renderAddBadge()}
+          {!showAddForm && renderAddBadge()}
         </ScrollView>
 
         <View style={styles.actionBar}>
@@ -374,6 +372,12 @@ const styles = StyleSheet.create({
   },
   infoText: {
     marginTop: spacing.xs,
+  },
+  addFormContainer: {
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 12,
   },
   scrollContainer: {
     flex: 1,
