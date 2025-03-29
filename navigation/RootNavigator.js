@@ -11,7 +11,7 @@ import { HomeScreen } from "../screens/HomeScreen";
 import { WailingWallScreen } from "../screens/WailingWallScreen";
 import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator } from "../components";
-import { auth } from "../config/firebase";
+import { auth } from "config";
 
 const Stack = createStackNavigator();
 
@@ -50,11 +50,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Auth" component={AuthStack} />
 
         {/* Protected routes that require authentication */}
-        {user ? (
-          <>
-            <Stack.Screen name="App" component={AppStack} />
-          </>
-        ) : null}
+        <Stack.Screen name="App" component={AppStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

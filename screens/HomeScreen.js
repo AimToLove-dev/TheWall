@@ -39,8 +39,8 @@ export const HomeScreen = ({ navigation }) => {
     navigation.navigate("WailingWall");
   };
 
-  const handleProfilePress = () => {
-    navigation.navigate("App", { screen: "Profile" });
+  const handleDashboardPress = () => {
+    navigation.navigate("App", { screen: "Dashboard" });
   };
 
   return (
@@ -105,8 +105,8 @@ export const HomeScreen = ({ navigation }) => {
 
               {user ? (
                 <CustomButton
-                  title="My Profile"
-                  onPress={handleProfilePress}
+                  title="Dashbaord"
+                  onPress={handleDashboardPress}
                   variant="secondary"
                   size="large"
                   style={styles.secondaryButton}

@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -9,16 +11,16 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "config";
 import { Ionicons } from "@expo/vector-icons";
-import { auth } from "../config";
-import { CustomInput, CustomButton, FormContainer } from "../components";
+import { CustomInput, CustomButton, FormContainer } from "components";
 import {
   HeaderText,
   SubtitleText,
   LinkText,
   ErrorText,
-} from "../components/Typography";
-import { getThemeColors, spacing } from "../styles/theme";
+} from "components/Typography";
+import { getThemeColors, spacing } from "styles/theme";
 
 const loginValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -42,12 +44,14 @@ export const LoginScreen = ({ navigation }) => {
     setErrorState("");
 
     signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        setLoading(false);
+      })
       .catch((error) => {
         setErrorState(error.message);
       })
       .finally(() => {
-        setLoading(false);
-        navigation.navigate("Home");
+        navigation.navigate("App", { screen: "Dashboard" });
       });
   };
 

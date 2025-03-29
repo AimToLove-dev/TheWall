@@ -1,9 +1,9 @@
 export { HomeScreen } from "./HomeScreen";
-export { LoginScreen } from "./LoginScreen";
-export { SignupScreen } from "./SignupScreen";
-export { ForgotPasswordScreen } from "./ForgotPasswordScreen";
-export { ProfileScreen } from "./ProfileScreen";
-export { SoulSubmissionsScreen } from "./SoulSubmissionsScreen";
+export { LoginScreen } from "./auth/LoginScreen";
+export { SignupScreen } from "./auth/SignupScreen";
+export { ForgotPasswordScreen } from "./auth/ForgotPasswordScreen";
+
 export { WailingWallScreen } from "./WailingWallScreen";
-export { AddSoulScreen } from "./AddSoulScreen";
-export { EditSoulScreen } from "./EditSoulScreen";
+export { DashboardScreen } from "./user/DashboardScreen";
+export { ProfileScreen } from "./user/ProfileScreen";
+export { MyWallScreen } from "./user/MyWallScreen";

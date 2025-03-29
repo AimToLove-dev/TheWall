@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef, Image } from "react";
 import {
   StyleSheet,
   useColorScheme,
@@ -61,7 +61,7 @@ export const WailingWallScreen = ({ navigation }) => {
   };
 
   const handleAddSoul = () => {
-    navigation.navigate("App", { screen: "Profile" });
+    navigation.navigate("App", { screen: "MyWall" });
     // We'll handle this in the Profile screen now
   };
 
@@ -194,6 +194,15 @@ const styles = StyleSheet.create({
   profileButton: {
     padding: spacing.sm,
     borderRadius: 50,
+  },
+  svgOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1, // Ensure it stays behind other content
+    opacity: 0.2, // Adjust opacity for a subtle effect
   },
   wallContainer: {
     flex: 1,

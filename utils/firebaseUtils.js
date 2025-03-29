@@ -12,7 +12,7 @@ import {
   limit,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../config/firebase"; // Updated import path
+import { db } from "config"; // Updated import path
 
 /**
  * Generic Firestore utility functions

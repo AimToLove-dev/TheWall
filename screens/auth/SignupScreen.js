@@ -5,44 +5,51 @@ import {
   View,
   StyleSheet,
   Platform,
-  Alert,
   useColorScheme,
   TouchableOpacity,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { sendPasswordResetEmail } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "config";
 import { Ionicons } from "@expo/vector-icons";
-import { auth } from "../config";
-import { CustomInput, CustomButton, FormContainer } from "../components";
-import { HeaderText, SubtitleText, ErrorText } from "../components/Typography";
-import { getThemeColors, spacing } from "../styles/theme";
+import { CustomInput, CustomButton, FormContainer } from "components";
+import {
+  HeaderText,
+  SubtitleText,
+  LinkText,
+  ErrorText,
+} from "components/Typography";
+import { getThemeColors, spacing } from "styles/theme";
 
-const forgotPasswordSchema = Yup.object().shape({
+const signupValidationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Please enter a valid email")
     .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
 });
 
-export const ForgotPasswordScreen = ({ navigation }) => {
+export const SignupScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
 
-  const handleResetPassword = (values) => {
-    const { email } = values;
+  const handleSignUp = (values) => {
+    const { email, password } = values;
     setLoading(true);
     setErrorState("");
 
-    sendPasswordResetEmail(auth, email)
+    createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
-        Alert.alert(
-          "Password Reset Email Sent",
-          "Check your email for a password reset link",
-          [{ text: "OK", onPress: () => navigation.goBack() }]
-        );
+        // Navigate to Dashboard after successful signup
+        navigation.navigate("App", { screen: "Dashboard" });
       })
       .catch((error) => {
         setErrorState(error.message);
@@ -50,6 +57,10 @@ export const ForgotPasswordScreen = ({ navigation }) => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleBackPress = () => {
+    navigation.navigate("Home");
   };
 
   const renderContent = () => {
@@ -60,22 +71,20 @@ export const ForgotPasswordScreen = ({ navigation }) => {
             styles.backButton,
             isDark && { backgroundColor: colors.card },
           ]}
-          onPress={() => navigation.goBack()}
+          onPress={handleBackPress}
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         <View style={styles.headerContainer}>
-          <HeaderText>Forgot Password</HeaderText>
-          <SubtitleText>
-            Enter your email to receive a password reset link
-          </SubtitleText>
+          <HeaderText>Create Account</HeaderText>
+          <SubtitleText>Sign up to get started</SubtitleText>
         </View>
 
         <Formik
-          initialValues={{ email: "" }}
-          validationSchema={forgotPasswordSchema}
-          onSubmit={handleResetPassword}
+          initialValues={{ email: "", password: "", confirmPassword: "" }}
+          validationSchema={signupValidationSchema}
+          onSubmit={handleSignUp}
         >
           {({
             values,
@@ -97,16 +106,49 @@ export const ForgotPasswordScreen = ({ navigation }) => {
                 leftIconName="mail-outline"
               />
 
+              <CustomInput
+                placeholder="Password"
+                value={values.password}
+                onChangeText={handleChange("password")}
+                onBlur={handleBlur("password")}
+                error={errors.password}
+                touched={touched.password}
+                secureTextEntry
+                showPasswordToggle
+                leftIconName="lock-closed-outline"
+              />
+
+              <CustomInput
+                placeholder="Confirm Password"
+                value={values.confirmPassword}
+                onChangeText={handleChange("confirmPassword")}
+                onBlur={handleBlur("confirmPassword")}
+                error={errors.confirmPassword}
+                touched={touched.confirmPassword}
+                secureTextEntry
+                showPasswordToggle
+                leftIconName="lock-closed-outline"
+              />
+
               {errorState !== "" && <ErrorText>{errorState}</ErrorText>}
 
               <CustomButton
-                title="Send Reset Link"
+                title="Sign Up"
                 onPress={() => handleSubmit()}
                 loading={loading}
                 variant="primary"
                 size="large"
-                style={styles.resetButton}
+                style={styles.signupButton}
               />
+
+              <View style={styles.loginContainer}>
+                <SubtitleText style={styles.loginText}>
+                  Already have an account?
+                </SubtitleText>
+                <LinkText onPress={() => navigation.navigate("Login")}>
+                  {" Sign In"}
+                </LinkText>
+              </View>
             </View>
           )}
         </Formik>
@@ -149,7 +191,15 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: "center",
   },
-  resetButton: {
-    marginTop: spacing.md,
+  signupButton: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
+  },
+  loginContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  loginText: {
+    marginBottom: 0,
   },
 });

@@ -1,14 +1,17 @@
 import { createStackNavigator } from "@react-navigation/stack";
-
-import { ProfileScreen } from "../screens/ProfileScreen";
+import { ProfileScreen, DashboardScreen, MyWallScreen } from "../screens";
 
 const Stack = createStackNavigator();
 
 export const AppStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      initialRouteName="Dashboard"
+      screenOptions={{ headerShown: false }}
+    >
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
-      {/* Add other authenticated screens here */}
+      <Stack.Screen name="MyWall" component={MyWallScreen} />
     </Stack.Navigator>
   );
 };

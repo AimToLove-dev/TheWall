@@ -1,13 +1,15 @@
 import React from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
-
-import { Colors } from "../config";
+import { ActivityIndicator, StyleSheet, useColorScheme } from "react-native";
+import { getThemeColors, spacing } from "../styles/theme";
 import { View } from "./View";
 
 export const LoadingIndicator = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const colors = getThemeColors(isDark);
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={Colors.blue} />
+      <ActivityIndicator size="large" color={colors.primary} />
     </View>
   );
 };

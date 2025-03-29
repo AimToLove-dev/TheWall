@@ -6,8 +6,7 @@
     "public": "dist",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "**/.*"
     ],
     "headers": [
       {
@@ -22,7 +21,11 @@
     ],
     "rewrites": [
       {
-        "source": "!/assets/**",
+        "source": "/assets/**",
+        "destination": "/assets/**"
+      },
+      {
+        "source": "**",
         "destination": "/index.html"
       }
     ]

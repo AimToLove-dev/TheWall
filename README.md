@@ -21,7 +21,7 @@ npx expo start
 
 ```
 
-Compile & Deploy:
+Deploy:
 
 ```
 # Build
@@ -34,7 +34,7 @@ firebase login
 firebase deploy
 ```
 
-Local Build Test:
+Local Build:
 
 ```
 # Build
