@@ -1,112 +1,155 @@
-import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
-import { Formik } from "formik";
-import { sendPasswordResetEmail } from "firebase/auth";
+"use client";
 
-import { passwordResetSchema } from "../utils";
-import { Colors, auth } from "../config";
-import { View, TextInput, Button, FormErrorMessage } from "../components";
+import { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Platform,
+  Alert,
+  useColorScheme,
+  TouchableOpacity,
+} from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { Ionicons } from "@expo/vector-icons";
+import { auth } from "../config";
+import { CustomInput, CustomButton, FormContainer } from "../components";
+import { HeaderText, SubtitleText, ErrorText } from "../components/Typography";
+import { getThemeColors, spacing } from "../styles/theme";
+
+const forgotPasswordSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+});
 
 export const ForgotPasswordScreen = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const colors = getThemeColors(isDark);
 
-  const handleSendPasswordResetEmail = (values) => {
+  const handleResetPassword = (values) => {
     const { email } = values;
+    setLoading(true);
+    setErrorState("");
 
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        console.log("Success: Password Reset Email sent.");
-        navigation.navigate("Login");
+        Alert.alert(
+          "Password Reset Email Sent",
+          "Check your email for a password reset link",
+          [{ text: "OK", onPress: () => navigation.goBack() }]
+        );
       })
-      .catch((error) => setErrorState(error.message));
+      .catch((error) => {
+        setErrorState(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const renderContent = () => {
+    return (
+      <View style={styles.inner}>
+        <TouchableOpacity
+          style={[
+            styles.backButton,
+            isDark && { backgroundColor: colors.card },
+          ]}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+
+        <View style={styles.headerContainer}>
+          <HeaderText>Forgot Password</HeaderText>
+          <SubtitleText>
+            Enter your email to receive a password reset link
+          </SubtitleText>
+        </View>
+
+        <Formik
+          initialValues={{ email: "" }}
+          validationSchema={forgotPasswordSchema}
+          onSubmit={handleResetPassword}
+        >
+          {({
+            values,
+            touched,
+            errors,
+            handleChange,
+            handleSubmit,
+            handleBlur,
+          }) => (
+            <View style={styles.formContainer}>
+              <CustomInput
+                placeholder="Email"
+                value={values.email}
+                onChangeText={handleChange("email")}
+                onBlur={handleBlur("email")}
+                error={errors.email}
+                touched={touched.email}
+                keyboardType="email-address"
+                leftIconName="mail-outline"
+              />
+
+              {errorState !== "" && <ErrorText>{errorState}</ErrorText>}
+
+              <CustomButton
+                title="Send Reset Link"
+                onPress={() => handleSubmit()}
+                loading={loading}
+                variant="primary"
+                size="large"
+                style={styles.resetButton}
+              />
+            </View>
+          )}
+        </Formik>
+      </View>
+    );
   };
 
   return (
-    <View isSafe style={styles.container}>
-      <View style={styles.innerContainer}>
-        <Text style={styles.screenTitle}>Reset your password</Text>
-      </View>
-      <Formik
-        initialValues={{ email: "" }}
-        validationSchema={passwordResetSchema}
-        onSubmit={(values) => handleSendPasswordResetEmail(values)}
-      >
-        {({
-          values,
-          touched,
-          errors,
-          handleChange,
-          handleSubmit,
-          handleBlur,
-        }) => (
-          <>
-            {/* Email input field */}
-            <TextInput
-              name="email"
-              leftIconName="email"
-              placeholder="Enter email"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              value={values.email}
-              onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
-            />
-            <FormErrorMessage error={errors.email} visible={touched.email} />
-            {/* Display Screen Error Mesages */}
-            {errorState !== "" ? (
-              <FormErrorMessage error={errorState} visible={true} />
-            ) : null}
-            {/* Password Reset Send Email  button */}
-            <Button style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Send Reset Email</Text>
-            </Button>
-          </>
-        )}
-      </Formik>
-      {/* Button to navigate to Login screen */}
-      <Button
-        style={styles.borderlessButtonContainer}
-        borderless
-        title={"Go back to Login"}
-        onPress={() => navigation.navigate("Login")}
-      />
-    </View>
+    <FormContainer
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {renderContent()}
+    </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
+    padding: spacing.lg,
+  },
+  inner: {
     flex: 1,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 12,
   },
-  innerContainer: {
+  backButton: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Platform.OS === "ios" ? "transparent" : "#F0F0F0",
   },
-  screenTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.black,
-    paddingTop: 20,
+  headerContainer: {
+    marginBottom: spacing.xl,
   },
-  button: {
+  formContainer: {
     width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 8,
-    backgroundColor: Colors.blue,
-    padding: 10,
-    borderRadius: 8,
+    maxWidth: 400,
+    alignSelf: "center",
   },
-  buttonText: {
-    fontSize: 20,
-    color: Colors.white,
-    fontWeight: "700",
-  },
-  borderlessButtonContainer: {
-    marginTop: 16,
-    alignItems: "center",
-    justifyContent: "center",
+  resetButton: {
+    marginTop: spacing.md,
   },
 });

@@ -1,6 +1,9 @@
-import { LoginScreen } from "./LoginScreen";
-import { SignupScreen } from "./SignupScreen";
-import { HomeScreen } from "./HomeScreen";
-import { ForgotPasswordScreen } from "./ForgotPasswordScreen";
-
-export { LoginScreen, SignupScreen, HomeScreen, ForgotPasswordScreen };
+export { HomeScreen } from "./HomeScreen";
+export { LoginScreen } from "./LoginScreen";
+export { SignupScreen } from "./SignupScreen";
+export { ForgotPasswordScreen } from "./ForgotPasswordScreen";
+export { ProfileScreen } from "./ProfileScreen";
+export { SoulSubmissionsScreen } from "./SoulSubmissionsScreen";
+export { WailingWallScreen } from "./WailingWallScreen";
+export { AddSoulScreen } from "./AddSoulScreen";
+export { EditSoulScreen } from "./EditSoulScreen";

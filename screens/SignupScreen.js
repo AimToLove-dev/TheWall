@@ -1,51 +1,86 @@
-import React, { useState } from "react";
-import { Text, StyleSheet } from "react-native";
-import { Formik } from "formik";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+"use client";
 
-import { View, TextInput, Logo, Button, FormErrorMessage } from "../components";
-import { Images, Colors, auth } from "../config";
-import { useTogglePasswordVisibility } from "../hooks";
-import { signupValidationSchema } from "../utils";
+import { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Platform,
+  useColorScheme,
+  TouchableOpacity,
+} from "react-native";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { Ionicons } from "@expo/vector-icons";
+import { auth } from "../config";
+import { CustomInput, CustomButton, FormContainer } from "../components";
+import {
+  HeaderText,
+  SubtitleText,
+  LinkText,
+  ErrorText,
+} from "../components/Typography";
+import { getThemeColors, spacing } from "../styles/theme";
+
+const signupValidationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email("Please enter a valid email")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
+});
 
 export const SignupScreen = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const colors = getThemeColors(isDark);
 
-  const {
-    passwordVisibility,
-    handlePasswordVisibility,
-    rightIcon,
-    handleConfirmPasswordVisibility,
-    confirmPasswordIcon,
-    confirmPasswordVisibility,
-  } = useTogglePasswordVisibility();
-
-  const handleSignup = async (values) => {
+  const handleSignUp = (values) => {
     const { email, password } = values;
+    setLoading(true);
+    setErrorState("");
 
-    createUserWithEmailAndPassword(auth, email, password).catch((error) =>
-      setErrorState(error.message)
-    );
+    createUserWithEmailAndPassword(auth, email, password)
+      .catch((error) => {
+        setErrorState(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
-  return (
-    <View isSafe style={styles.container}>
-      <KeyboardAwareScrollView enableOnAndroid={true}>
-        {/* LogoContainer: consist app logo and screen title */}
-        <View style={styles.logoContainer}>
-          <Logo uri={Images.logo} />
-          <Text style={styles.screenTitle}>Create a new account!</Text>
+  const handleBackPress = () => {
+    navigation.navigate("Home");
+  };
+
+  const renderContent = () => {
+    return (
+      <View style={styles.inner}>
+        <TouchableOpacity
+          style={[
+            styles.backButton,
+            isDark && { backgroundColor: colors.card },
+          ]}
+          onPress={handleBackPress}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+
+        <View style={styles.headerContainer}>
+          <HeaderText>Create Account</HeaderText>
+          <SubtitleText>Sign up to get started</SubtitleText>
         </View>
-        {/* Formik Wrapper */}
+
         <Formik
-          initialValues={{
-            email: "",
-            password: "",
-            confirmPassword: "",
-          }}
+          initialValues={{ email: "", password: "", confirmPassword: "" }}
           validationSchema={signupValidationSchema}
-          onSubmit={(values) => handleSignup(values)}
+          onSubmit={handleSignUp}
         >
           {({
             values,
@@ -55,112 +90,112 @@ export const SignupScreen = ({ navigation }) => {
             handleSubmit,
             handleBlur,
           }) => (
-            <>
-              {/* Input fields */}
-              <TextInput
-                name="email"
-                leftIconName="email"
-                placeholder="Enter email"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                textContentType="emailAddress"
-                autoFocus={true}
+            <View style={styles.formContainer}>
+              <CustomInput
+                placeholder="Email"
                 value={values.email}
                 onChangeText={handleChange("email")}
                 onBlur={handleBlur("email")}
+                error={errors.email}
+                touched={touched.email}
+                keyboardType="email-address"
+                leftIconName="mail-outline"
               />
-              <FormErrorMessage error={errors.email} visible={touched.email} />
-              <TextInput
-                name="password"
-                leftIconName="key-variant"
-                placeholder="Enter password"
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={passwordVisibility}
-                textContentType="newPassword"
-                rightIcon={rightIcon}
-                handlePasswordVisibility={handlePasswordVisibility}
+
+              <CustomInput
+                placeholder="Password"
                 value={values.password}
                 onChangeText={handleChange("password")}
                 onBlur={handleBlur("password")}
-              />
-              <FormErrorMessage
                 error={errors.password}
-                visible={touched.password}
+                touched={touched.password}
+                secureTextEntry
+                showPasswordToggle
+                leftIconName="lock-closed-outline"
               />
-              <TextInput
-                name="confirmPassword"
-                leftIconName="key-variant"
-                placeholder="Enter password"
-                autoCapitalize="none"
-                autoCorrect={false}
-                secureTextEntry={confirmPasswordVisibility}
-                textContentType="password"
-                rightIcon={confirmPasswordIcon}
-                handlePasswordVisibility={handleConfirmPasswordVisibility}
+
+              <CustomInput
+                placeholder="Confirm Password"
                 value={values.confirmPassword}
                 onChangeText={handleChange("confirmPassword")}
                 onBlur={handleBlur("confirmPassword")}
-              />
-              <FormErrorMessage
                 error={errors.confirmPassword}
-                visible={touched.confirmPassword}
+                touched={touched.confirmPassword}
+                secureTextEntry
+                showPasswordToggle
+                leftIconName="lock-closed-outline"
               />
-              {/* Display Screen Error Messages */}
-              {errorState !== "" ? (
-                <FormErrorMessage error={errorState} visible={true} />
-              ) : null}
-              {/* Signup button */}
-              <Button style={styles.button} onPress={handleSubmit}>
-                <Text style={styles.buttonText}>Signup</Text>
-              </Button>
-            </>
+
+              {errorState !== "" && <ErrorText>{errorState}</ErrorText>}
+
+              <CustomButton
+                title="Sign Up"
+                onPress={() => handleSubmit()}
+                loading={loading}
+                variant="primary"
+                size="large"
+                style={styles.signupButton}
+              />
+
+              <View style={styles.loginContainer}>
+                <SubtitleText style={styles.loginText}>
+                  Already have an account?
+                </SubtitleText>
+                <LinkText onPress={() => navigation.navigate("Login")}>
+                  {" Sign In"}
+                </LinkText>
+              </View>
+            </View>
           )}
         </Formik>
-        {/* Button to navigate to Login screen */}
-        <Button
-          style={styles.borderlessButtonContainer}
-          borderless
-          title={"Already have an account?"}
-          onPress={() => navigation.navigate("Login")}
-        />
-      </KeyboardAwareScrollView>
-    </View>
+      </View>
+    );
+  };
+
+  return (
+    <FormContainer
+      style={{ backgroundColor: colors.background }}
+      contentContainerStyle={styles.contentContainer}
+    >
+      {renderContent()}
+    </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
+    padding: spacing.lg,
+  },
+  inner: {
     flex: 1,
-    backgroundColor: Colors.white,
-    paddingHorizontal: 12,
   },
-  logoContainer: {
+  backButton: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Platform.OS === "ios" ? "transparent" : "#F0F0F0",
   },
-  screenTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: Colors.black,
-    paddingTop: 20,
+  headerContainer: {
+    marginBottom: spacing.xl,
   },
-  button: {
+  formContainer: {
     width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 8,
-    backgroundColor: Colors.blue,
-    padding: 10,
-    borderRadius: 8,
+    maxWidth: 400,
+    alignSelf: "center",
   },
-  buttonText: {
-    fontSize: 20,
-    color: Colors.white,
-    fontWeight: "700",
+  signupButton: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
   },
-  borderlessButtonContainer: {
-    marginTop: 16,
-    alignItems: "center",
+  loginContainer: {
+    flexDirection: "row",
     justifyContent: "center",
+  },
+  loginText: {
+    marginBottom: 0,
   },
 });

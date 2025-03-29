@@ -1,17 +1,18 @@
-import React from "react";
+import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
-import { RootNavigator } from "./navigation/RootNavigator";
 import { AuthenticatedUserProvider } from "./providers";
+import { RootNavigator } from "./navigation/RootNavigator";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
-const App = () => {
+export default function App() {
   return (
-    <AuthenticatedUserProvider>
-      <SafeAreaProvider>
-        <RootNavigator />
-      </SafeAreaProvider>
-    </AuthenticatedUserProvider>
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <AuthenticatedUserProvider>
+          <StatusBar />
+          <RootNavigator />
+        </AuthenticatedUserProvider>
+      </ErrorBoundary>
+    </SafeAreaProvider>
   );
-};
-
-export default App;
+}
