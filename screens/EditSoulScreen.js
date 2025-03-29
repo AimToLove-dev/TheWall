@@ -2,20 +2,22 @@
 
 import { useState, useContext } from "react";
 import {
-  View,
   StyleSheet,
   useColorScheme,
   TouchableOpacity,
   Alert,
+  useWindowDimensions,
 } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { Ionicons } from "@expo/vector-icons";
+import { View } from "../components/View";
 import { AuthenticatedUserContext } from "../providers";
-import { CustomInput, CustomButton, FormContainer } from "../components";
+import { CustomInput, CustomButton } from "../components";
 import { HeaderText, SubtitleText, ErrorText } from "../components/Typography";
-import { getThemeColors } from "../styles/theme";
+import { getThemeColors, spacing } from "../styles/theme";
 import { updateSoul } from "../utils/firebaseUtils";
+import { DatabaseErrorScreen } from "../components/DatabaseErrorScreen";
 
 const soulValidationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),
@@ -27,9 +29,12 @@ export const EditSoulScreen = ({ navigation, route }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
+  const [dbError, setDbError] = useState(null);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width > 768;
 
   // Get initial contact value (either email or phone)
   const initialContact = soul.email || soul.phone || "";
@@ -62,29 +67,52 @@ export const EditSoulScreen = ({ navigation, route }) => {
       );
     } catch (error) {
       console.error("Error updating soul:", error);
-      setErrorState("Failed to update soul. Please try again.");
+      if (
+        error.message?.includes("Firebase") ||
+        error.message?.includes("firestore")
+      ) {
+        setDbError(error);
+      } else {
+        setErrorState("Failed to update soul. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const renderContent = () => {
+  // If there's a database error, show the database error screen
+  if (dbError) {
     return (
-      <View style={styles.inner}>
-        <TouchableOpacity
-          style={[
-            styles.backButton,
-            isDark && { backgroundColor: colors.card },
-          ]}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
+      <DatabaseErrorScreen
+        onRetry={() => setDbError(null)}
+        error={dbError}
+        navigation={navigation}
+      />
+    );
+  }
 
-        <View style={styles.headerContainer}>
+  return (
+    <View
+      isSafe
+      style={[styles.container, { backgroundColor: colors.background }]}
+    >
+      <View style={[styles.content, isLargeScreen && styles.contentLarge]}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={[
+              styles.backButton,
+              { backgroundColor: isDark ? colors.card : "transparent" },
+            ]}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
           <HeaderText>Edit Soul</HeaderText>
-          <SubtitleText>Update the information for this soul</SubtitleText>
         </View>
+
+        <SubtitleText style={styles.subtitle}>
+          Update the information for this soul
+        </SubtitleText>
 
         <Formik
           initialValues={{
@@ -102,7 +130,12 @@ export const EditSoulScreen = ({ navigation, route }) => {
             handleSubmit,
             handleBlur,
           }) => (
-            <View style={styles.formContainer}>
+            <View
+              style={[
+                styles.formContainer,
+                isLargeScreen && styles.formContainerLarge,
+              ]}
+            >
               <CustomInput
                 label="Name"
                 placeholder="Enter name"
@@ -139,19 +172,48 @@ export const EditSoulScreen = ({ navigation, route }) => {
           )}
         </Formik>
       </View>
-    );
-  };
-
-  return (
-    <FormContainer
-      style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.contentContainer}
-    >
-      {renderContent()}
-    </FormContainer>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  // Styles remain the same
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+    padding: spacing.lg,
+  },
+  contentLarge: {
+    maxWidth: 800,
+    alignSelf: "center",
+    width: "100%",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing.md,
+  },
+  subtitle: {
+    marginBottom: spacing.xl,
+  },
+  formContainer: {
+    width: "100%",
+  },
+  formContainerLarge: {
+    maxWidth: 500,
+    alignSelf: "center",
+  },
+  submitButton: {
+    marginTop: spacing.lg,
+    borderRadius: 12,
+  },
 });

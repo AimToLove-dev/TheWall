@@ -9,12 +9,9 @@ import { AuthStack } from "./AuthStack";
 import { AppStack } from "./AppStack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { WailingWallScreen } from "../screens/WailingWallScreen";
-import { AddSoulScreen } from "../screens/AddSoulScreen";
-import { SoulSubmissionsScreen } from "../screens/SoulSubmissionsScreen";
-import { EditSoulScreen } from "../screens/EditSoulScreen";
 import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator } from "../components";
-import { auth } from "../config";
+import { auth } from "../config/firebase";
 
 const Stack = createStackNavigator();
 
@@ -56,12 +53,6 @@ export const RootNavigator = () => {
         {user ? (
           <>
             <Stack.Screen name="App" component={AppStack} />
-            <Stack.Screen name="AddSoul" component={AddSoulScreen} />
-            <Stack.Screen
-              name="SoulSubmissions"
-              component={SoulSubmissionsScreen}
-            />
-            <Stack.Screen name="EditSoul" component={EditSoulScreen} />
           </>
         ) : null}
       </Stack.Navigator>

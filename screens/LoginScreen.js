@@ -47,6 +47,7 @@ export const LoginScreen = ({ navigation }) => {
       })
       .finally(() => {
         setLoading(false);
+        navigation.navigate("Home");
       });
   };
 

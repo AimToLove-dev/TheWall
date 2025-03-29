@@ -1,15 +1,34 @@
-import React from 'react';
-import { View as RNView, StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import React, { forwardRef } from "react";
+import { View as RNView, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-export const View = ({ isSafe, style, children }) => {
-  const insets = useSafeAreaInsets();
-
+/**
+ * A custom View component that optionally applies safe area insets
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.isSafe - Whether to use SafeAreaView
+ * @param {React.ReactNode} props.children - Child components
+ * @param {Object} props.style - Additional styles
+ * @returns {React.ReactElement} View component
+ */
+export const View = forwardRef(({ isSafe, children, style, ...props }, ref) => {
   if (isSafe) {
     return (
-      <RNView style={{ paddingTop: insets.top, ...style }}>{children}</RNView>
+      <SafeAreaView style={[styles.container, style]} {...props}>
+        {children}
+      </SafeAreaView>
     );
   }
 
-  return <RNView style={StyleSheet.flatten(style)}>{children}</RNView>;
-};
+  return (
+    <RNView ref={ref} style={[styles.container, style]} {...props}>
+      {children}
+    </RNView>
+  );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

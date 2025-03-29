@@ -1,22 +1,20 @@
 "use client";
 
-import { useContext } from "react";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  TouchableOpacity,
-  Alert,
-  useWindowDimensions,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { useContext, useState } from "react";
+import { StyleSheet, useColorScheme, useWindowDimensions } from "react-native";
+import { View } from "../components/View";
 import { signOut } from "firebase/auth";
-import { auth } from "../config";
+import { auth } from "../config/firebase";
 import { AuthenticatedUserContext } from "../providers";
 import { CustomButton } from "../components/CustomButton";
 import { HeaderText, SubtitleText, BodyText } from "../components/Typography";
+import { CustomDialog } from "../components/CustomDialog";
+import { SoulsList } from "../components/souls/SoulsList";
+import { AddSoul } from "../components/souls/AddSoul";
+import { EditSoul } from "../components/souls/EditSoul";
+import { ScreenHeader } from "../components/ScreenHeader";
 import { getThemeColors, spacing } from "../styles/theme";
+import { FormContainer } from "../components/FormContainer";
 
 export const ProfileScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -26,138 +24,200 @@ export const ProfileScreen = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const isLargeScreen = width > 768;
 
+  const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);
+  const [currentView, setCurrentView] = useState("profile"); // 'profile', 'souls', 'addSoul', 'editSoul'
+  const [selectedSoul, setSelectedSoul] = useState(null);
+
   const handleSignOut = () => {
-    onPress: () => {
-      signOut(auth)
-        .then(() => {
-          navigation.navigate("Home");
-        })
-        .catch((error) => {
-          console.error("Sign out error:", error);
-        });
-    };
+    setSignOutDialogVisible(true);
+  };
+
+  const confirmSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        navigation.navigate("Home");
+      })
+      .catch((error) => {
+        console.error("Sign out error:", error);
+      })
+      .finally(() => {
+        setSignOutDialogVisible(false);
+      });
   };
 
   const handleBackPress = () => {
-    navigation.navigate("Home");
+    if (currentView === "profile") {
+      navigation.navigate("Home");
+    } else {
+      setCurrentView("profile");
+    }
   };
 
   const handleViewSubmissions = () => {
-    navigation.navigate("SoulSubmissions");
+    setCurrentView("souls");
+  };
+
+  const handleAddSoul = () => {
+    setCurrentView("addSoul");
+  };
+
+  const handleEditSoul = (soul) => {
+    setSelectedSoul(soul);
+    setCurrentView("editSoul");
+  };
+
+  const handleSoulAdded = () => {
+    setCurrentView("souls");
+  };
+
+  const handleSoulUpdated = () => {
+    setCurrentView("souls");
+  };
+
+  const renderContent = () => {
+    switch (currentView) {
+      case "souls":
+        return (
+          <SoulsList
+            navigation={navigation}
+            onAddPress={handleAddSoul}
+            onEditPress={handleEditSoul}
+          />
+        );
+      case "addSoul":
+        return (
+          <AddSoul
+            onSuccess={handleSoulAdded}
+            onCancel={() => setCurrentView("souls")}
+          />
+        );
+      case "editSoul":
+        return (
+          <EditSoul
+            soul={selectedSoul}
+            onSuccess={handleSoulUpdated}
+            onCancel={() => setCurrentView("souls")}
+          />
+        );
+      default:
+        return (
+          <>
+            <View
+              style={[
+                styles.profileContainer,
+                isLargeScreen && styles.profileContainerLarge,
+              ]}
+            >
+              <View
+                style={[
+                  styles.avatarPlaceholder,
+                  { backgroundColor: colors.primary },
+                ]}
+              >
+                <HeaderText style={styles.avatarText}>
+                  {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
+                </HeaderText>
+              </View>
+
+              <HeaderText style={styles.nameText}>
+                {user?.displayName || "User"}
+              </HeaderText>
+
+              <SubtitleText style={styles.emailText}>
+                {user?.email || "No email provided"}
+              </SubtitleText>
+            </View>
+
+            <View
+              style={[
+                styles.infoContainer,
+                isLargeScreen && styles.infoContainerLarge,
+              ]}
+            >
+              <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
+                <BodyText>Account Information</BodyText>
+                <View
+                  style={[styles.divider, { backgroundColor: colors.border }]}
+                />
+                <View style={styles.infoRow}>
+                  <BodyText style={{ color: colors.textSecondary }}>
+                    Email:
+                  </BodyText>
+                  <BodyText>{user?.email}</BodyText>
+                </View>
+                <View style={styles.infoRow}>
+                  <BodyText style={{ color: colors.textSecondary }}>
+                    User ID:
+                  </BodyText>
+                  <BodyText>{user?.uid.substring(0, 8)}...</BodyText>
+                </View>
+                <View style={styles.infoRow}>
+                  <BodyText style={{ color: colors.textSecondary }}>
+                    Role:
+                  </BodyText>
+                  <BodyText>{user?.isAdmin ? "Admin" : "User"}</BodyText>
+                </View>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.actionContainer,
+                isLargeScreen && styles.actionContainerLarge,
+              ]}
+            >
+              <CustomButton
+                title="My Soul Submissions"
+                onPress={handleViewSubmissions}
+                variant="secondary"
+                size="large"
+                style={styles.submissionsButton}
+              />
+
+              <CustomButton
+                title="Sign Out"
+                onPress={handleSignOut}
+                variant="outline"
+                size="large"
+              />
+            </View>
+          </>
+        );
+    }
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["top", "bottom"]}
-    >
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={[
-            styles.backButton,
-            isDark && { backgroundColor: colors.card },
-          ]}
-          onPress={handleBackPress}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <HeaderText>Profile</HeaderText>
-      </View>
+    <FormContainer style={{ backgroundColor: colors.background }}>
+      <ScreenHeader
+        title={currentView === "profile" ? "Profile" : ""}
+        onBackPress={handleBackPress}
+        style={styles.header}
+      />
 
-      <View
-        style={[
-          styles.profileContainer,
-          isLargeScreen && styles.profileContainerLarge,
-        ]}
-      >
-        <View
-          style={[
-            styles.avatarPlaceholder,
-            { backgroundColor: colors.primary },
-          ]}
-        >
-          <HeaderText style={styles.avatarText}>
-            {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
-          </HeaderText>
-        </View>
+      <View style={styles.content}>{renderContent()}</View>
 
-        <HeaderText style={styles.nameText}>
-          {user?.displayName || "User"}
-        </HeaderText>
-
-        <SubtitleText style={styles.emailText}>
-          {user?.email || "No email provided"}
-        </SubtitleText>
-      </View>
-
-      <View
-        style={[
-          styles.infoContainer,
-          isLargeScreen && styles.infoContainerLarge,
-        ]}
-      >
-        <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
-          <BodyText>Account Information</BodyText>
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          <View style={styles.infoRow}>
-            <BodyText style={{ color: colors.textSecondary }}>Email:</BodyText>
-            <BodyText>{user?.email}</BodyText>
-          </View>
-          <View style={styles.infoRow}>
-            <BodyText style={{ color: colors.textSecondary }}>
-              User ID:
-            </BodyText>
-            <BodyText>{user?.uid.substring(0, 8)}...</BodyText>
-          </View>
-          <View style={styles.infoRow}>
-            <BodyText style={{ color: colors.textSecondary }}>Role:</BodyText>
-            <BodyText>{user?.isAdmin ? "Admin" : "User"}</BodyText>
-          </View>
-        </View>
-      </View>
-
-      <View
-        style={[
-          styles.actionContainer,
-          isLargeScreen && styles.actionContainerLarge,
-        ]}
-      >
-        <CustomButton
-          title="My Soul Submissions"
-          onPress={handleViewSubmissions}
-          variant="secondary"
-          size="large"
-          style={styles.submissionsButton}
-        />
-
-        <CustomButton
-          title="Sign Out"
-          onPress={handleSignOut}
-          variant="outline"
-          size="large"
-        />
-      </View>
-    </SafeAreaView>
+      <CustomDialog
+        visible={signOutDialogVisible}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        onCancel={() => setSignOutDialogVisible(false)}
+        onConfirm={confirmSignOut}
+      />
+    </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: spacing.lg,
-  },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.md,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: spacing.md,
+  content: {
+    flex: 1,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
   },
   profileContainer: {
     alignItems: "center",

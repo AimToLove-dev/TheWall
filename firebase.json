@@ -9,9 +9,20 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "headers": [
+      {
+        "source": "**/*.@(ttf|otf|woff|woff2|eot|svg)",
+        "headers": [
+          {
+            "key": "Access-Control-Allow-Origin",
+            "value": "*"
+          }
+        ]
+      }
+    ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "!/assets/**",
         "destination": "/index.html"
       }
     ]

@@ -15,6 +15,7 @@ import { AuthenticatedUserContext } from "../providers";
 import { CustomButton } from "../components/CustomButton";
 import { HeaderText, SubtitleText } from "../components/Typography";
 import { getThemeColors, spacing } from "../styles/theme";
+import { Ionicons } from "@expo/vector-icons";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -32,6 +33,10 @@ export const HomeScreen = ({ navigation }) => {
 
   const handleSignupPress = () => {
     navigation.navigate("Auth", { screen: "Signup" });
+  };
+
+  const handleWallPress = () => {
+    navigation.navigate("WailingWall");
   };
 
   const handleProfilePress = () => {
@@ -62,18 +67,14 @@ export const HomeScreen = ({ navigation }) => {
               <View
                 style={[styles.logoCircle, { backgroundColor: colors.primary }]}
               >
-                <Image
-                  source={require("../assets/whale.svg")} // Whale logo from assets
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
+                <HeaderText style={styles.logoText}>W</HeaderText>
               </View>
             </View>
 
             <HeaderText
               style={[styles.title, isLargeScreen && styles.largeScreenTitle]}
             >
-              Learn Anything
+              The Wailing Wall
             </HeaderText>
 
             <SubtitleText
@@ -82,7 +83,7 @@ export const HomeScreen = ({ navigation }) => {
                 isLargeScreen && styles.largeScreenSubtitle,
               ]}
             >
-              The fun and effective way to master new skills
+              A place to submit names for prayer and support
             </SubtitleText>
 
             <View
@@ -91,31 +92,47 @@ export const HomeScreen = ({ navigation }) => {
                 isLargeScreen && styles.largeScreenButtonContainer,
               ]}
             >
+              <CustomButton
+                title="Visit the Wailing Wall"
+                onPress={handleWallPress}
+                variant="primary"
+                size="large"
+                style={styles.button}
+                leftIcon={
+                  <Ionicons name="book-outline" size={20} color="#FFFFFF" />
+                }
+              />
+
               {user ? (
                 <CustomButton
-                  title="Go to Profile"
+                  title="My Profile"
                   onPress={handleProfilePress}
-                  variant="primary"
+                  variant="secondary"
                   size="large"
-                  style={styles.button}
+                  style={styles.secondaryButton}
+                  leftIcon={
+                    <Ionicons
+                      name="person-outline"
+                      size={20}
+                      color={colors.primary}
+                    />
+                  }
                 />
               ) : (
-                <>
-                  <CustomButton
-                    title="Get Started"
-                    onPress={handleSignupPress}
-                    variant="primary"
-                    size="large"
-                    style={styles.button}
-                  />
-                  <CustomButton
-                    title="I already have an account"
-                    onPress={handleLoginPress}
-                    variant="text"
-                    size="medium"
-                    style={styles.secondaryButton}
-                  />
-                </>
+                <CustomButton
+                  title="Sign In"
+                  onPress={handleLoginPress}
+                  variant="secondary"
+                  size="large"
+                  style={styles.secondaryButton}
+                  leftIcon={
+                    <Ionicons
+                      name="log-in-outline"
+                      size={20}
+                      color={colors.primary}
+                    />
+                  }
+                />
               )}
             </View>
           </View>
@@ -201,9 +218,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  logo: {
-    width: 70,
-    height: 70,
+  logoText: {
+    fontSize: 40,
+    fontWeight: "bold",
+    color: "white",
   },
 
   // Text styles
@@ -240,8 +258,10 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     marginBottom: spacing.md,
+    height: 56,
   },
   secondaryButton: {
     marginBottom: spacing.lg,
+    width: "100%",
   },
 });

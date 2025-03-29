@@ -1,5 +1,18 @@
-import { TouchableOpacity, Text, ActivityIndicator, StyleSheet, useColorScheme } from "react-native"
-import { getThemeColors, spacing, borderRadius, fontSizes, shadows } from "../styles/theme"
+import {
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
+import {
+  getThemeColors,
+  spacing,
+  borderRadius,
+  fontSizes,
+  shadows,
+} from "../styles/theme";
+import { View } from "react-native";
 
 export const CustomButton = ({
   title,
@@ -13,9 +26,9 @@ export const CustomButton = ({
   leftIcon,
   rightIcon,
 }) => {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme === "dark"
-  const colors = getThemeColors(isDark)
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const colors = getThemeColors(isDark);
 
   // Determine button styles based on variant
   const getButtonStyles = () => {
@@ -25,73 +38,75 @@ export const CustomButton = ({
           backgroundColor: colors.primary,
           borderColor: colors.primary,
           ...shadows.colored(colors.primary),
-        }
+        };
       case "secondary":
         return {
-          backgroundColor: isDark ? "rgba(90, 103, 242, 0.15)" : "rgba(90, 103, 242, 0.1)",
+          backgroundColor: isDark
+            ? "rgba(90, 103, 242, 0.15)"
+            : "rgba(90, 103, 242, 0.1)",
           borderColor: "transparent",
-        }
+        };
       case "outline":
         return {
           backgroundColor: "transparent",
           borderColor: colors.border,
           borderWidth: 1,
-        }
+        };
       case "text":
         return {
           backgroundColor: "transparent",
           borderColor: "transparent",
-        }
+        };
       default:
         return {
           backgroundColor: colors.primary,
           borderColor: colors.primary,
           ...shadows.colored(colors.primary),
-        }
+        };
     }
-  }
+  };
 
   // Determine text color based on variant
   const getTextColor = () => {
     switch (variant) {
       case "primary":
-        return "#FFFFFF"
+        return "#FFFFFF";
       case "secondary":
       case "outline":
       case "text":
-        return colors.primary
+        return colors.primary;
       default:
-        return "#FFFFFF"
+        return "#FFFFFF";
     }
-  }
+  };
 
   // Determine button height based on size
   const getButtonHeight = () => {
     switch (size) {
       case "small":
-        return 40
+        return 40;
       case "medium":
-        return 48
+        return 48;
       case "large":
-        return 56
+        return 56;
       default:
-        return 48
+        return 48;
     }
-  }
+  };
 
   // Determine text size based on button size
   const getTextSize = () => {
     switch (size) {
       case "small":
-        return fontSizes.sm
+        return fontSizes.sm;
       case "medium":
-        return fontSizes.md
+        return fontSizes.md;
       case "large":
-        return fontSizes.md
+        return fontSizes.md;
       default:
-        return fontSizes.md
+        return fontSizes.md;
     }
-  }
+  };
 
   return (
     <TouchableOpacity
@@ -107,10 +122,13 @@ export const CustomButton = ({
       activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "primary" ? "#FFFFFF" : colors.primary} size="small" />
+        <ActivityIndicator
+          color={variant === "primary" ? "#FFFFFF" : colors.primary}
+          size="small"
+        />
       ) : (
         <>
-          {leftIcon && <span style={styles.leftIcon}>{leftIcon}</span>}
+          {leftIcon && <View style={styles.leftIcon}>{leftIcon}</View>}
           <Text
             style={[
               styles.buttonText,
@@ -123,12 +141,12 @@ export const CustomButton = ({
           >
             {title}
           </Text>
-          {rightIcon && <span style={styles.rightIcon}>{rightIcon}</span>}
+          {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}
         </>
       )}
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   button: {
@@ -151,5 +169,4 @@ const styles = StyleSheet.create({
   rightIcon: {
     marginLeft: spacing.sm,
   },
-})
-
+});

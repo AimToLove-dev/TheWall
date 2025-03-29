@@ -52,6 +52,7 @@ export const SignupScreen = ({ navigation }) => {
       })
       .finally(() => {
         setLoading(false);
+        navigation.navigate("Profile");
       });
   };
 

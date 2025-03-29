@@ -1,12 +1,10 @@
-import React from "react";
 import {
-  View,
   StyleSheet,
   Platform,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  ScrollView,
+  View,
   useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Content to render inside the form container
  * @param {Object} props.style - Additional styles for the SafeAreaView
- * @param {Object} props.contentContainerStyle - Additional styles for the ScrollView contentContainerStyle
+ * @param {Object} props.contentContainerStyle - Additional styles for the content container
  * @param {Array} props.edges - SafeAreaView edges array
  * @returns {React.ReactElement} FormContainer component
  */
@@ -34,7 +32,7 @@ export const FormContainer = ({
   const isDesktop = width > 768;
 
   // Determine if keyboard dismissal should be enabled (only on mobile)
-  const shouldDismissKeyboard = !isDesktop;
+  const shouldDismissKeyboard = !isDesktop && Platform.OS !== "web";
 
   return (
     <SafeAreaView style={[styles.container, style]} edges={edges}>
@@ -45,25 +43,15 @@ export const FormContainer = ({
         {shouldDismissKeyboard ? (
           // On mobile, use TouchableWithoutFeedback to dismiss keyboard
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView
-              contentContainerStyle={[
-                styles.scrollContent,
-                contentContainerStyle,
-              ]}
-            >
+            <View style={[styles.content, contentContainerStyle]}>
               {children}
-            </ScrollView>
+            </View>
           </TouchableWithoutFeedback>
         ) : (
           // On desktop, don't use TouchableWithoutFeedback
-          <ScrollView
-            contentContainerStyle={[
-              styles.scrollContent,
-              contentContainerStyle,
-            ]}
-          >
+          <View style={[styles.content, contentContainerStyle]}>
             {children}
-          </ScrollView>
+          </View>
         )}
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -77,7 +65,7 @@ const styles = StyleSheet.create({
   keyboardAvoidingView: {
     flex: 1,
   },
-  scrollContent: {
+  content: {
     flexGrow: 1,
   },
 });

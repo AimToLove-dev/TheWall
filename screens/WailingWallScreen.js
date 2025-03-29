@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
+"use client";
+
+import { useState, useEffect, useContext, useRef } from "react";
 import {
   StyleSheet,
   useColorScheme,
-  FlatList,
   Animated,
   TouchableOpacity,
   useWindowDimensions,
@@ -11,10 +12,12 @@ import { View } from "../components/View";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthenticatedUserContext } from "../providers";
 import { CustomButton } from "../components/CustomButton";
-import { HeaderText, BodyText } from "../components/Typography";
+import { BodyText } from "../components/Typography";
+import { ScreenHeader } from "../components/ScreenHeader";
 import { getThemeColors, spacing } from "../styles/theme";
 import { getAllSouls } from "../utils/firebaseUtils";
 import { DatabaseErrorScreen } from "../components/DatabaseErrorScreen";
+import { FormContainer } from "../components/FormContainer";
 
 export const WailingWallScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -58,7 +61,8 @@ export const WailingWallScreen = ({ navigation }) => {
   };
 
   const handleAddSoul = () => {
-    navigation.navigate("AddSoul");
+    navigation.navigate("App", { screen: "Profile" });
+    // We'll handle this in the Profile screen now
   };
 
   const renderSoulItem = ({ item, index }) => {
@@ -115,20 +119,27 @@ export const WailingWallScreen = ({ navigation }) => {
     );
   }
 
-  return (
-    <View
-      isSafe
-      style={[styles.container, { backgroundColor: colors.background }]}
+  // Create the profile button for the right side of the header
+  const profileButton = (
+    <TouchableOpacity
+      style={[styles.profileButton, { backgroundColor: colors.card }]}
+      onPress={() => navigation.navigate("App", { screen: "Profile" })}
     >
-      <View style={styles.header}>
-        <HeaderText style={styles.title}>Wailing Wall</HeaderText>
-        <TouchableOpacity
-          style={[styles.profileButton, { backgroundColor: colors.card }]}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Ionicons name="person-outline" size={24} color={colors.text} />
-        </TouchableOpacity>
-      </View>
+      <Ionicons name="person-outline" size={24} color={colors.text} />
+    </TouchableOpacity>
+  );
+
+  return (
+    <FormContainer style={{ backgroundColor: colors.background }}>
+      <ScreenHeader
+        title="Wailing Wall"
+        showBackButton={true}
+        rightContent={profileButton}
+        style={styles.header}
+        onBackPress={() => {
+          navigation.navigate("Home");
+        }}
+      />
 
       <Animated.View
         style={[
@@ -172,24 +183,13 @@ export const WailingWallScreen = ({ navigation }) => {
           />
         </View>
       )}
-    </View>
+    </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
   },
   profileButton: {
     padding: spacing.sm,

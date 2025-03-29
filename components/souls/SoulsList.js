@@ -1,27 +1,31 @@
-import React, { useState, useEffect, useContext } from "react";
+"use client";
+
+import { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   useColorScheme,
   FlatList,
   TouchableOpacity,
-  Alert,
   useWindowDimensions,
   ActivityIndicator,
+  View as RNView,
 } from "react-native";
-import { View } from "../components/View";
+import { View } from "../View";
 import { Ionicons } from "@expo/vector-icons";
-import { AuthenticatedUserContext } from "../providers";
-import { CustomButton } from "../components/CustomButton";
-import { HeaderText, BodyText, SubtitleText } from "../components/Typography";
-import { getThemeColors, spacing } from "../styles/theme";
+import { AuthenticatedUserContext } from "../../providers";
+import { CustomButton } from "../CustomButton";
+import { BodyText, SubtitleText } from "../Typography";
+import { ScreenHeader } from "../ScreenHeader";
+import { CustomDialog } from "../CustomDialog";
+import { getThemeColors, spacing } from "../../styles/theme";
 import {
   getUserSouls,
   deleteSoul,
   countUserSouls,
-} from "../utils/firebaseUtils";
-import { DatabaseErrorScreen } from "../components/DatabaseErrorScreen";
+} from "../../utils/firebaseUtils";
+import { DatabaseErrorScreen } from "../DatabaseErrorScreen";
 
-export const SoulSubmissionsScreen = ({ navigation }) => {
+export const SoulsList = ({ navigation, onAddPress, onEditPress }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -33,6 +37,8 @@ export const SoulSubmissionsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [soulCount, setSoulCount] = useState(0);
   const [error, setError] = useState(null);
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [selectedSoul, setSelectedSoul] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -59,35 +65,30 @@ export const SoulSubmissionsScreen = ({ navigation }) => {
   };
 
   const handleEditSoul = (soul) => {
-    navigation.navigate("EditSoul", { soul });
+    if (onEditPress) {
+      onEditPress(soul);
+    }
   };
 
-  const handleDeleteSoul = (soulId, soulName) => {
-    Alert.alert(
-      "Delete Soul",
-      `Are you sure you want to remove ${soulName} from the Wailing Wall?`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteSoul(soulId);
-              // Update local state
-              setSouls(souls.filter((soul) => soul.id !== soulId));
-              setSoulCount((prevCount) => prevCount - 1);
-            } catch (error) {
-              console.error("Error deleting soul:", error);
-              Alert.alert("Error", "Failed to delete. Please try again.");
-            }
-          },
-        },
-      ]
-    );
+  const handleDeleteSoul = (soul) => {
+    setSelectedSoul(soul);
+    setDialogVisible(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedSoul) return;
+
+    try {
+      await deleteSoul(selectedSoul.id);
+      // Update local state
+      setSouls(souls.filter((soul) => soul.id !== selectedSoul.id));
+      setSoulCount((prevCount) => prevCount - 1);
+    } catch (error) {
+      console.error("Error deleting soul:", error);
+    } finally {
+      setDialogVisible(false);
+      setSelectedSoul(null);
+    }
   };
 
   const renderSoulItem = ({ item }) => {
@@ -122,7 +123,7 @@ export const SoulSubmissionsScreen = ({ navigation }) => {
               styles.actionButton,
               { backgroundColor: colors.error + "20" },
             ]}
-            onPress={() => handleDeleteSoul(item.id, item.name)}
+            onPress={() => handleDeleteSoul(item)}
           >
             <Ionicons name="trash-outline" size={20} color={colors.error} />
           </TouchableOpacity>
@@ -143,94 +144,78 @@ export const SoulSubmissionsScreen = ({ navigation }) => {
   }
 
   return (
-    <View
-      isSafe
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={[
-              styles.backButton,
-              { backgroundColor: isDark ? colors.card : "transparent" },
-            ]}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-          <HeaderText>My Submissions</HeaderText>
-        </View>
+    <RNView style={styles.container}>
+      <ScreenHeader title="My Submissions" showBackButton={false} />
 
-        <View style={styles.limitInfo}>
-          <SubtitleText>
-            {user?.isAdmin
-              ? "Admin: Unlimited submissions"
-              : `${soulCount}/7 submissions used`}
-          </SubtitleText>
-        </View>
+      <RNView style={styles.limitInfo}>
+        <SubtitleText>
+          {user?.isAdmin
+            ? "Admin: Unlimited submissions"
+            : `${soulCount}/7 submissions used`}
+        </SubtitleText>
+      </RNView>
 
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-          </View>
-        ) : (
-          <FlatList
-            data={souls}
-            renderItem={renderSoulItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={[
-              styles.soulsList,
-              souls.length === 0 && styles.emptyList,
-            ]}
-            ListEmptyComponent={() => (
-              <View style={styles.emptyContainer}>
-                <BodyText style={{ color: colors.textSecondary }}>
-                  You haven't added any souls to the Wailing Wall yet.
-                </BodyText>
-              </View>
-            )}
+      {loading ? (
+        <RNView style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </RNView>
+      ) : (
+        <FlatList
+          data={souls}
+          renderItem={renderSoulItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={[
+            styles.soulsList,
+            souls.length === 0 && styles.emptyList,
+          ]}
+          ListEmptyComponent={() => (
+            <RNView style={styles.emptyContainer}>
+              <BodyText style={{ color: colors.textSecondary }}>
+                You haven't added any souls to the Wailing Wall yet.
+              </BodyText>
+            </RNView>
+          )}
+        />
+      )}
+
+      {soulCount < 7 || user?.isAdmin ? (
+        <RNView style={styles.buttonContainer}>
+          <CustomButton
+            title="Add New Soul"
+            onPress={onAddPress}
+            variant="primary"
+            size="large"
+            style={styles.addButton}
           />
-        )}
+        </RNView>
+      ) : null}
 
-        {soulCount < 7 || user?.isAdmin ? (
-          <View style={styles.buttonContainer}>
-            <CustomButton
-              title="Add New Soul"
-              onPress={() => navigation.navigate("AddSoul")}
-              variant="primary"
-              size="large"
-              style={styles.addButton}
-            />
-          </View>
-        ) : null}
-      </View>
-    </View>
+      <CustomDialog
+        visible={dialogVisible}
+        title="Delete Soul"
+        message={`Are you sure you want to remove ${
+          selectedSoul?.name || "this soul"
+        } from the Wailing Wall?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onCancel={() => {
+          setDialogVisible(false);
+          setSelectedSoul(null);
+        }}
+        onConfirm={confirmDelete}
+        isDestructive={true}
+      />
+    </RNView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.md,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: spacing.md,
+    width: "100%",
   },
   limitInfo: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
   },
   loadingContainer: {
     flex: 1,

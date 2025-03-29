@@ -14,21 +14,34 @@ APP_ID=XXXX
 
 ## Run project
 
-To start the development server and run your project:
+Local development:
 
 ```
-npx http-server ./dist
+npx expo start
 
 ```
 
-To locally compile your app, run:
+Compile & Deploy:
+
+```
+# Build
+npm run build
+
+# Login
+firebase login
+
+#Deploy Web
+firebase deploy
+```
+
+Local Build Test:
 
 ```
 # Build
 npx expo export
 
-#Deploy Web
-firebase deploy
+# Test
+npx http-server ./dist
 ```
 
 # Forked expo-firebase-starter 🔥

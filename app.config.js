@@ -6,6 +6,10 @@ export default {
     slug: "expo-firebase",
     privacy: "public",
     platforms: ["web", "ios", "android"],
+    web: {
+      favicon: "./assets/favicon.png",
+      assetBundlePatterns: ["**/*"],
+    },
     version: "0.19.0",
     orientation: "portrait",
     icon: "./assets/whale.svg",
