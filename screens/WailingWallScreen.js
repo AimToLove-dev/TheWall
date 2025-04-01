@@ -45,10 +45,7 @@ export const WailingWallScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>The Wailing Wall</Text>
-      </View>
-      <WailingWall souls={souls} />
+      <WailingWall souls={souls} speed={50} />
     </SafeAreaView>
   );
 };
