@@ -1,0 +1,6 @@
+export { default as brick1 } from "./brick1.svg"
+export { default as brick2 } from "./brick2.svg"
+export { default as brick3 } from "./brick3.svg"
+export { default as brick4 } from "./brick4.svg"
+export { default as brick5 } from "./brick5.svg"
+export { default as brick6 } from "./brick6.svg"
