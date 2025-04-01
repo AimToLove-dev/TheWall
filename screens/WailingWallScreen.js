@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { View, StyleSheet, SafeAreaView, Text } from "react-native";
+import { StyleSheet, SafeAreaView, Text } from "react-native";
 import { WailingWall } from "../components/WailingWall";
+import { SpeedDial } from "../components/SpeedDial";
 import { getAllSouls } from "../utils/firebaseUtils";
 import { LoadingIndicator } from "../components/LoadingIndicator";
 
@@ -10,6 +11,7 @@ export const WailingWallScreen = () => {
   const [souls, setSouls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [speed, setSpeed] = useState(1); // Default speed is 1 (normal)
 
   useEffect(() => {
     fetchSouls();
@@ -29,6 +31,10 @@ export const WailingWallScreen = () => {
     }
   };
 
+  const handleSpeedChange = (newSpeed) => {
+    setSpeed(newSpeed);
+  };
+
   if (loading) {
     return <LoadingIndicator />;
   }
@@ -45,7 +51,8 @@ export const WailingWallScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <WailingWall souls={souls} speed={50} />
+      <WailingWall souls={souls} speed={speed * 100} />
+      <SpeedDial onSpeedChange={handleSpeedChange} initialSpeed={1} />
     </SafeAreaView>
   );
 };

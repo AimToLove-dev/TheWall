@@ -8,6 +8,7 @@ import { FormContainer } from "./FormContainer";
 import { CustomDialog } from "./CustomDialog";
 import { WallBrick } from "./WallBrick";
 import { WailingWall } from "./WailingWall";
+import { SpeedDial } from "./SpeedDial";
 
 export {
   View,
@@ -20,4 +21,5 @@ export {
   CustomDialog,
   WallBrick,
   WailingWall,
+  SpeedDial,
 };
