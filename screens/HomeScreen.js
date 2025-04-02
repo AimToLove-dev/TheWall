@@ -64,18 +64,12 @@ export const HomeScreen = ({ navigation }) => {
             ]}
           >
             <View style={styles.logoContainer}>
-              <View
-                style={[styles.logoCircle, { backgroundColor: colors.primary }]}
-              >
-                <HeaderText style={styles.logoText}>W</HeaderText>
-              </View>
+              <Image
+                source={require("assets/TheWall.png")} // Replace with your logo path
+                style={[styles.logoImage]}
+                resizeMode="cover"
+              />
             </View>
-
-            <HeaderText
-              style={[styles.title, isLargeScreen && styles.largeScreenTitle]}
-            >
-              The Wailing Wall
-            </HeaderText>
 
             <SubtitleText
               style={[
@@ -218,10 +212,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  logoText: {
-    fontSize: 40,
-    fontWeight: "bold",
-    color: "white",
+  logoImage: {
+    width: 249,
+    height: 120,
   },
 
   // Text styles

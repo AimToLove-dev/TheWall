@@ -10,6 +10,7 @@ import { WallBrick } from "./WallBrick";
 import { WailingWall } from "./WailingWall";
 import { SpeedDial } from "./SpeedDial";
 import { AddSoulInput } from "./AddSoulInput";
+import { Header } from "./Header";
 
 export {
   View,
@@ -24,4 +25,5 @@ export {
   WailingWall,
   SpeedDial,
   AddSoulInput,
+  Header,
 };

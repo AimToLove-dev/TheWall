@@ -10,7 +10,7 @@ import { AppStack } from "./AppStack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { WailingWallScreen } from "../screens/WailingWallScreen";
 import { AuthenticatedUserContext } from "../providers";
-import { LoadingIndicator } from "../components";
+import { LoadingIndicator, Header } from "components";
 import { auth } from "config";
 
 const Stack = createStackNavigator();
@@ -39,6 +39,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
+      <Header></Header>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* Home screen is always accessible */}
         <Stack.Screen name="Home" component={HomeScreen} />
