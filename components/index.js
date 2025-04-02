@@ -9,6 +9,7 @@ import { CustomDialog } from "./CustomDialog";
 import { WallBrick } from "./WallBrick";
 import { WailingWall } from "./WailingWall";
 import { SpeedDial } from "./SpeedDial";
+import { AddSoulInput } from "./AddSoulInput";
 
 export {
   View,
@@ -22,4 +23,5 @@ export {
   WallBrick,
   WailingWall,
   SpeedDial,
+  AddSoulInput,
 };

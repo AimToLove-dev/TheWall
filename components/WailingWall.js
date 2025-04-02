@@ -208,7 +208,12 @@ export const WailingWall = ({ speed }) => {
         style={[
           styles.container,
           {
-            transform: [{ translateX: activeAnimationA }],
+            transform: [
+              {
+                translateX:
+                  speed > 0 ? activeAnimationA : activeAnimationA.Value,
+              },
+            ],
           },
         ]}
       >
@@ -223,7 +228,12 @@ export const WailingWall = ({ speed }) => {
           styles.container,
           {
             position: "absolute",
-            transform: [{ translateX: activeAnimationB }],
+            transform: [
+              {
+                translateX:
+                  speed > 0 ? activeAnimationB : activeAnimationB.Value,
+              },
+            ],
           },
         ]}
       >

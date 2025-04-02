@@ -2,12 +2,12 @@ import { View, Text, StyleSheet, Image } from "react-native";
 
 // Import brick SVGs
 const brickImages = [
-  require("../assets/brick1.png"),
-  require("../assets/brick2.png"),
-  require("../assets/brick3.png"),
-  require("../assets/brick4.png"),
-  require("../assets/brick5.png"),
-  require("../assets/brick6.png"),
+  require("../assets/bricks/brick1.png"),
+  require("../assets/bricks/brick2.png"),
+  require("../assets/bricks/brick3.png"),
+  require("../assets/bricks/brick4.png"),
+  require("../assets/bricks/brick5.png"),
+  require("../assets/bricks/brick6.png"),
 ];
 
 export const WallBrick = ({

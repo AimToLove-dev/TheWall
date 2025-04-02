@@ -1,34 +1,17 @@
 import { Platform } from "react-native";
 
 export const colors = {
-  // Light mode colors
-  light: {
-    primary: "#5A67F2",
-    primaryDark: "#4A56D6",
-    background: "#FFFFFF",
-    card: "#F7F7F7",
-    text: "#333333",
-    textSecondary: "#666666",
-    textTertiary: "#999999",
-    border: "#E1E1E1",
-    error: "#FF3B30",
-    success: "#34C759",
-    warning: "#FFCC00",
-  },
-  // Dark mode colors
-  dark: {
-    primary: "#7B83FF",
-    primaryDark: "#5A67F2",
-    background: "#121212",
-    card: "#2A2A2A",
-    text: "#FFFFFF",
-    textSecondary: "#A0A0A0",
-    textTertiary: "#777777",
-    border: "#3A3A3A",
-    error: "#FF453A",
-    success: "#30D158",
-    warning: "#FFD60A",
-  },
+  primary: "#d4583c",
+  primaryDark: "#e88161",
+  background: "#ffe8cc",
+  card: "#ffc485",
+  text: "#000000",
+  textSecondary: "#A0A0A0",
+  textTertiary: "#777777",
+  border: "#3A3A3A",
+  error: "#FF453A",
+  success: "#9dd3ce",
+  warning: "#FFD60A",
 };
 
 export const spacing = {
@@ -108,5 +91,6 @@ export const shadows = {
 };
 
 export const getThemeColors = (isDark) => {
-  return isDark ? colors.dark : colors.light;
+  return colors;
+  //return isDark ? colors.dark : colors.light;
 };

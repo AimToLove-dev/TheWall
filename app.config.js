@@ -7,7 +7,7 @@ export default {
     privacy: "public",
     platforms: ["web", "ios", "android"],
     web: {
-      favicon: "./assets/favicon.png",
+      favicon: "./assets/heart.png",
       assetBundlePatterns: ["**/*"],
     },
     version: "0.19.0",
