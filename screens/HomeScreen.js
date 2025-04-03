@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   logoImage: {
-    width: 249,
-    height: 120,
+    width: 315,
+    height: 151,
   },
 
   // Text styles
