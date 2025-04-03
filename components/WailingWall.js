@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
-import { WallBrick } from "./WallBrick";
-import { getAllSouls } from "../utils/firebaseUtils"; // Import the Firebase utility
+import { WallBrick, LoadingIndicator } from "components";
+import { getAllSouls } from "../utils/soulsUtils"; // Import the Firebase utility
 
 const Sections = Object.freeze({
   A: "A",
@@ -31,7 +31,10 @@ const rowWidth = bricksThatFitPerRow * brickWidth; // Total width of each row of
 const startPosition = SCREEN_WIDTH + brickWidth + brickMargin; // Start position for the animation, off-screen to the right
 const bricksPerRow = bricksThatFitPerRow + 1; // Total bricks per row including the offset for the animation
 
-export const WailingWall = ({ speed }) => {
+export const WailingWall = () => {
+  const speed = 50;
+  const [loading, setLoading] = useState(true);
+
   const duration = useRef((startPosition / speed) * 1000).current;
 
   const animIN = useRef(new Animated.Value(startPosition)).current;
@@ -95,6 +98,7 @@ export const WailingWall = ({ speed }) => {
       } catch (error) {
         console.error("Error fetching souls:", error);
       }
+      setLoading(false);
     };
 
     fetchSouls();
@@ -199,9 +203,15 @@ export const WailingWall = ({ speed }) => {
     AnimateIN(Sections.A, startPosition, duration);
     AnimateOUT(Sections.B, 0, duration);
 
-    return () => animIN.stop(); // Cleanup on unmount
+    return () => {
+      animIN.stopAnimation();
+      animOUT.stopAnimation();
+    }; // Cleanup on unmount
   }, []);
 
+  if (loading) {
+    return <LoadingIndicator />;
+  }
   return (
     <View style={styles.wrapper}>
       <Animated.View

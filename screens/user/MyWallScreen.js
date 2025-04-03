@@ -12,7 +12,6 @@ import { View } from "../../components/View";
 import { AuthenticatedUserContext } from "../../providers";
 import { CustomButton } from "../../components/CustomButton";
 import { SubtitleText, BodyText } from "../../components/Typography";
-import { ScreenHeader } from "../../components/ScreenHeader";
 import { getThemeColors, spacing } from "../../styles/theme";
 import { FormContainer } from "../../components/FormContainer";
 import { Ionicons } from "@expo/vector-icons";
@@ -233,12 +232,6 @@ export const MyWallScreen = ({ navigation }) => {
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
-      <ScreenHeader
-        title="My Wall"
-        onBackPress={handleBackPress}
-        style={styles.header}
-      />
-
       <View style={styles.content}>
         <View style={styles.infoContainer}>
           <SubtitleText>

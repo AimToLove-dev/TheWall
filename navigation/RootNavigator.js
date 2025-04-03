@@ -7,8 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 import { AuthStack } from "./AuthStack";
 import { AppStack } from "./AppStack";
-import { HomeScreen } from "../screens/HomeScreen";
-import { WailingWallScreen } from "../screens/WailingWallScreen";
+import { HomeScreen, WailingWallScreen, TestimonyWallScreen } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator, Header } from "components";
 import { auth } from "config";
@@ -46,6 +45,7 @@ export const RootNavigator = () => {
 
         {/* Wailing Wall screen is always accessible */}
         <Stack.Screen name="WailingWall" component={WailingWallScreen} />
+        <Stack.Screen name="TestimonyWall" component={TestimonyWallScreen} />
 
         {/* Auth stack for login/signup */}
         <Stack.Screen name="Auth" component={AuthStack} />

@@ -14,7 +14,6 @@ import { AuthenticatedUserContext } from "providers";
 import { CustomButton } from "components/CustomButton";
 import { HeaderText, SubtitleText } from "components/Typography";
 import { CustomDialog } from "components/CustomDialog";
-import { ScreenHeader } from "components/ScreenHeader";
 import { getThemeColors, spacing } from "styles/theme";
 import { FormContainer } from "components/FormContainer";
 import { Ionicons } from "@expo/vector-icons";
@@ -63,12 +62,6 @@ export const DashboardScreen = ({ navigation }) => {
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
-      <ScreenHeader
-        title="Dashboard"
-        onBackPress={handleBackPress}
-        style={styles.header}
-      />
-
       <View style={styles.content}>
         <View
           style={[

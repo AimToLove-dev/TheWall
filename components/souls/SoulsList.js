@@ -15,7 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { AuthenticatedUserContext } from "../../providers";
 import { CustomButton } from "../CustomButton";
 import { BodyText, SubtitleText } from "../Typography";
-import { ScreenHeader } from "../ScreenHeader";
 import { CustomDialog } from "../CustomDialog";
 import { getThemeColors, spacing } from "../../styles/theme";
 import {
@@ -145,8 +144,6 @@ export const SoulsList = ({ navigation, onAddPress, onEditPress }) => {
 
   return (
     <RNView style={styles.container}>
-      <ScreenHeader title="My Submissions" showBackButton={false} />
-
       <RNView style={styles.limitInfo}>
         <SubtitleText>
           {user?.isAdmin

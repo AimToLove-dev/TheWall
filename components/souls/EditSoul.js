@@ -8,7 +8,6 @@ import { View } from "../View";
 import { AuthenticatedUserContext } from "../../providers";
 import { CustomInput, CustomButton } from "../";
 import { SubtitleText, ErrorText } from "../Typography";
-import { ScreenHeader } from "../ScreenHeader";
 import { CustomDialog } from "../CustomDialog";
 import { getThemeColors, spacing } from "../../styles/theme";
 import { updateSoul } from "../../utils/firebaseUtils";
@@ -92,8 +91,6 @@ export const EditSoul = ({ soul, onSuccess, onCancel }) => {
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title="Edit Soul" showBackButton={false} />
-
       <SubtitleText style={styles.subtitle}>
         Update the information for this soul
       </SubtitleText>

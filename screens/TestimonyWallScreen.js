@@ -2,24 +2,29 @@
 
 import { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, Text } from "react-native";
-import { WailingWall, WailingWallReanimated } from "components";
+import { LoadingIndicator, TestimonyWall } from "components";
 import { AddSoulInput } from "components";
-import { LoadingIndicator } from "components/LoadingIndicator";
-import { getAllSouls, setSouls } from "../utils/soulsUtils";
+import { getAllTestimonies } from "utils/testimoniesUtils";
 
-export const WailingWallScreen = () => {
+export const TestimonyWallScreen = () => {
+  const [testimonies, setTestimonies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [speed, setSpeed] = useState(1); // Default speed is 1 (normal)
 
-  const handleSoulAdded = (soulId, soulData) => {
-    // Add the new soul to the list without refetching everything
-    setSouls((prevSouls) => [...prevSouls, { id: soulId, ...soulData }]);
-  };
+  useEffect(() => {
+    const fetchTestimonies = async () => {
+      try {
+        const data = await getAllTestimonies();
+        setTestimonies(data);
+      } catch (err) {
+        console.error("Error fetching testimonies:", err);
+        setError(err);
+      }
+      setIsLoading(false);
+    };
 
-  const handleSoulError = (error) => {
-    console.error("Error adding soul:", error);
-    // You could show a toast or alert here
-  };
+    fetchTestimonies();
+  }, []);
 
   if (error) {
     return (
@@ -31,10 +36,13 @@ export const WailingWallScreen = () => {
     );
   }
 
+  if (isLoading) {
+    return <LoadingIndicator></LoadingIndicator>;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <WailingWall />
-      <AddSoulInput onSuccess={handleSoulAdded} onError={handleSoulError} />
+      <TestimonyWall testimonies={testimonies} />
     </SafeAreaView>
   );
 };
