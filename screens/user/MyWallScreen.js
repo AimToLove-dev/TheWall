@@ -22,7 +22,7 @@ import {
   canAddMoreSouls,
 } from "../../utils/firebaseUtils";
 import { CustomDialog } from "../../components/CustomDialog";
-import { DatabaseErrorScreen } from "../../components/DatabaseErrorScreen";
+import { DatabaseErrorScreen } from "../../components/error/DatabaseErrorScreen";
 import { AddSoul } from "../../components/souls/AddSoul";
 
 export const MyWallScreen = ({ navigation }) => {

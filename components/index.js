@@ -9,7 +9,7 @@ import { CustomDialog } from "./CustomDialog";
 import { WallBrick } from "./WallBrick";
 import { WailingWall } from "./WailingWall";
 import { TestimonyWall } from "./TestimonyWall";
-import { WailingWallReanimated } from "./WailingWallReanimated";
+import { WailingWallReanimated } from "./WailingWallReanimated_experemental";
 import { SpeedDial } from "./SpeedDial";
 import { AddSoulInput } from "./AddSoulInput";
 import { Header } from "./Header";
@@ -20,6 +20,9 @@ import {
   LinkText,
   ErrorText,
 } from "./Typography";
+import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
+import { ErrorBoundary } from "./error/ErrorBoundary";
+import { ErrorScreen } from "./error/ErrorScreen";
 
 export {
   View,
@@ -42,4 +45,7 @@ export {
   HeaderText,
   LinkText,
   ErrorText,
+  DatabaseErrorScreen,
+  ErrorBoundary,
+  ErrorScreen,
 };

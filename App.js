@@ -5,7 +5,7 @@ import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthenticatedUserProvider } from "./providers";
 import { RootNavigator } from "./navigation/RootNavigator";
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorBoundary } from "components";
 import "./styles/global.css";
 
 export default function App() {

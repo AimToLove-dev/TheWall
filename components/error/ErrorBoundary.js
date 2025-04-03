@@ -2,10 +2,10 @@
 
 import React from "react";
 import { StyleSheet, useColorScheme, Platform } from "react-native";
-import { View } from "./View"; // Import your custom View component
-import { HeaderText, BodyText } from "./Typography";
-import { CustomButton } from "./CustomButton";
-import { getThemeColors, spacing } from "../styles/theme";
+import { View } from "components"; // Import your custom View component
+import { HeaderText, BodyText } from "components";
+import { CustomButton } from "components";
+import { getThemeColors, spacing } from "styles/theme";
 
 // Define __DEV__ if it's not already defined
 const __DEV__ =

@@ -11,7 +11,7 @@ import { SubtitleText, ErrorText } from "../Typography";
 import { CustomDialog } from "../CustomDialog";
 import { getThemeColors, spacing } from "../../styles/theme";
 import { updateSoul } from "../../utils/firebaseUtils";
-import { DatabaseErrorScreen } from "../DatabaseErrorScreen";
+import { DatabaseErrorScreen } from "../error/DatabaseErrorScreen";
 
 const soulValidationSchema = Yup.object().shape({
   name: Yup.string().required("Name is required"),

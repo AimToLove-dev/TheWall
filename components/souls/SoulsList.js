@@ -22,7 +22,7 @@ import {
   deleteSoul,
   countUserSouls,
 } from "../../utils/firebaseUtils";
-import { DatabaseErrorScreen } from "../DatabaseErrorScreen";
+import { DatabaseErrorScreen } from "../error/DatabaseErrorScreen";
 
 export const SoulsList = ({ navigation, onAddPress, onEditPress }) => {
   const { user } = useContext(AuthenticatedUserContext);

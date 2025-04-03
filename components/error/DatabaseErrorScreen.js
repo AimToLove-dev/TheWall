@@ -1,8 +1,8 @@
 import { StyleSheet, useColorScheme, Platform, ScrollView } from "react-native";
-import { View } from "./View";
-import { HeaderText, BodyText, SubtitleText } from "./Typography";
-import { CustomButton } from "./CustomButton";
-import { getThemeColors, spacing } from "../styles/theme";
+import { View } from "../View";
+import { HeaderText, BodyText, SubtitleText } from "../Typography";
+import { CustomButton } from "../CustomButton";
+import { getThemeColors, spacing } from "../../styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 
 const __DEV__ = process.env.NODE_ENV !== "production" || Platform.OS === "web";
