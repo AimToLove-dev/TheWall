@@ -115,7 +115,7 @@ export const deleteSoul = async (soulId) => {
 export const canAddMoreSouls = async (
   userId,
   isAdmin = false,
-  maxSouls = 100
+  maxSouls = 7
 ) => {
   try {
     if (isAdmin) return true;

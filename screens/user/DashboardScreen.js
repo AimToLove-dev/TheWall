@@ -64,7 +64,7 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   const handleTestimonyPress = () => {
-    navigation.navigate("TestimonyWall");
+    navigation.navigate("MyTestimony");
   };
 
   return (

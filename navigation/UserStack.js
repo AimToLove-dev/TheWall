@@ -1,5 +1,11 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import { ProfileScreen, DashboardScreen, MyWallScreen } from "../screens";
+import { ScrollView } from "react-native-gesture-handler";
+import {
+  ProfileScreen,
+  DashboardScreen,
+  MyWallScreen,
+  MyTestimonyScreen,
+} from "screens";
 
 const Stack = createStackNavigator();
 
@@ -9,12 +15,16 @@ export const UserStack = () => {
       initialRouteName="Dashboard"
       screenOptions={{
         headerShown: false,
-        cardStyle: { paddingTop: 56, backgroundColor: "#ffe8cc" },
+        cardStyle: {
+          paddingTop: 56,
+          backgroundColor: "#ffe8cc",
+        },
       }}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="MyWall" component={MyWallScreen} />
+      <Stack.Screen name="MyTestimony" component={MyTestimonyScreen} />
     </Stack.Navigator>
   );
 };

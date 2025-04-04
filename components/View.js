@@ -14,21 +14,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export const View = forwardRef(({ isSafe, children, style, ...props }, ref) => {
   if (isSafe) {
     return (
-      <SafeAreaView style={[styles.container, style]} {...props}>
+      <SafeAreaView style={[ style]} {...props}>
         {children}
       </SafeAreaView>
     );
   }
 
   return (
-    <RNView ref={ref} style={[styles.container, style]} {...props}>
+    <RNView ref={ref} style={[style]} {...props}>
       {children}
     </RNView>
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

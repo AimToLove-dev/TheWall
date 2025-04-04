@@ -2,7 +2,6 @@ import { View } from "./View";
 import { Logo } from "./Logo";
 import { Icon } from "./Icon";
 import { LoadingIndicator } from "./LoadingIndicator";
-import { CustomInput } from "./CustomInput";
 import { CustomButton } from "./CustomButton";
 import { FormContainer } from "./FormContainer";
 import { CustomDialog } from "./CustomDialog";
@@ -22,13 +21,13 @@ import {
 } from "./Typography";
 import { DatabaseErrorScreen, ErrorBoundary, ErrorScreen } from "./error";
 import { AddSoulInput, AddSoul, EditSoul, SoulsList } from "./souls";
+import { CustomInput, MediaUpload, VideoUpload, TextAreaInput } from "./inputs";
 
 export {
   View,
   Logo,
   Icon,
   LoadingIndicator,
-  CustomInput,
   CustomButton,
   FormContainer,
   CustomDialog,
@@ -51,4 +50,8 @@ export {
   AddSoul,
   EditSoul,
   SoulsList,
+  CustomInput,
+  MediaUpload,
+  VideoUpload,
+  TextAreaInput,
 };

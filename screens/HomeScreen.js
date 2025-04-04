@@ -25,6 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
+  console.log("user in HomeScreen:", user); // For debugging purposes
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);

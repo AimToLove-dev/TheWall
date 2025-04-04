@@ -8,3 +8,4 @@ export { TestimonyWallScreen } from "./TestimonyWallScreen";
 export { DashboardScreen } from "./user/DashboardScreen";
 export { ProfileScreen } from "./user/ProfileScreen";
 export { MyWallScreen } from "./user/MyWallScreen";
+export { MyTestimonyScreen } from "./user/MyTestimonyScreen";

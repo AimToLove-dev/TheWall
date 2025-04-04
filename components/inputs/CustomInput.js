@@ -11,12 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  getThemeColors,
-  spacing,
-  borderRadius,
-  fontSizes,
-} from "../styles/theme";
+import { getThemeColors, spacing, borderRadius, fontSizes } from "styles/theme";
 
 export const CustomInput = ({
   label,

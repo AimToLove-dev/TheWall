@@ -4,6 +4,112 @@ import {
   deleteDocument,
   queryDocuments,
 } from "./firebaseUtils";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
+/**
+ * Upload a file to Firebase Storage
+ * @param {string} uri - Local URI of the file
+ * @param {string} path - Storage path
+ * @returns {Promise<string>} - Download URL
+ */
+export const uploadFile = async (uri, path) => {
+  try {
+    // Get the file extension
+    const extension = uri.split(".").pop();
+
+    // Create a reference to the file location
+    const storage = getStorage();
+    const storageRef = ref(storage, path);
+
+    // Fetch the file
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    // Upload the file
+    await uploadBytes(storageRef, blob);
+
+    // Get the download URL
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw error;
+  }
+};
+
+/**
+ * Submit a testimony with media files
+ * @param {Object} testimonyData - Testimony data
+ * @param {string} beforeImageUri - Local URI of before image
+ * @param {string} afterImageUri - Local URI of after image
+ * @param {string} videoUri - Local URI of video
+ * @returns {Promise<string>} - New testimony ID
+ */
+export const submitTestimony = async (
+  testimonyData,
+  beforeImageUri,
+  afterImageUri,
+  videoUri
+) => {
+  try {
+    const userId = testimonyData.userId;
+    const timestamp = new Date().getTime();
+
+    // Upload media files if provided
+    const uploadPromises = [];
+    let beforeImageUrl = null;
+    let afterImageUrl = null;
+    let videoUrl = null;
+
+    if (beforeImageUri) {
+      const beforePromise = uploadFile(
+        beforeImageUri,
+        `testimonies/${userId}/before_${timestamp}.jpg`
+      ).then((url) => {
+        beforeImageUrl = url;
+      });
+      uploadPromises.push(beforePromise);
+    }
+
+    if (afterImageUri) {
+      const afterPromise = uploadFile(
+        afterImageUri,
+        `testimonies/${userId}/after_${timestamp}.jpg`
+      ).then((url) => {
+        afterImageUrl = url;
+      });
+      uploadPromises.push(afterPromise);
+    }
+
+    if (videoUri) {
+      const videoPromise = uploadFile(
+        videoUri,
+        `testimonies/${userId}/video_${timestamp}.mp4`
+      ).then((url) => {
+        videoUrl = url;
+      });
+      uploadPromises.push(videoPromise);
+    }
+
+    // Wait for all uploads to complete
+    await Promise.all(uploadPromises);
+
+    // Add testimony document with media URLs
+    const completeTestimonyData = {
+      ...testimonyData,
+      beforeImage: beforeImageUrl,
+      afterImage: afterImageUrl,
+      video: videoUrl,
+      status: "pending", // Pending approval
+      submittedAt: new Date().toISOString(),
+    };
+
+    return await addDocument("testimonies", completeTestimonyData);
+  } catch (error) {
+    console.error("Error submitting testimony:", error);
+    throw error;
+  }
+};
 
 /**
  * Get all testimonies
@@ -63,20 +169,6 @@ export const countUserTestimonies = async (userId) => {
 };
 
 /**
- * Add a testimony
- * @param {Object} testimonyData - Testimony data
- * @returns {Promise<string>} - New testimony ID
- */
-export const addTestimony = async (testimonyData) => {
-  try {
-    return await addDocument("testimonies", testimonyData);
-  } catch (error) {
-    console.error("Error adding testimony:", error);
-    throw error;
-  }
-};
-
-/**
  * Update a testimony
  * @param {string} testimonyId - Testimony ID
  * @param {Object} testimonyData - Updated testimony data
@@ -115,7 +207,7 @@ export const deleteTestimony = async (testimonyId) => {
 export const canAddMoreTestimonies = async (
   userId,
   isAdmin = false,
-  maxTestimonies = 100
+  maxTestimonies = 1
 ) => {
   try {
     if (isAdmin) return true;

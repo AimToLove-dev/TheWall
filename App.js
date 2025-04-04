@@ -31,7 +31,13 @@ export default function App() {
   if (!isReady) {
     // Show a loading indicator while the app is preparing
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <ActivityIndicator size="large" />
       </View>
     );
