@@ -4,42 +4,39 @@ import { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   useColorScheme,
-  useWindowDimensions,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { View } from "../../components/View";
-import { AuthenticatedUserContext } from "../../providers";
-import { CustomButton } from "../../components/CustomButton";
-import { SubtitleText, BodyText } from "../../components/Typography";
-import { getThemeColors, spacing } from "../../styles/theme";
-import { FormContainer } from "../../components/FormContainer";
-import { Ionicons } from "@expo/vector-icons";
+import { LinearTransition, FadeOut } from "react-native-reanimated";
+import { Animated } from "react-native";
+
+import { AuthenticatedUserContext } from "providers";
+import { getUserSouls, updateSoul, deleteSoul, canAddMoreSouls } from "utils";
+
 import {
-  getUserSouls,
-  updateSoul,
-  deleteSoul,
-  canAddMoreSouls,
-} from "../../utils/firebaseUtils";
-import { CustomDialog } from "../../components/CustomDialog";
-import { DatabaseErrorScreen } from "../../components/error/DatabaseErrorScreen";
-import { AddSoul } from "../../components/souls/AddSoul";
+  View,
+  FormContainer,
+  AddSoul,
+  DatabaseErrorScreen,
+  SubtitleText,
+  BodyText,
+  CustomButton,
+} from "components";
+
+import { Ionicons } from "@expo/vector-icons";
+import { getThemeColors, spacing } from "styles/theme";
 
 export const MyWallScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
-  const { width } = useWindowDimensions();
-  const isLargeScreen = width > 768;
 
   const [souls, setSouls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSouls, setSelectedSouls] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [dialogVisible, setDialogVisible] = useState(false);
-  const [dialogAction, setDialogAction] = useState(null);
   const [canAddMore, setCanAddMore] = useState(false);
 
   useEffect(() => {
@@ -72,10 +69,6 @@ export const MyWallScreen = ({ navigation }) => {
     }
   };
 
-  const handleBackPress = () => {
-    navigation.navigate("Dashboard");
-  };
-
   const handleAddSoulSuccess = (newSoul) => {
     setSouls([...souls, newSoul]);
     setShowAddForm(false);
@@ -90,63 +83,81 @@ export const MyWallScreen = ({ navigation }) => {
     }
   };
 
-  const handleMakePublic = () => {
+  const handleMakePublic = async () => {
     if (selectedSouls.length === 0) return;
-    setDialogAction("public");
-    setDialogVisible(true);
-  };
 
-  const handleMakePrivate = () => {
-    if (selectedSouls.length === 0) return;
-    setDialogAction("private");
-    setDialogVisible(true);
-  };
-
-  const handleDelete = () => {
-    if (selectedSouls.length === 0) return;
-    setDialogAction("delete");
-    setDialogVisible(true);
-  };
-
-  const confirmAction = async () => {
     try {
-      if (dialogAction === "delete") {
-        // Delete selected souls
-        for (const soul of selectedSouls) {
-          await deleteSoul(soul.id);
-        }
-        setSouls(
-          souls.filter((soul) => !selectedSouls.some((s) => s.id === soul.id))
-        );
-      } else {
-        // Update visibility
-        const isPublic = dialogAction === "public";
-        for (const soul of selectedSouls) {
-          await updateSoul(soul.id, { isPublic });
+      // Update visibility to public
+      for (const soul of selectedSouls) {
+        await updateSoul(soul.id, { isPublic: true });
 
-          // Update local state
-          setSouls(
-            souls.map((s) => {
-              if (s.id === soul.id) {
-                return { ...s, isPublic };
-              }
-              return s;
-            })
-          );
-        }
+        // Update local state
+        setSouls(
+          souls.map((s) => {
+            if (s.id === soul.id) {
+              return { ...s, isPublic: true };
+            }
+            return s;
+          })
+        );
       }
+
+      // Reset selection
+      setSelectedSouls([]);
+    } catch (error) {
+      console.error("Error making souls public:", error);
+    }
+  };
+
+  const handleMakePrivate = async () => {
+    if (selectedSouls.length === 0) return;
+
+    try {
+      // Update visibility to private
+      for (const soul of selectedSouls) {
+        await updateSoul(soul.id, { isPublic: false });
+
+        // Update local state
+        setSouls(
+          souls.map((s) => {
+            if (s.id === soul.id) {
+              return { ...s, isPublic: false };
+            }
+            return s;
+          })
+        );
+      }
+
+      // Reset selection
+      setSelectedSouls([]);
+    } catch (error) {
+      console.error("Error making souls private:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (selectedSouls.length === 0) return;
+
+    try {
+      // Delete selected souls
+      for (const soul of selectedSouls) {
+        await deleteSoul(soul.id);
+      }
+
+      // Update local state
+      setSouls(
+        souls.filter((soul) => !selectedSouls.some((s) => s.id === soul.id))
+      );
 
       // Reset selection
       setSelectedSouls([]);
       checkCanAddMore();
     } catch (error) {
-      console.error(`Error performing ${dialogAction} action:`, error);
-    } finally {
-      setDialogVisible(false);
+      console.error("Error deleting souls:", error);
     }
   };
 
-  const renderSoulBadge = (soul, index) => {
+  const renderSoulBadge = (soul) => {
     const isSelected = selectedSouls.some((s) => s.id === soul.id);
     const badgeStyle = {
       backgroundColor: isSelected ? colors.primary + "30" : colors.card,
@@ -154,28 +165,21 @@ export const MyWallScreen = ({ navigation }) => {
     };
 
     return (
-      <TouchableOpacity
-        key={soul.id}
-        style={[styles.soulBadge, badgeStyle]}
-        onPress={() => toggleSoulSelection(soul)}
-      >
-        {isSelected && (
-          <View style={[styles.checkmark, { backgroundColor: colors.primary }]}>
-            <Ionicons name="checkmark" size={12} color="#FFFFFF" />
-          </View>
-        )}
-        <BodyText style={styles.soulName}>{soul.name}</BodyText>
-        <View
-          style={[
-            styles.statusDot,
-            {
-              backgroundColor: soul.isPublic
-                ? colors.success
-                : colors.textTertiary,
-            },
-          ]}
-        />
-      </TouchableOpacity>
+      <Animated.View key={soul.id} layout={LinearTransition} exiting={FadeOut}>
+        <TouchableOpacity
+          style={[styles.soulBadge, badgeStyle]}
+          onPress={() => toggleSoulSelection(soul)}
+        >
+          {isSelected && (
+            <View
+              style={[styles.checkmark, { backgroundColor: colors.primary }]}
+            >
+              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+            </View>
+          )}
+          <BodyText style={styles.soulName}>{soul.name}</BodyText>
+        </TouchableOpacity>
+      </Animated.View>
     );
   };
 
@@ -210,26 +214,6 @@ export const MyWallScreen = ({ navigation }) => {
     );
   }
 
-  const getDialogMessage = () => {
-    const count = selectedSouls.length;
-    const names = selectedSouls.map((s) => s.name).join(", ");
-
-    switch (dialogAction) {
-      case "public":
-        return `Make ${
-          count > 1 ? `these ${count} souls` : names
-        } public on the wailing wall?`;
-      case "private":
-        return `Make ${count > 1 ? `these ${count} souls` : names} private?`;
-      case "delete":
-        return `Are you sure you want to remove ${
-          count > 1 ? `these ${count} souls` : names
-        } from your wall?`;
-      default:
-        return "";
-    }
-  };
-
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
@@ -245,21 +229,20 @@ export const MyWallScreen = ({ navigation }) => {
           </BodyText>
         </View>
 
-        {showAddForm ? (
+        {showAddForm && (
           <View style={styles.addFormContainer}>
             <AddSoul
               onSuccess={handleAddSoulSuccess}
               onCancel={() => setShowAddForm(false)}
             />
           </View>
-        ) : null}
+        )}
 
-        <ScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.badgesContainer}
-        >
-          {souls.map(renderSoulBadge)}
-          {!showAddForm && renderAddBadge()}
+        <ScrollView>
+          <View style={styles.badgesContainer}>
+            {souls.map(renderSoulBadge)}
+            {renderAddBadge()}
+          </View>
         </ScrollView>
 
         <View style={styles.actionBar}>
@@ -329,36 +312,14 @@ export const MyWallScreen = ({ navigation }) => {
           />
         </View>
       </View>
-
-      <CustomDialog
-        visible={dialogVisible}
-        title={
-          dialogAction === "delete"
-            ? "Delete Soul"
-            : dialogAction === "public"
-            ? "Make Public"
-            : "Make Private"
-        }
-        message={getDialogMessage()}
-        confirmText={dialogAction === "delete" ? "Delete" : "Confirm"}
-        cancelText="Cancel"
-        onCancel={() => setDialogVisible(false)}
-        onConfirm={confirmAction}
-        isDestructive={dialogAction === "delete"}
-      />
     </FormContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.md,
-  },
   content: {
     flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
+    padding: spacing.lg,
   },
   infoContainer: {
     marginBottom: spacing.md,
@@ -371,9 +332,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     backgroundColor: "#f5f5f5",
     borderRadius: 12,
-  },
-  scrollContainer: {
-    flex: 1,
   },
   badgesContainer: {
     flexDirection: "row",
@@ -397,12 +355,6 @@ const styles = StyleSheet.create({
   soulName: {
     fontSize: 14,
     marginHorizontal: spacing.xs,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginLeft: spacing.xs,
   },
   checkmark: {
     width: 16,

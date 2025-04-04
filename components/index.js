@@ -11,8 +11,8 @@ import { WailingWall } from "./WailingWall";
 import { TestimonyWall } from "./TestimonyWall";
 import { WailingWallReanimated } from "./WailingWallReanimated_experemental";
 import { SpeedDial } from "./SpeedDial";
-import { AddSoulInput } from "./AddSoulInput";
 import { Header } from "./Header";
+import { CardGrid } from "./CardGrid";
 import {
   SubtitleText,
   BodyText,
@@ -20,9 +20,8 @@ import {
   LinkText,
   ErrorText,
 } from "./Typography";
-import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
-import { ErrorBoundary } from "./error/ErrorBoundary";
-import { ErrorScreen } from "./error/ErrorScreen";
+import { DatabaseErrorScreen, ErrorBoundary, ErrorScreen } from "./error";
+import { AddSoulInput, AddSoul, EditSoul, SoulsList } from "./souls";
 
 export {
   View,
@@ -38,14 +37,18 @@ export {
   WailingWall,
   WailingWallReanimated,
   SpeedDial,
-  AddSoulInput,
   Header,
   SubtitleText,
   BodyText,
   HeaderText,
+  CardGrid,
   LinkText,
   ErrorText,
   DatabaseErrorScreen,
   ErrorBoundary,
   ErrorScreen,
+  AddSoulInput,
+  AddSoul,
+  EditSoul,
+  SoulsList,
 };

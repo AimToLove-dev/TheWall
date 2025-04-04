@@ -6,7 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { AuthStack } from "./AuthStack";
-import { AppStack } from "./AppStack";
+import { UserStack } from "./UserStack";
 import { HomeScreen, WailingWallScreen, TestimonyWallScreen } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
 import { LoadingIndicator, Header } from "components";
@@ -51,7 +51,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Auth" component={AuthStack} />
 
         {/* Protected routes that require authentication */}
-        <Stack.Screen name="App" component={AppStack} />
+        <Stack.Screen name="App" component={UserStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

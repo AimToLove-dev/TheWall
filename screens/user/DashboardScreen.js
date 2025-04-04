@@ -7,15 +7,22 @@ import {
   useWindowDimensions,
   TouchableOpacity,
 } from "react-native";
-import { View } from "components/View";
+
 import { signOut } from "firebase/auth";
 import { auth } from "config";
 import { AuthenticatedUserContext } from "providers";
-import { CustomButton } from "components/CustomButton";
-import { HeaderText, SubtitleText } from "components/Typography";
-import { CustomDialog } from "components/CustomDialog";
+
+import {
+  View,
+  HeaderText,
+  SubtitleText,
+  CustomButton,
+  CustomDialog,
+  FormContainer,
+  CardGrid,
+} from "components";
+
 import { getThemeColors, spacing } from "styles/theme";
-import { FormContainer } from "components/FormContainer";
 import { Ionicons } from "@expo/vector-icons";
 
 export const DashboardScreen = ({ navigation }) => {
@@ -56,29 +63,14 @@ export const DashboardScreen = ({ navigation }) => {
     navigation.navigate("MyWall");
   };
 
-  const handlePublicWallPress = () => {
-    navigation.navigate("WailingWall");
+  const handleTestimonyPress = () => {
+    navigation.navigate("TestimonyWall");
   };
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        <View
-          style={[
-            styles.welcomeContainer,
-            isLargeScreen && styles.welcomeContainerLarge,
-          ]}
-        >
-          <View
-            style={[
-              styles.avatarPlaceholder,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <HeaderText style={styles.avatarText}>
-              {user?.email ? user.email.charAt(0).toUpperCase() : "U"}
-            </HeaderText>
-          </View>
+        <View style={styles.welcomeContainer}>
           <HeaderText style={styles.welcomeText}>
             Welcome, {user?.displayName || "User"}
           </HeaderText>
@@ -87,69 +79,21 @@ export const DashboardScreen = ({ navigation }) => {
           </SubtitleText>
         </View>
 
-        <View
-          style={[
-            styles.menuContainer,
-            isLargeScreen && styles.menuContainerLarge,
-          ]}
-        >
-          <TouchableOpacity
-            style={[styles.menuItem, { backgroundColor: colors.card }]}
-            onPress={handleProfilePress}
-          >
-            <View
-              style={[
-                styles.menuIconContainer,
-                { backgroundColor: colors.primary + "20" },
-              ]}
-            >
-              <Ionicons
-                name="person-outline"
-                size={24}
-                color={colors.primary}
-              />
-            </View>
-            <View style={styles.menuTextContainer}>
-              <HeaderText style={styles.menuTitle}>Profile</HeaderText>
-              <SubtitleText style={styles.menuSubtitle}>
-                View and edit your profile information
-              </SubtitleText>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.menuItem, { backgroundColor: colors.card }]}
-            onPress={handleMyWallPress}
-          >
-            <View
-              style={[
-                styles.menuIconContainer,
-                { backgroundColor: colors.primary + "20" },
-              ]}
-            >
-              <Ionicons
-                name="people-outline"
-                size={24}
-                color={colors.primary}
-              />
-            </View>
-            <View style={styles.menuTextContainer}>
-              <HeaderText style={styles.menuTitle}>My Wall</HeaderText>
-              <SubtitleText style={styles.menuSubtitle}>
-                Manage your personal wall of souls
-              </SubtitleText>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
+        <View style={styles.menuContainer}>
+          <CardGrid
+            cards={[
+              {
+                image: require("assets/whale_wall.png"),
+                text: "My\nLoved Ones",
+                onPress: handleMyWallPress,
+              },
+              {
+                image: require("assets/bird_wall.png"),
+                text: "My\nTestimony",
+                onPress: handleTestimonyPress,
+              },
+            ]}
+          />
           <View
             style={[
               styles.actionContainer,
@@ -198,10 +142,6 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: "center",
-    marginBottom: spacing.xl,
-  },
-  welcomeContainerLarge: {
-    marginBottom: spacing.xxl,
   },
   avatarPlaceholder: {
     width: 80,

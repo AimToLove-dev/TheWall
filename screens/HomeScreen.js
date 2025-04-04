@@ -13,7 +13,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthenticatedUserContext } from "../providers";
-import { Header, SubtitleText, BodyText, CustomButton } from "components";
+import {
+  Header,
+  SubtitleText,
+  BodyText,
+  CustomButton,
+  CardGrid,
+} from "components";
 import { getThemeColors, spacing, shadows } from "../styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -73,42 +79,20 @@ export const HomeScreen = ({ navigation }) => {
               A place to submit names for prayer and support
             </SubtitleText>
 
-            {/* Square buttons side by side */}
-            <View style={styles.squareButtonsContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.squareButton,
-                  { backgroundColor: colors.primary },
-                ]}
-                onPress={handleWallPress}
-                activeOpacity={0.8}
-              >
-                <Image
-                  source={require("../assets/whale.png")}
-                  style={styles.buttonImage}
-                  resizeMode="contain"
-                />
-                <BodyText style={styles.buttonText}>
-                  Wailing<br></br>Wall
-                </BodyText>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.squareButton,
-                  { backgroundColor: colors.primary },
-                ]}
-                onPress={handleTestimonyPress}
-                activeOpacity={0.8}
-              >
-                <Image
-                  source={require("../assets/bird.png")}
-                  style={styles.buttonImage}
-                  resizeMode="contain"
-                />
-                <BodyText style={styles.buttonText}>Testimony Wall</BodyText>
-              </TouchableOpacity>
-            </View>
+            <CardGrid
+              cards={[
+                {
+                  image: require("../assets/whale_wall.png"),
+                  text: "Wailing\nWall",
+                  onPress: handleWallPress,
+                },
+                {
+                  image: require("../assets/bird_wall.png"),
+                  text: "Testimony Wall",
+                  onPress: handleTestimonyPress,
+                },
+              ]}
+            />
 
             {user ? (
               <CustomButton

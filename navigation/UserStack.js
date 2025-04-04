@@ -3,11 +3,14 @@ import { ProfileScreen, DashboardScreen, MyWallScreen } from "../screens";
 
 const Stack = createStackNavigator();
 
-export const AppStack = () => {
+export const UserStack = () => {
   return (
     <Stack.Navigator
       initialRouteName="Dashboard"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{
+        headerShown: false,
+        cardStyle: { paddingTop: 56, backgroundColor: "#ffe8cc" },
+      }}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
