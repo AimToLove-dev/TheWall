@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, createContext, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../config";
 
 export const AuthenticatedUserContext = createContext({
@@ -9,6 +9,7 @@ export const AuthenticatedUserContext = createContext({
   setUser: () => {},
   profile: null,
   refreshProfile: () => {},
+  updateProfile: () => {},
 });
 
 export const AuthenticatedUserProvider = ({ children }) => {
@@ -47,14 +48,54 @@ export const AuthenticatedUserProvider = ({ children }) => {
     }
   };
 
+  // Function to update user profile in Firestore
+  const updateProfile = async (profileData) => {
+    if (user && user.uid) {
+      try {
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            ...profileData,
+            updatedAt: new Date().toISOString(),
+          },
+          { merge: true }
+        );
+
+        // Update local state
+        setUser((prevUser) => ({
+          ...prevUser,
+          ...profileData,
+        }));
+
+        // Refresh profile
+        await refreshProfile();
+
+        return true;
+      } catch (error) {
+        console.error("Error updating user profile:", error);
+        throw error;
+      }
+    }
+    return false;
+  };
+
   // Refresh profile when user changes
   useEffect(() => {
-    refreshProfile();
-  }, [user.uid]);
+    if (user?.uid) {
+      // Add null check here
+      refreshProfile();
+    }
+  }, [user?.uid]); // Change dependency to include null check
 
   return (
     <AuthenticatedUserContext.Provider
-      value={{ user, setUser, profile, refreshProfile }}
+      value={{
+        user,
+        setUser,
+        profile,
+        refreshProfile,
+        updateProfile,
+      }}
     >
       {children}
     </AuthenticatedUserContext.Provider>

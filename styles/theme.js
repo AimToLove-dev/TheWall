@@ -1,18 +1,5 @@
 import { Platform } from "react-native";
-
-export const colors = {
-  primary: "#d4583c",
-  primaryDark: "#e88161",
-  background: "#ffe8cc",
-  card: "#ffc485",
-  text: "#000000",
-  textSecondary: "#A0A0A0",
-  textTertiary: "#777777",
-  border: "#3A3A3A",
-  error: "#FF453A",
-  success: "#9dd3ce",
-  warning: "#FFD60A",
-};
+import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 
 export const spacing = {
   xs: 4,
@@ -76,21 +63,20 @@ export const shadows = {
       elevation: 8,
     },
   }),
-  colored: (color) =>
-    Platform.select({
-      ios: {
-        shadowColor: color,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 8,
-      },
-    }),
 };
 
+// Helper function to get theme colors while maintaining backward compatibility
 export const getThemeColors = (isDark) => {
-  return colors;
-  //return isDark ? colors.dark : colors.light;
+  const theme = isDark ? MD3DarkTheme : MD3LightTheme;
+  return {
+    primary: theme.colors.primary,
+    background: theme.colors.background,
+    surface: theme.colors.surface,
+    text: theme.colors.onSurface,
+    error: theme.colors.error,
+    border: theme.colors.outline,
+    card: theme.colors.surfaceVariant,
+    textSecondary: theme.colors.onSurfaceVariant,
+    textTertiary: theme.colors.onSurfaceDisabled,
+  };
 };

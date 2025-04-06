@@ -1,159 +1,107 @@
 "use client";
 
 import { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  useColorScheme,
-  Platform,
-  ActivityIndicator,
-} from "react-native";
+import { View, Image, TouchableOpacity } from "react-native";
+import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
-import { BodyText, ErrorText } from "components";
-import { getThemeColors, spacing } from "styles/theme";
 
-/**
- * A component for uploading and displaying images
- */
 export const MediaUpload = ({
-  label,
-  onImageSelected,
-  error,
-  touched,
-  imageUri,
+  onImageSelect,
+  initialImage,
   style,
-  aspectRatio = [4, 3],
-  placeholder = "Upload Image",
+  label = "Upload Image",
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
-  const [loading, setLoading] = useState(false);
-
-  const hasError = error && touched;
-
-  const requestPermissions = async () => {
-    if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-        return false;
-      }
-      return true;
-    }
-    return true;
-  };
+  const [image, setImage] = useState(initialImage);
+  const theme = useTheme();
 
   const pickImage = async () => {
-    const hasPermission = await requestPermissions();
-    if (!hasPermission) return;
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    try {
-      setLoading(true);
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: aspectRatio,
-        quality: 0.8,
-      });
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        onImageSelected(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error("Error picking image:", error);
-    } finally {
-      setLoading(false);
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      onImageSelect && onImageSelect(result.assets[0].uri);
     }
   };
 
   return (
-    <View style={[styles.container, style]}>
-      {label && <BodyText style={styles.label}>{label}</BodyText>}
-      <TouchableOpacity
-        style={[
-          styles.uploadContainer,
-          {
-            backgroundColor: colors.inputBackground,
-            borderColor: hasError ? colors.error : colors.border,
-          },
-        ]}
-        onPress={pickImage}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator size="large" color={colors.primary} />
-        ) : imageUri ? (
-          <View style={styles.imageContainer}>
-            <Image source={{ uri: imageUri }} style={styles.image} />
-            <TouchableOpacity
-              style={[styles.removeButton, { backgroundColor: colors.error }]}
-              onPress={() => onImageSelected(null)}
-            >
-              <Ionicons name="close" size={16} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.placeholderContainer}>
-            <Ionicons
-              name="image-outline"
-              size={40}
-              color={colors.textSecondary}
+    <Surface
+      mode="elevated"
+      elevation={1}
+      style={[
+        {
+          padding: 16,
+          borderRadius: 8,
+        },
+        style,
+      ]}
+    >
+      <Text variant="labelLarge" style={{ marginBottom: 8 }}>
+        {label}
+      </Text>
+
+      {image ? (
+        <View>
+          <Image
+            source={{ uri: image }}
+            style={{ width: 200, height: 150, borderRadius: 4 }}
+          />
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              marginTop: 8,
+            }}
+          >
+            <IconButton
+              icon="image-edit"
+              mode="contained-tonal"
+              onPress={pickImage}
             />
-            <BodyText style={{ color: colors.textSecondary }}>
-              {placeholder}
-            </BodyText>
+            <IconButton
+              icon="delete"
+              mode="contained-tonal"
+              onPress={() => {
+                setImage(null);
+                onImageSelect && onImageSelect(null);
+              }}
+            />
           </View>
-        )}
-      </TouchableOpacity>
-      {hasError && <ErrorText>{error}</ErrorText>}
-    </View>
+        </View>
+      ) : (
+        <TouchableOpacity
+          onPress={pickImage}
+          style={{
+            borderWidth: 1,
+            borderColor: theme.colors.outline,
+            borderStyle: "dashed",
+            borderRadius: 4,
+            padding: 16,
+            alignItems: "center",
+            width: 200,
+            height: 150,
+            justifyContent: "center",
+          }}
+        >
+          <IconButton
+            icon="image-plus"
+            size={32}
+            iconColor={theme.colors.primary}
+          />
+          <Text variant="bodyMedium">Choose Image</Text>
+        </TouchableOpacity>
+      )}
+    </Surface>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: spacing.md,
-  },
-  label: {
-    marginBottom: spacing.xs,
-    fontWeight: "500",
-  },
-  uploadContainer: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    borderRadius: 8,
-    height: 150,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  placeholderContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  imageContainer: {
-    width: "100%",
-    height: "100%",
-    position: "relative",
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  removeButton: {
-    position: "absolute",
-    top: 8,
-    right: 8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

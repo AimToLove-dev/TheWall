@@ -1,4 +1,7 @@
+"use client";
+
 import { View, Text, StyleSheet, Image } from "react-native";
+import { Surface, useTheme } from "react-native-paper";
 
 // Import brick SVGs
 const brickImages = [
@@ -16,6 +19,8 @@ export const WallBrick = ({
   isFlipped = false,
   style,
 }) => {
+  const theme = useTheme();
+
   // Format name to First Name & Last Initial
   const formatName = (fullName) => {
     if (!fullName) return "";
@@ -48,7 +53,7 @@ export const WallBrick = ({
   const formattedName = formatName(name);
 
   return (
-    <View style={[styles.brickContainer, style]}>
+    <Surface mode="flat" style={[styles.brickContainer, style]}>
       <Image
         source={brickImages[type]}
         style={[
@@ -58,7 +63,7 @@ export const WallBrick = ({
         resizeMode="cover"
       />
       <Text style={styles.nameText}>{formattedName}</Text>
-    </View>
+    </Surface>
   );
 };
 
@@ -69,6 +74,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     justifyContent: "center",
     alignItems: "center",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
   },
   brickImage: {
     position: "absolute",
@@ -80,9 +88,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center", // Center-align the text
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadow: "1px 1px 2px rgba(0, 0, 0, 0.75)",
     zIndex: 1,
     flexWrap: "wrap", // Allow text to wrap to the next line
     width: "100%", // Ensure the text container has a width for wrapping

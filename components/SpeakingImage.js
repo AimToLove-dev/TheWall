@@ -1,90 +1,123 @@
 "use client";
 
-import { useEffect } from "react";
-import { StyleSheet, View, Image, Text } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import { useState, useEffect } from "react";
+import { View, Image, StyleSheet, Animated } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
-/**
- * A simplified SpeakingImage component that shows a speech bubble next to an image
- */
 export const SpeakingImage = ({
-  source,
-  imageStyle,
+  imageSrc,
   message,
-  position = "left",
+  position = "right",
   delay = 0,
-  duration = 10000,
+  duration = 300,
+  style,
+  imageStyle,
+  bubbleStyle,
 }) => {
-  // Animation value for opacity
-  const opacity = useSharedValue(0);
+  const [animation] = useState(new Animated.Value(0));
+  const theme = useTheme();
 
-  // Set up the animation
   useEffect(() => {
-    // Show the bubble after delay
-    const showTimeout = setTimeout(() => {
-      opacity.value = withTiming(1, { duration: 300 });
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: duration,
+      delay: delay,
+      useNativeDriver: false,
+    }).start();
+  }, []);
 
-      // Hide the bubble after duration
-      const hideTimeout = setTimeout(() => {
-        opacity.value = withTiming(0, { duration: 300 });
-      }, duration);
-
-      return () => clearTimeout(hideTimeout);
-    }, delay);
-
-    return () => clearTimeout(showTimeout);
-  }, [delay, duration]);
-
-  // Animated style for the bubble
-  const bubbleStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-    };
-  });
-
-  // Determine position styles
   const getBubbleStyle = () => {
-    if (position === "left") {
-      return styles.bubbleLeft;
-    } else if (position === "right") {
-      return styles.bubbleRight;
-    } else if (position === "top") {
-      return styles.bubbleTop;
-    } else {
-      return styles.bubbleBottom;
+    switch (position) {
+      case "left":
+        return {
+          right: "100%",
+          marginRight: 10,
+          transform: [
+            {
+              translateX: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-20, 0],
+              }),
+            },
+          ],
+        };
+      case "right":
+        return {
+          left: "100%",
+          marginLeft: 10,
+          transform: [
+            {
+              translateX: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        };
+      case "top":
+        return {
+          bottom: "100%",
+          marginBottom: 10,
+          transform: [
+            {
+              translateY: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [-20, 0],
+              }),
+            },
+          ],
+        };
+      case "bottom":
+        return {
+          top: "100%",
+          marginTop: 10,
+          transform: [
+            {
+              translateY: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        };
     }
   };
 
-  // Determine arrow styles
   const getArrowStyle = () => {
-    if (position === "left") {
-      return styles.arrowRight;
-    } else if (position === "right") {
-      return styles.arrowLeft;
-    } else if (position === "top") {
-      return styles.arrowBottom;
-    } else {
-      return styles.arrowTop;
+    switch (position) {
+      case "left":
+        return [styles.arrow, styles.arrowRight];
+      case "right":
+        return [styles.arrow, styles.arrowLeft];
+      case "top":
+        return [styles.arrow, styles.arrowBottom];
+      case "bottom":
+        return [styles.arrow, styles.arrowTop];
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* The image */}
+    <View style={[styles.container, style]}>
       <Image
-        source={source}
+        source={imageSrc}
         style={[styles.image, imageStyle]}
         resizeMode="contain"
       />
 
-      {/* The speech bubble */}
-      <Animated.View style={[styles.bubble, getBubbleStyle(), bubbleStyle]}>
-        <View style={[styles.arrow, getArrowStyle()]} />
-        <Text style={styles.message}>{message}</Text>
+      <Animated.View
+        style={[
+          styles.bubble,
+          getBubbleStyle(),
+          { backgroundColor: theme.colors.surface },
+          bubbleStyle,
+        ]}
+      >
+        <View
+          style={[getArrowStyle(), { borderColor: theme.colors.surface }]}
+        />
+        <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+          {message}
+        </Text>
       </Animated.View>
     </View>
   );
@@ -103,42 +136,11 @@ const styles = StyleSheet.create({
   bubble: {
     position: "absolute",
     padding: 10,
-    backgroundColor: "white",
     borderRadius: 10,
     width: "max-content",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
     elevation: 2,
     zIndex: 2,
   },
-  message: {
-    fontSize: 14,
-    color: "#333",
-  },
-  // Bubble positions
-  bubbleLeft: {
-    right: "100%",
-    top: "50%",
-    transform: [{ translateY: -20 }],
-    marginRight: 15,
-  },
-  bubbleRight: {
-    left: "100%",
-    top: "50%",
-    transform: [{ translateY: -20 }],
-    marginLeft: 15,
-  },
-  bubbleTop: {
-    bottom: "100%",
-    marginBottom: 15,
-  },
-  bubbleBottom: {
-    top: "100%",
-    marginTop: 15,
-  },
-  // Arrow styles
   arrow: {
     position: "absolute",
     width: 0,
@@ -147,30 +149,28 @@ const styles = StyleSheet.create({
     borderWidth: 8,
     borderColor: "transparent",
   },
-  arrowRight: {
-    left: "100%",
-    top: 12,
-    borderLeftColor: "white",
-    borderRightWidth: 0,
-  },
   arrowLeft: {
     right: "100%",
-    top: 12,
-    borderRightColor: "white",
-    borderLeftWidth: 0,
+    top: "50%",
+    marginTop: -8,
+    borderRightWidth: 8,
+  },
+  arrowRight: {
+    left: "100%",
+    top: "50%",
+    marginTop: -8,
+    borderLeftWidth: 8,
   },
   arrowBottom: {
     top: "100%",
     left: "50%",
     marginLeft: -8,
-    borderTopColor: "white",
-    borderBottomWidth: 0,
+    borderTopWidth: 8,
   },
   arrowTop: {
     bottom: "100%",
     left: "50%",
     marginLeft: -8,
-    borderBottomColor: "white",
-    borderTopWidth: 0,
+    borderBottomWidth: 8,
   },
 });

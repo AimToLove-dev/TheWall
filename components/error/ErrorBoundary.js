@@ -1,45 +1,30 @@
 "use client";
 
 import React from "react";
-import { StyleSheet, useColorScheme, Platform } from "react-native";
-import { View } from "components"; // Import your custom View component
-import { HeaderText, BodyText } from "components";
-import { CustomButton } from "components";
-import { getThemeColors, spacing } from "styles/theme";
+import { Surface, Text, Button, useTheme } from "react-native-paper";
+import { View } from "components";
 
-// Define __DEV__ if it's not already defined
-const __DEV__ =
-  Platform.OS === "android" || Platform.OS === "ios"
-    ? process.env.NODE_ENV !== "production"
-    : true;
+const __DEV__ = process.env.NODE_ENV !== "production";
 
 class ErrorBoundaryClass extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { error: null };
   }
 
   static getDerivedStateFromError(error) {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    // Log the error to an error reporting service
-    console.error("Error caught by ErrorBoundary:", error, errorInfo);
-    this.setState({ errorInfo });
+    return { error };
   }
 
   resetError = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    this.setState({ error: null });
     if (this.props.onReset) {
       this.props.onReset();
     }
   };
 
   render() {
-    if (this.state.hasError) {
-      // Render fallback UI
+    if (this.state.error) {
       return (
         <this.props.FallbackComponent
           error={this.state.error}
@@ -54,38 +39,63 @@ class ErrorBoundaryClass extends React.Component {
 
 // Default fallback component
 const DefaultErrorFallback = ({ error, resetError }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
+  const theme = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <View style={styles.content}>
-        <HeaderText style={styles.title}>Oops! Something went wrong</HeaderText>
-        <BodyText style={[styles.message, { color: colors.textSecondary }]}>
+    <Surface
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 24,
+      }}
+    >
+      <View style={{ width: "100%", maxWidth: 500, alignItems: "center" }}>
+        <Text
+          variant="headlineMedium"
+          style={{ marginBottom: 12, textAlign: "center" }}
+        >
+          Oops! Something went wrong
+        </Text>
+
+        <Text
+          variant="bodyLarge"
+          style={{
+            marginBottom: 24,
+            textAlign: "center",
+            color: theme.colors.onSurfaceVariant,
+          }}
+        >
           We're sorry, but we encountered an unexpected error.
-        </BodyText>
+        </Text>
 
         {__DEV__ && error && (
-          <View style={[styles.errorDetails, { backgroundColor: colors.card }]}>
-            <BodyText style={{ color: colors.error }}>
+          <Surface
+            mode="elevated"
+            elevation={1}
+            style={{
+              padding: 16,
+              borderRadius: 8,
+              width: "100%",
+              marginBottom: 24,
+              backgroundColor: theme.colors.errorContainer,
+            }}
+          >
+            <Text style={{ color: theme.colors.error }}>
               {error.toString()}
-            </BodyText>
-          </View>
+            </Text>
+          </Surface>
         )}
 
-        <CustomButton
-          title="Try Again"
-          onPress={resetError}
-          variant="primary"
-          style={styles.button}
-        />
+        <Button mode="contained" onPress={resetError}>
+          Try Again
+        </Button>
       </View>
-    </View>
+    </Surface>
   );
 };
 
-// Wrapper component that provides the colorScheme context
+// Wrapper component that provides the theme context
 export const ErrorBoundary = ({
   children,
   FallbackComponent = DefaultErrorFallback,
@@ -97,34 +107,3 @@ export const ErrorBoundary = ({
     </ErrorBoundaryClass>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: spacing.lg,
-  },
-  content: {
-    width: "100%",
-    maxWidth: 500,
-    alignItems: "center",
-  },
-  title: {
-    marginBottom: spacing.md,
-    textAlign: "center",
-  },
-  message: {
-    textAlign: "center",
-    marginBottom: spacing.xl,
-  },
-  errorDetails: {
-    padding: spacing.md,
-    borderRadius: 8,
-    width: "100%",
-    marginBottom: spacing.xl,
-  },
-  button: {
-    minWidth: 200,
-  },
-});

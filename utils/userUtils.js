@@ -1,19 +1,23 @@
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { db } from "../config";
 
 /**
  * Update a user's profile in Firestore
  * @param {string} userId - User ID
  * @param {Object} profileData - Updated profile data
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>}
  */
 export const updateUserProfile = async (userId, profileData) => {
   try {
     const userRef = doc(db, "users", userId);
-    await updateDoc(userRef, {
-      ...profileData,
-      updatedAt: new Date().toISOString(),
-    });
+    await setDoc(
+      userRef,
+      {
+        ...profileData,
+        updatedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    );
     return true;
   } catch (error) {
     console.error(`Error updating user profile for ${userId}:`, error);

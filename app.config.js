@@ -2,8 +2,8 @@ import "dotenv/config";
 
 export default {
   expo: {
-    name: "Expo Firebase Starter",
-    slug: "expo-firebase",
+    name: "The Wall",
+    slug: "the-wall",
     privacy: "public",
     platforms: ["web", "ios", "android"],
     web: {
@@ -14,9 +14,9 @@ export default {
     orientation: "portrait",
     icon: "./assets/whale.svg",
     splash: {
-      image: "./assets/splash.png",
-      resizeMode: "cover",
-      backgroundColor: "#F57C00",
+      image: "./assets/TheWall.png",
+      resizeMode: "contain",
+      backgroundColor: "#FFFFFF",
     },
     updates: {
       fallbackToCacheTimeout: 0,

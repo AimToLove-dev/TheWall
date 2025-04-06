@@ -1,46 +1,48 @@
 "use client";
 
 import { useState } from "react";
-import { View, StyleSheet, useColorScheme } from "react-native";
-import { Formik } from "formik";
-import * as Yup from "yup";
-import { ErrorText, CustomInput, CustomButton } from "components";
-import { getThemeColors, spacing } from "styles/theme";
+import { View } from "react-native";
+import { Button, TextInput, Text, useTheme } from "react-native-paper";
 import { updateUserProfile } from "utils/userUtils";
-
-const profileValidationSchema = Yup.object().shape({
-  displayName: Yup.string().required("Full name is required"),
-  email: Yup.string()
-    .email("Please enter a valid email")
-    .required("Email is required"),
-  phoneNumber: Yup.string()
-    .matches(
-      /^(\+\d{1,2}\s)?\d{3}[\s.-]?\d{3}[\s.-]?\d{4}$/,
-      "Please enter a valid phone number"
-    )
-    .required("Phone number is required"),
-  address: Yup.string().required("Address is required"),
-  dob: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format")
-    .required("Date of birth is required"),
-});
 
 export const EditProfileForm = ({ user, onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
+  const [formData, setFormData] = useState({
+    displayName: user?.displayName || "",
+    email: user?.email || "",
+    phoneNumber: user?.phoneNumber || "",
+    address: user?.address || "",
+    dob: user?.dob || "",
+  });
 
-  const handleSubmit = async (values) => {
+  const theme = useTheme();
+
+  const handleInputChange = (field, value) => {
+    setFormData({
+      ...formData,
+      [field]: value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    // Basic validation
+    if (
+      !formData.displayName ||
+      !formData.phoneNumber ||
+      !formData.address ||
+      !formData.dob
+    ) {
+      setError("All fields except email are required");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      await updateUserProfile(user.uid, values);
-      if (onSuccess) {
-        onSuccess(values);
-      }
+      await updateUserProfile(user.uid, formData);
+      onSuccess(formData);
     } catch (err) {
       setError("Failed to update profile. Please try again.");
       console.error("Error updating profile:", err);
@@ -50,124 +52,76 @@ export const EditProfileForm = ({ user, onSuccess, onCancel }) => {
   };
 
   return (
-    <Formik
-      initialValues={{
-        displayName: user?.displayName || "",
-        email: user?.email || "",
-        phoneNumber: user?.phoneNumber || "",
-        address: user?.address || "",
-        dob: user?.dob || "",
-      }}
-      validationSchema={profileValidationSchema}
-      onSubmit={handleSubmit}
-    >
-      {({
-        values,
-        touched,
-        errors,
-        handleChange,
-        handleSubmit,
-        handleBlur,
-      }) => (
-        <View style={styles.container}>
-          <CustomInput
-            label="Full Name"
-            placeholder="Your full name"
-            value={values.displayName}
-            onChangeText={handleChange("displayName")}
-            onBlur={handleBlur("displayName")}
-            error={errors.displayName}
-            touched={touched.displayName}
-            leftIconName="person-outline"
-          />
+    <View style={{ width: "100%" }}>
+      <TextInput
+        label="Full Name"
+        value={formData.displayName}
+        onChangeText={(text) => handleInputChange("displayName", text)}
+        mode="outlined"
+        left={<TextInput.Icon icon="account" />}
+        style={{ marginBottom: 16 }}
+      />
 
-          <CustomInput
-            label="Email"
-            placeholder="Your email address"
-            value={values.email}
-            onChangeText={handleChange("email")}
-            onBlur={handleBlur("email")}
-            error={errors.email}
-            touched={touched.email}
-            keyboardType="email-address"
-            leftIconName="mail-outline"
-            editable={false} // Email is typically not editable after account creation
-          />
+      <TextInput
+        label="Email"
+        value={formData.email}
+        disabled={true}
+        mode="outlined"
+        left={<TextInput.Icon icon="email" />}
+        style={{ marginBottom: 16 }}
+      />
 
-          <CustomInput
-            label="Phone Number"
-            placeholder="Your phone number"
-            value={values.phoneNumber}
-            onChangeText={handleChange("phoneNumber")}
-            onBlur={handleBlur("phoneNumber")}
-            error={errors.phoneNumber}
-            touched={touched.phoneNumber}
-            keyboardType="phone-pad"
-            leftIconName="call-outline"
-          />
+      <TextInput
+        label="Phone Number"
+        value={formData.phoneNumber}
+        onChangeText={(text) => handleInputChange("phoneNumber", text)}
+        mode="outlined"
+        keyboardType="phone-pad"
+        left={<TextInput.Icon icon="phone" />}
+        style={{ marginBottom: 16 }}
+      />
 
-          <CustomInput
-            label="Address"
-            placeholder="Your address"
-            value={values.address}
-            onChangeText={handleChange("address")}
-            onBlur={handleBlur("address")}
-            error={errors.address}
-            touched={touched.address}
-            leftIconName="home-outline"
-          />
+      <TextInput
+        label="Address"
+        value={formData.address}
+        onChangeText={(text) => handleInputChange("address", text)}
+        mode="outlined"
+        left={<TextInput.Icon icon="home" />}
+        style={{ marginBottom: 16 }}
+      />
 
-          <CustomInput
-            label="Date of Birth"
-            placeholder="YYYY-MM-DD"
-            value={values.dob}
-            onChangeText={handleChange("dob")}
-            onBlur={handleBlur("dob")}
-            error={errors.dob}
-            touched={touched.dob}
-            leftIconName="calendar-outline"
-          />
+      <TextInput
+        label="Date of Birth (YYYY-MM-DD)"
+        value={formData.dob}
+        onChangeText={(text) => handleInputChange("dob", text)}
+        mode="outlined"
+        left={<TextInput.Icon icon="calendar" />}
+        style={{ marginBottom: 16 }}
+      />
 
-          {error ? <ErrorText>{error}</ErrorText> : null}
+      {error ? (
+        <Text style={{ color: theme.colors.error, marginBottom: 16 }}>
+          {error}
+        </Text>
+      ) : null}
 
-          <View style={styles.buttonContainer}>
-            <CustomButton
-              title="Cancel"
-              onPress={onCancel}
-              variant="outline"
-              size="medium"
-              style={styles.cancelButton}
-            />
-            <CustomButton
-              title="Save Changes"
-              onPress={handleSubmit}
-              loading={loading}
-              variant="primary"
-              size="medium"
-              style={styles.saveButton}
-            />
-          </View>
-        </View>
-      )}
-    </Formik>
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <Button
+          mode="outlined"
+          onPress={onCancel}
+          style={{ flex: 1, marginRight: 8 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          mode="contained"
+          onPress={handleSubmit}
+          loading={loading}
+          style={{ flex: 1, marginLeft: 8 }}
+        >
+          Save Changes
+        </Button>
+      </View>
+    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: spacing.lg,
-  },
-  cancelButton: {
-    flex: 1,
-    marginRight: spacing.sm,
-  },
-  saveButton: {
-    flex: 1,
-    marginLeft: spacing.sm,
-  },
-});

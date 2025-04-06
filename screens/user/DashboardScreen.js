@@ -26,7 +26,7 @@ import { getThemeColors, spacing } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 
 export const DashboardScreen = ({ navigation }) => {
-  const { user } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
@@ -41,7 +41,12 @@ export const DashboardScreen = ({ navigation }) => {
   const confirmSignOut = () => {
     signOut(auth)
       .then(() => {
-        navigation.navigate("Home");
+        setUser(null); // Clear the user state
+        navigation.reset({
+          // Reset navigation stack
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
       })
       .catch((error) => {
         console.error("Sign out error:", error);
@@ -176,10 +181,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderRadius: 12,
     marginBottom: spacing.md,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
     elevation: 2,
   },
   menuIconContainer: {

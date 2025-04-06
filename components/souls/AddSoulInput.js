@@ -2,15 +2,13 @@
 
 import { useState, useRef } from "react";
 import {
-  StyleSheet,
   View,
-  TextInput,
-  TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  Image,
+  StyleSheet,
+  TouchableOpacity,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { TextInput, HelperText, Button, useTheme } from "react-native-paper";
 import { addSoul } from "../../utils/soulsUtils";
 import Animated, {
   useSharedValue,
@@ -32,7 +30,69 @@ export const AddSoulInput = ({
   const [isOpen, setIsOpen] = useState(false);
   const [soulName, setSoulName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   const inputRef = useRef(null);
+  const theme = useTheme();
+
+  const styles = StyleSheet.create({
+    container: {
+      position: "absolute",
+      bottom: 20,
+      right: 20,
+      alignItems: "flex-end",
+      zIndex: 100,
+    },
+    backdrop: {
+      position: "absolute",
+      top: -1000,
+      left: -1000,
+      right: -1000,
+      bottom: -1000,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      zIndex: 99,
+    },
+    iconButton: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 101,
+      backgroundColor: "transparent",
+    },
+    icon: {
+      width: 56,
+      height: 56,
+      resizeMode: "contain",
+    },
+    inputContainer: {
+      flexDirection: "row",
+      backgroundColor: theme.colors.surface,
+      borderRadius: 30,
+      width: 280,
+      height: 50,
+      alignItems: "center",
+      paddingHorizontal: 15,
+      zIndex: 100,
+      marginRight: 20,
+      marginBottom: 10,
+      paddingRight: 5,
+    },
+    input: {
+      flex: 1,
+      fontSize: 16,
+      marginRight: 10,
+      color: theme.colors.onSurface,
+    },
+    sendButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.colors.primary,
+    },
+  });
 
   // Animation values
   const progress = useSharedValue(0);
@@ -73,6 +133,7 @@ export const AddSoulInput = ({
       setTimeout(() => {
         setIsOpen(false);
         setSoulName("");
+        setError(null);
         Keyboard.dismiss();
       }, 300);
     } else {
@@ -107,6 +168,7 @@ export const AddSoulInput = ({
       }
     } catch (error) {
       console.error("Error adding soul:", error);
+      setError("Failed to add soul. Please try again.");
       if (onError) {
         onError(error);
       }
@@ -127,31 +189,28 @@ export const AddSoulInput = ({
         <Animated.View style={[styles.inputContainer, inputContainerStyle]}>
           <TextInput
             ref={inputRef}
-            style={styles.input}
             value={soulName}
             onChangeText={setSoulName}
-            placeholder="Lost Soul"
-            placeholderTextColor="#999"
-            returnKeyType="send"
+            placeholder="Enter name for prayer..."
+            mode="outlined"
+            error={!!error}
+            left={<TextInput.Icon icon="account-heart" />}
+            right={
+              <TextInput.Icon
+                icon="send"
+                disabled={!soulName.trim() || isSubmitting}
+                onPress={handleSubmit}
+              />
+            }
             onSubmitEditing={handleSubmit}
-            editable={!isSubmitting}
-            autoCapitalize="words"
-            maxLength={30}
+            returnKeyType="send"
+            style={{ backgroundColor: theme.colors.surface }}
           />
-          <TouchableOpacity
-            style={[
-              styles.submitButton,
-              (!soulName.trim() || isSubmitting) && styles.submitButtonDisabled,
-            ]}
-            onPress={handleSubmit}
-            disabled={isSubmitting || !soulName.trim()}
-          >
-            <Feather
-              name="check"
-              size={24}
-              color={soulName.trim() && !isSubmitting ? "#fff" : "#999"}
-            />
-          </TouchableOpacity>
+          {error && (
+            <HelperText type="error" visible={!!error}>
+              {error}
+            </HelperText>
+          )}
         </Animated.View>
       )}
 
@@ -172,71 +231,3 @@ export const AddSoulInput = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    alignItems: "flex-end",
-    zIndex: 100,
-  },
-  backdrop: {
-    position: "absolute",
-    top: -1000,
-    left: -1000,
-    right: -1000,
-    bottom: -1000,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    zIndex: 99,
-  },
-  iconButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 101,
-    backgroundColor: "transparent",
-  },
-  icon: {
-    width: 56,
-    height: 56,
-    resizeMode: "contain",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 30,
-    width: 280,
-    height: 50,
-    alignItems: "center",
-    paddingHorizontal: 15,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    zIndex: 100,
-    marginRight: 20,
-    marginBottom: 10,
-    paddingRight: 5,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    color: "#333",
-    fontSize: 16,
-  },
-  submitButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#4a6da7",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  submitButtonDisabled: {
-    backgroundColor: "#ccc",
-  },
-});

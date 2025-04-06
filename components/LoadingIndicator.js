@@ -1,23 +1,13 @@
+"use client";
+
 import React from "react";
-import { ActivityIndicator, StyleSheet, useColorScheme } from "react-native";
-import { getThemeColors, spacing } from "../styles/theme";
-import { View } from "./View";
+import { ActivityIndicator, Surface } from "react-native-paper";
 
-export const LoadingIndicator = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
-  return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color={colors.primary} />
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+export const LoadingIndicator = () => (
+  <Surface
+    mode="flat"
+    style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+  >
+    <ActivityIndicator size="large" animating={true} />
+  </Surface>
+);

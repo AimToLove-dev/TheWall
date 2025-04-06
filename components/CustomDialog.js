@@ -1,13 +1,7 @@
-import {
-  StyleSheet,
-  Modal,
-  TouchableWithoutFeedback,
-  useColorScheme,
-} from "react-native";
-import { View } from "./View";
-import { HeaderText, BodyText } from "./Typography";
-import { CustomButton } from "./CustomButton";
-import { getThemeColors, spacing } from "../styles/theme";
+"use client";
+
+import { Modal, TouchableWithoutFeedback } from "react-native";
+import { Dialog, Portal, Text, Button, useTheme } from "react-native-paper";
 
 export const CustomDialog = ({
   visible,
@@ -17,106 +11,40 @@ export const CustomDialog = ({
   onConfirm,
   confirmText = "Confirm",
   cancelText = "Cancel",
-  confirmVariant = "primary",
-  cancelVariant = "outline",
+  confirmVariant = "contained",
+  cancelVariant = "outlined",
   isDestructive = false,
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
+  const theme = useTheme();
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onCancel}
-    >
-      <TouchableWithoutFeedback onPress={onCancel}>
-        <View style={styles.modalOverlay}>
-          <TouchableWithoutFeedback>
-            <View
-              style={[
-                styles.dialogContainer,
-                { backgroundColor: colors.background },
-              ]}
+    <Portal>
+      <Dialog visible={visible} onDismiss={onCancel}>
+        <Dialog.Title>{title}</Dialog.Title>
+        <Dialog.Content>
+          <Text>{message}</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          {onCancel && (
+            <Button
+              mode={cancelVariant}
+              onPress={onCancel}
+              style={{ marginRight: 8 }}
             >
-              <HeaderText style={styles.title}>{title}</HeaderText>
-              <BodyText
-                style={[styles.message, { color: colors.textSecondary }]}
-              >
-                {message}
-              </BodyText>
-
-              <View style={styles.buttonContainer}>
-                {onCancel && (
-                  <CustomButton
-                    title={cancelText}
-                    onPress={onCancel}
-                    variant={cancelVariant}
-                    style={[styles.button, styles.cancelButton]}
-                  />
-                )}
-
-                {onConfirm && (
-                  <CustomButton
-                    title={confirmText}
-                    onPress={onConfirm}
-                    variant={isDestructive ? "outline" : confirmVariant}
-                    style={[
-                      styles.button,
-                      isDestructive && { borderColor: colors.error },
-                    ]}
-                    textStyle={isDestructive && { color: colors.error }}
-                  />
-                )}
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+              {cancelText}
+            </Button>
+          )}
+          {onConfirm && (
+            <Button
+              mode={confirmVariant}
+              onPress={onConfirm}
+              textColor={isDestructive ? theme.colors.error : undefined}
+            >
+              {confirmText}
+            </Button>
+          )}
+        </Dialog.Actions>
+      </Dialog>
+    </Portal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: spacing.lg,
-  },
-  dialogContainer: {
-    width: "100%",
-    maxWidth: 400,
-    borderRadius: 12,
-    padding: spacing.lg,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  title: {
-    marginBottom: spacing.md,
-    textAlign: "center",
-  },
-  message: {
-    marginBottom: spacing.xl,
-    textAlign: "center",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
-  },
-  button: {
-    minWidth: 120,
-    marginHorizontal: spacing.xs,
-  },
-  cancelButton: {
-    marginRight: spacing.sm,
-  },
-});

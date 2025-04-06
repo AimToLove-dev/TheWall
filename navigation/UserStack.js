@@ -15,10 +15,6 @@ export const UserStack = () => {
       initialRouteName="Dashboard"
       screenOptions={{
         headerShown: false,
-        cardStyle: {
-          paddingTop: 56,
-          backgroundColor: "#ffe8cc",
-        },
       }}
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
