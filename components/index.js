@@ -19,7 +19,6 @@ import {
 import { WallBrick } from "./WallBrick";
 import { TestimonyWall } from "./TestimonyWall";
 import { WailingWall } from "./WailingWall";
-import { WailingWallReanimated } from "./WailingWallReanimated_experemental";
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
 import { ErrorBoundary } from "./error/ErrorBoundary";
 import { ErrorScreen } from "./error/ErrorScreen";
@@ -42,7 +41,6 @@ export {
   WallBrick,
   TestimonyWall,
   WailingWall,
-  WailingWallReanimated,
   Header,
   SubtitleText,
   BodyText,

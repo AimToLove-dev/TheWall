@@ -1,137 +1,137 @@
 "use client";
 
 import { useContext } from "react";
-import {
-  View,
-  StyleSheet,
-  useColorScheme,
-  useWindowDimensions,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { AuthenticatedUserContext } from "../providers";
+import { StyleSheet, useColorScheme, TouchableOpacity } from "react-native";
+import { View, HeaderText, BodyText, Logo, CustomButton } from "components";
+import { getThemeColors } from "styles/theme";
+import { AuthenticatedUserContext } from "providers";
 import { Surface } from "react-native-paper";
-import { CustomButton } from "components";
-import { getThemeColors, spacing, shadows } from "../styles/theme";
-import { Ionicons } from "@expo/vector-icons";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
-  const { width } = useWindowDimensions();
-  const isLargeScreen = width > 768;
 
   const handleLoginPress = () => {
     navigation.navigate("Auth", { screen: "Login" });
   };
 
-  const handleWallPress = () => {
-    navigation.navigate("WailingWall");
-  };
-
-  const handleTestimonyPress = () => {
-    navigation.navigate("TestimonyWall");
+  const handleSignupPress = () => {
+    navigation.navigate("Auth", { screen: "Signup" });
   };
 
   const handleDashboardPress = () => {
     navigation.navigate("App", { screen: "Dashboard" });
   };
 
+  const navigateToWailingWall = () => {
+    navigation.navigate("WailingWall");
+  };
+
+  const navigateToTestimonyWall = () => {
+    navigation.navigate("TestimonyWall");
+  };
+
   return (
-    <SafeAreaView
+    <Surface
+      mode="flat"
       style={[styles.container, { backgroundColor: colors.background }]}
-      edges={["bottom"]}
     >
-      <Surface
-        style={[styles.content, { backgroundColor: colors.background }]}
-        elevation={0}
-      >
-        <View
-          style={[
-            styles.buttonContainer,
-            isLargeScreen && styles.largeScreenButtonContainer,
-          ]}
+      {/* Logo section */}
+      <View style={styles.logoContainer}>
+        <Logo size={150} />
+        <HeaderText style={styles.title}>The Wall</HeaderText>
+        <BodyText style={styles.subtitle}>
+          A place for your prayers and testimonies
+        </BodyText>
+      </View>
+
+      {/* Main options */}
+      <View style={styles.cardsContainer}>
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={navigateToWailingWall}
         >
-          <CustomButton
-            title="Wailing Wall"
-            onPress={handleWallPress}
-            variant="primary"
-            size="large"
-            style={styles.button}
-            leftIcon={
-              <Ionicons name="wallet-outline" size={24} color="#FFFFFF" />
-            }
-          />
+          <HeaderText style={styles.cardTitle}>Wailing Wall</HeaderText>
+          <BodyText style={styles.cardText}>
+            Share your prayers and intercede for others
+          </BodyText>
+        </TouchableOpacity>
 
-          <CustomButton
-            title="Testimony Wall"
-            onPress={handleTestimonyPress}
-            variant="primary"
-            size="large"
-            style={styles.button}
-            leftIcon={
-              <Ionicons name="book-outline" size={24} color="#FFFFFF" />
-            }
-          />
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={navigateToTestimonyWall}
+        >
+          <HeaderText style={styles.cardTitle}>Testimony Wall</HeaderText>
+          <BodyText style={styles.cardText}>
+            Share how God has worked in your life
+          </BodyText>
+        </TouchableOpacity>
+      </View>
 
-          {user ? (
+      {/* Authentication buttons */}
+      <View style={styles.authContainer}>
+        {user ? (
+          <CustomButton
+            title="Go to Dashboard"
+            onPress={handleDashboardPress}
+            mode="contained"
+          />
+        ) : (
+          <>
             <CustomButton
-              title="Dashboard"
-              onPress={handleDashboardPress}
-              variant="secondary"
-              size="large"
-              style={styles.button}
-              leftIcon={
-                <Ionicons
-                  name="person-outline"
-                  size={24}
-                  color={colors.primary}
-                />
-              }
-            />
-          ) : (
-            <CustomButton
-              title="Sign In"
+              title="Login"
               onPress={handleLoginPress}
-              variant="secondary"
-              size="large"
-              style={styles.button}
-              leftIcon={
-                <Ionicons
-                  name="log-in-outline"
-                  size={24}
-                  color={colors.primary}
-                />
-              }
+              mode="outlined"
             />
-          )}
-        </View>
-      </Surface>
-    </SafeAreaView>
+            <CustomButton
+              title="Sign Up"
+              onPress={handleSignupPress}
+              mode="contained"
+            />
+          </>
+        )}
+      </View>
+    </Surface>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
   },
-  content: {
-    flex: 1,
-    justifyContent: "center",
+  logoContainer: {
     alignItems: "center",
-    padding: spacing.lg,
+    marginVertical: 40,
   },
-  buttonContainer: {
-    width: "100%",
-    maxWidth: 400,
-    gap: spacing.md,
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginVertical: 10,
   },
-  largeScreenButtonContainer: {
-    maxWidth: 500,
+  subtitle: {
+    textAlign: "center",
+    marginHorizontal: 20,
   },
-  button: {
-    width: "100%",
-    ...shadows.medium,
+  cardsContainer: {
+    marginVertical: 20,
+  },
+  card: {
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 15,
+  },
+  cardTitle: {
+    marginBottom: 5,
+  },
+  cardText: {
+    opacity: 0.7,
+  },
+  authContainer: {
+    marginTop: "auto",
+    marginBottom: 20,
+    gap: 10,
   },
 });
