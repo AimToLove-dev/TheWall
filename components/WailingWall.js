@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
-import { WallBrick } from "components";
+import { WallBrick } from "components/WallBrick";
 import { getAllSouls } from "utils/soulsUtils"; // Import the Firebase utility
 
 const Sections = Object.freeze({

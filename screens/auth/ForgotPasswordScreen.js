@@ -45,7 +45,32 @@ export const ForgotPasswordScreen = ({ navigation }) => {
         );
       })
       .catch((error) => {
-        setErrorState(error.message);
+        // Translate Firebase error messages to user-friendly messages
+        const errorCode = error.code;
+        let errorMessage;
+
+        switch (errorCode) {
+          case "auth/user-not-found":
+            errorMessage = "No account found with this email address.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Please enter a valid email address.";
+            break;
+          case "auth/missing-email":
+            errorMessage = "Please enter your email address.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage =
+              "Network error. Please check your internet connection and try again.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many reset attempts. Please try again later.";
+            break;
+          default:
+            errorMessage = "Failed to send reset email. Please try again.";
+        }
+
+        setErrorState(errorMessage);
       })
       .finally(() => {
         setLoading(false);

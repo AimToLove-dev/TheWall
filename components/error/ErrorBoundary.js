@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Surface, Text, Button, useTheme } from "react-native-paper";
-import { View } from "components";
+import { View } from "components/View";
 
 const __DEV__ = process.env.NODE_ENV !== "production";
 

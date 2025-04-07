@@ -2,15 +2,11 @@
 
 import { FlatList } from "react-native";
 import { Surface, List, IconButton, Text, useTheme } from "react-native-paper";
-import { View } from "components";
+import { View } from "components/View";
 import { useState, useEffect, useContext } from "react";
-import { AuthenticatedUserContext } from "../../providers";
-import {
-  getUserSouls,
-  deleteSoul,
-  countUserSouls,
-} from "../../utils/firebaseUtils";
-import { DatabaseErrorScreen } from "../error/DatabaseErrorScreen";
+import { AuthenticatedUserContext } from "providers";
+import { getUserSouls, deleteSoul, countUserSouls } from "utils/firebaseUtils";
+import { DatabaseErrorScreen } from "components/error/DatabaseErrorScreen";
 
 export const SoulsList = ({
   navigation,

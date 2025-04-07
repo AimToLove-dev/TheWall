@@ -45,8 +45,10 @@ export const ProfileIncomplete = ({
                 color={colors.error}
               />
               <BodyText style={styles.missingFieldText}>
-                {field === "displayName"
-                  ? "Full Name"
+                {field === "firstName"
+                  ? "First Name"
+                  : field === "lastName"
+                  ? "Last Name"
                   : field === "phoneNumber"
                   ? "Phone Number"
                   : field === "dob"

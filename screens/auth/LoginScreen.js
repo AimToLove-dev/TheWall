@@ -45,13 +45,31 @@ export const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        setLoading(false);
+        // Only navigate to Dashboard after successful login
+        navigation.navigate("App", { screen: "Dashboard" });
       })
       .catch((error) => {
-        setErrorState(error.message);
+        let errorMessage = "An error occurred during login";
+        switch (error.code) {
+          case "auth/invalid-credential":
+          case "auth/user-not-found":
+          case "auth/wrong-password":
+            errorMessage = "Invalid email or password";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "This account has been disabled";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many failed attempts. Please try again later";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Network error. Please check your connection";
+            break;
+        }
+        setErrorState(errorMessage);
       })
       .finally(() => {
-        navigation.navigate("App", { screen: "Dashboard" });
+        setLoading(false);
       });
   };
 

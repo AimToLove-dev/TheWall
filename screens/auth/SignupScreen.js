@@ -52,7 +52,34 @@ export const SignupScreen = ({ navigation }) => {
         navigation.navigate("App", { screen: "Dashboard" });
       })
       .catch((error) => {
-        setErrorState(error.message);
+        // Translate Firebase error messages to user-friendly messages
+        const errorCode = error.code;
+        let errorMessage;
+
+        switch (errorCode) {
+          case "auth/email-already-in-use":
+            errorMessage =
+              "This email address is already registered. Please sign in instead.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "Please enter a valid email address.";
+            break;
+          case "auth/weak-password":
+            errorMessage =
+              "Password is too weak. Please choose a stronger password.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage =
+              "Network error. Please check your internet connection and try again.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Too many failed attempts. Please try again later.";
+            break;
+          default:
+            errorMessage = "Failed to create account. Please try again.";
+        }
+
+        setErrorState(errorMessage);
       })
       .finally(() => {
         setLoading(false);
