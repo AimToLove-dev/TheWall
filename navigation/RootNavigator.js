@@ -4,12 +4,13 @@ import { useState, useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
+import { ActivityIndicator, Surface } from "react-native-paper";
 
 import { AuthStack } from "./AuthStack";
 import { UserStack } from "./UserStack";
 import { HomeScreen, WailingWallScreen, TestimonyWallScreen } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
-import { LoadingIndicator, Header } from "components";
+import { Header } from "components";
 import { auth } from "config";
 
 const Stack = createStackNavigator();
@@ -33,7 +34,14 @@ export const RootNavigator = () => {
   }, []);
 
   if (isLoading) {
-    return <LoadingIndicator />;
+    return (
+      <Surface
+        mode="flat"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ActivityIndicator size="large" animating={true} />
+      </Surface>
+    );
   }
 
   return (

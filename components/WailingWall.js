@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { View, StyleSheet, Animated, Dimensions, Easing } from "react-native";
-import { WallBrick, LoadingIndicator } from "components";
-import { getAllSouls } from "../utils/soulsUtils"; // Import the Firebase utility
+import { ActivityIndicator, Surface } from "react-native-paper";
+import { WallBrick } from "components";
+import { getAllSouls } from "utils/soulsUtils"; // Import the Firebase utility
 
 const Sections = Object.freeze({
   A: "A",
@@ -210,7 +211,14 @@ export const WailingWall = () => {
   }, []);
 
   if (loading) {
-    return <LoadingIndicator />;
+    return (
+      <Surface
+        mode="flat"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ActivityIndicator size="large" animating={true} />
+      </Surface>
+    );
   }
   return (
     <View style={styles.wrapper}>

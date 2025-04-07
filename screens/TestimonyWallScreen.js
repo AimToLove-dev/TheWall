@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, Text } from "react-native";
-import { LoadingIndicator, TestimonyWall } from "components";
+import { ActivityIndicator, Surface } from "react-native-paper";
+import { TestimonyWall } from "components";
 import { AddSoulInput } from "components";
 import { getAllTestimonies } from "utils/testimoniesUtils";
 
@@ -37,7 +38,14 @@ export const TestimonyWallScreen = () => {
   }
 
   if (isLoading) {
-    return <LoadingIndicator></LoadingIndicator>;
+    return (
+      <Surface
+        mode="flat"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ActivityIndicator size="large" animating={true} />
+      </Surface>
+    );
   }
 
   return (

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, Text } from "react-native";
 import { WailingWall, WailingWallReanimated } from "components";
 import { AddSoulInput } from "components";
-import { LoadingIndicator } from "components/LoadingIndicator";
 import { getAllSouls, setSouls } from "../utils/soulsUtils";
 
 export const WailingWallScreen = () => {

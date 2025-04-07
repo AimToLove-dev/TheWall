@@ -2,11 +2,9 @@
 import { View } from "./View";
 import { Logo } from "./Logo";
 import { Icon } from "./Icon";
-import { LoadingIndicator } from "./LoadingIndicator";
 import { CustomButton } from "./CustomButton";
 import { FormContainer } from "./FormContainer";
 import { CustomDialog } from "./CustomDialog";
-import { SpeedDial } from "./SpeedDial";
 import { Header } from "./Header";
 import { CardGrid } from "./CardGrid";
 import {
@@ -38,7 +36,6 @@ export {
   View,
   Logo,
   Icon,
-  LoadingIndicator,
   CustomButton,
   FormContainer,
   CustomDialog,
@@ -46,7 +43,6 @@ export {
   TestimonyWall,
   WailingWall,
   WailingWallReanimated,
-  SpeedDial,
   Header,
   SubtitleText,
   BodyText,
