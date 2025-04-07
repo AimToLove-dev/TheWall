@@ -3,13 +3,7 @@
 ```
 npm i
 
-# Replace XXXX's with your own Firebase config keys
-API_KEY=XXXX
-AUTH_DOMAIN=XXXX
-PROJECT_ID=XXXX
-STORAGE_BUCKET=XXXX
-MESSAGING_SENDER_ID=XXXX
-APP_ID=XXXX
+copy the env file and rename .env then update config values
 ```
 
 ## Run project
