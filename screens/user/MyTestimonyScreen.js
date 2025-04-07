@@ -10,18 +10,17 @@ import {
   ScrollView,
   Alert,
 } from "react-native";
-import { Formik } from "formik";
-import * as Yup from "yup";
 import { Ionicons } from "@expo/vector-icons";
 import { AuthenticatedUserContext } from "providers";
 import {
   CustomButton,
   FormContainer,
-  TextAreaInput,
-  MediaUpload,
-  VideoUpload,
+  ProfileIncomplete,
+  ConnectTestimony,
+  ConfirmationPage,
+  ReadTestimony,
+  EditTestimony,
 } from "components";
-import { ProfileIncomplete } from "components/ProfileIncomplete";
 import {
   HeaderText,
   SubtitleText,
@@ -29,20 +28,21 @@ import {
   ErrorText,
 } from "components/Typography";
 import { getThemeColors, spacing } from "styles/theme";
-import { submitTestimony, canAddMoreTestimonies } from "utils/testimoniesUtils";
+import {
+  submitTestimony,
+  canAddMoreTestimonies,
+  getUserTestimonies,
+  getUserTestimonyById,
+  linkTestimonyToSoulRecord,
+  updateTestimony,
+} from "utils/testimoniesUtils";
 import { checkProfileCompleteness, getFullName } from "@utils/profileUtils";
-
-// Validation schema for the testimony form
-const testimonyValidationSchema = Yup.object().shape({
-  testimony: Yup.string()
-    .required("Testimony is required")
-    .min(50, "Testimony must be at least 50 characters")
-    .max(2000, "Testimony must be less than 2000 characters"),
-});
+import { findMatchingSouls, addSoul } from "utils/soulsUtils";
 
 export const MyTestimonyScreen = ({ navigation }) => {
   const { user, profile } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
+  const [loadingTestimonies, setLoadingTestimonies] = useState(true);
   const [errorState, setErrorState] = useState("");
   const [beforeImage, setBeforeImage] = useState(null);
   const [afterImage, setAfterImage] = useState(null);
@@ -51,11 +51,22 @@ export const MyTestimonyScreen = ({ navigation }) => {
   const [profileComplete, setProfileComplete] = useState(true);
   const [missingFields, setMissingFields] = useState([]);
 
+  // States for existing testimonies
+  const [userTestimonies, setUserTestimonies] = useState([]);
+  const [currentTestimony, setCurrentTestimony] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // States for the step process
+  const [currentStep, setCurrentStep] = useState(1);
+  // 1: Form/Read/Edit, 2: Connect, 3: Confirmation
+  const [testimonyData, setTestimonyData] = useState(null);
+  const [matchingSouls, setMatchingSouls] = useState([]);
+
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
 
-  // Check if user profile is complete and if they can submit more testimonies
+  // Load user testimonies and check profile completeness
   useEffect(() => {
     if (user) {
       // Check profile completeness
@@ -63,20 +74,52 @@ export const MyTestimonyScreen = ({ navigation }) => {
       setProfileComplete(isComplete);
       setMissingFields(missingFields);
 
-      // Check submission limit
-      const checkSubmissionLimit = async () => {
-        const canAdd = await canAddMoreTestimonies(user.uid, user.isAdmin);
-        setCanSubmit(canAdd);
+      // Load user's testimonies
+      const loadTestimonies = async () => {
+        setLoadingTestimonies(true);
+        try {
+          const testimonies = await getUserTestimonies(user.uid);
+          setUserTestimonies(testimonies);
 
-        if (!canAdd) {
-          Alert.alert(
-            "Submission Limit Reached",
-            "You have reached the maximum number of testimony submissions. Please contact support for assistance."
-          );
+          // Determine the initial state based on existing testimonies
+          if (testimonies.length > 0) {
+            // Get the most recent testimony
+            const latestTestimony = testimonies[0]; // Assuming sorted by date desc
+            setCurrentTestimony(latestTestimony);
+
+            // Set the proper step based on testimony status
+            if (latestTestimony.status === "unlinked") {
+              prepareConnectStep(latestTestimony);
+            } else {
+              setCurrentStep(1); // View/Edit step
+              setIsEditing(false);
+            }
+          } else {
+            // No testimonies, start at form step
+            setCurrentStep(1);
+            setIsEditing(true);
+            setCurrentTestimony(null);
+          }
+
+          // Check submission limit
+          const canAdd = await canAddMoreTestimonies(user.uid, user.isAdmin);
+          setCanSubmit(canAdd);
+
+          if (!canAdd && testimonies.length === 0) {
+            Alert.alert(
+              "Submission Limit Reached",
+              "You have reached the maximum number of testimony submissions. Please contact support for assistance."
+            );
+          }
+        } catch (error) {
+          console.error("Error loading testimonies:", error);
+          setErrorState("Failed to load testimonies. Please try again.");
+        } finally {
+          setLoadingTestimonies(false);
         }
       };
 
-      checkSubmissionLimit();
+      loadTestimonies();
     }
   }, [user]);
 
@@ -84,6 +127,61 @@ export const MyTestimonyScreen = ({ navigation }) => {
     navigation.navigate("Profile", { startEditing: true });
   };
 
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  const navigateToDashboard = () => {
+    navigation.navigate("Dashboard");
+  };
+
+  // Function to handle editing an existing testimony
+  const handleEdit = () => {
+    setIsEditing(true);
+
+    // Set initial form values from current testimony
+    if (currentTestimony) {
+      setBeforeImage(currentTestimony.beforeImage || null);
+      setAfterImage(currentTestimony.afterImage || null);
+      setVideo(currentTestimony.video || null);
+    }
+  };
+
+  // Function to cancel editing and return to view mode
+  const handleCancelEdit = () => {
+    if (currentTestimony) {
+      setIsEditing(false);
+    } else {
+      // If no testimony exists and user cancels, go back
+      navigation.goBack();
+    }
+  };
+
+  // Function to prepare for the connect step (finding matching souls)
+  const prepareConnectStep = async (testimony) => {
+    setLoading(true);
+    setErrorState("");
+
+    try {
+      // Store the testimony data
+      setTestimonyData(testimony);
+
+      // Find matching souls based on the user's name
+      const fullName = getFullName(profile);
+      const matches = await findMatchingSouls(fullName);
+      setMatchingSouls(matches);
+
+      // Move to the connect step
+      setCurrentStep(2);
+    } catch (error) {
+      console.error("Error preparing to connect testimony:", error);
+      setErrorState("Failed to load soul matches. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to submit a new testimony or update an existing one
   const handleSubmitTestimony = async (values) => {
     if (!user) {
       setErrorState("You must be logged in to submit a testimony");
@@ -97,19 +195,13 @@ export const MyTestimonyScreen = ({ navigation }) => {
       return;
     }
 
-    if (!canSubmit) {
-      setErrorState(
-        "You have reached the maximum number of testimony submissions"
-      );
-      return;
-    }
-
     setLoading(true);
     setErrorState("");
 
     try {
-      const testimonyData = {
-        ...values,
+      // Prepare testimony data
+      const data = {
+        testimony: values.testimony,
         userId: profile.uid || user.uid,
         userEmail: profile.email,
         displayName: getFullName(profile),
@@ -118,28 +210,235 @@ export const MyTestimonyScreen = ({ navigation }) => {
         dob: profile?.dob,
       };
 
-      await submitTestimony(testimonyData, beforeImage, afterImage, video);
+      if (currentTestimony && currentTestimony.id) {
+        // Update existing testimony
+        await updateTestimony(currentTestimony.id, {
+          ...data,
+          // Only update media if it has changed
+          ...(beforeImage !== currentTestimony.beforeImage && { beforeImage }),
+          ...(afterImage !== currentTestimony.afterImage && { afterImage }),
+          ...(video !== currentTestimony.video && { video }),
+          // If previously approved or pending, set back to pending
+          status: ["approved", "pending"].includes(currentTestimony.status)
+            ? "pending"
+            : currentTestimony.status,
+        });
 
-      Alert.alert(
-        "Testimony Submitted",
-        "Your testimony has been submitted successfully and is pending review.",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate("Dashboard"),
-          },
-        ]
-      );
+        // Get the updated testimony
+        const updatedTestimony = await getUserTestimonyById(
+          user.uid,
+          currentTestimony.id
+        );
+
+        if (updatedTestimony) {
+          // Refresh testimonies list and set current testimony
+          const updatedTestimonies = await getUserTestimonies(user.uid);
+          setUserTestimonies(updatedTestimonies);
+          setCurrentTestimony(updatedTestimony);
+
+          // Exit edit mode
+          setIsEditing(false);
+        } else {
+          setErrorState("Failed to retrieve the updated testimony.");
+        }
+      } else {
+        // Submit new testimony (status will be 'unlinked' initially)
+        const newTestimonyId = await submitTestimony(
+          data,
+          beforeImage,
+          afterImage,
+          video
+        );
+
+        // Get the newly created testimony by ID
+        const newTestimony = await getUserTestimonyById(
+          user.uid,
+          newTestimonyId
+        );
+
+        if (newTestimony) {
+          // Refresh testimonies list and set current testimony
+          const updatedTestimonies = await getUserTestimonies(user.uid);
+          setUserTestimonies(updatedTestimonies);
+          setCurrentTestimony(newTestimony);
+
+          // Prepare to connect to a soul
+          prepareConnectStep(newTestimony);
+        } else {
+          setErrorState("Failed to retrieve the newly created testimony.");
+        }
+      }
     } catch (error) {
-      console.error("Error submitting testimony:", error);
-      setErrorState("Failed to submit testimony. Please try again later.");
+      console.error("Error submitting/updating testimony:", error);
+      setErrorState("Failed to save testimony. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBackPress = () => {
-    navigation.goBack();
+  // Function to handle connecting a testimony to a soul
+  const handleClaimSubmit = async (selectedSoulId) => {
+    try {
+      setLoading(true);
+      setErrorState("");
+
+      let soulId;
+
+      if (matchingSouls.length > 0 && selectedSoulId) {
+        // Use existing soul
+        soulId = selectedSoulId;
+      } else {
+        // Create new soul
+        const fullName = getFullName(profile);
+        const newSoul = {
+          name: fullName,
+          userId: user.uid,
+          email: profile.email || user.email,
+          createdAt: new Date().toISOString(),
+          status: "active",
+          isPublic: false,
+        };
+
+        soulId = await addSoul(newSoul);
+      }
+
+      // Link the testimony to the soul and update status to pending
+      await linkTestimonyToSoulRecord(currentTestimony.id, soulId);
+
+      // Get the updated testimony
+      const updatedTestimony = await getUserTestimonyById(
+        user.uid,
+        currentTestimony.id
+      );
+
+      if (updatedTestimony) {
+        // Refresh testimonies list and set current testimony
+        const updatedTestimonies = await getUserTestimonies(user.uid);
+        setUserTestimonies(updatedTestimonies);
+        setCurrentTestimony(updatedTestimony);
+
+        // Move to confirmation step
+        setCurrentStep(3);
+      } else {
+        setErrorState("Failed to retrieve the updated testimony.");
+      }
+    } catch (error) {
+      console.error("Error connecting testimony to soul:", error);
+      setErrorState("Failed to connect testimony. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBackFromClaims = () => {
+    // Go back to form/read step
+    setCurrentStep(1);
+  };
+
+  // Function to start a new testimony
+  const handleNewTestimony = () => {
+    setCurrentTestimony(null);
+    setBeforeImage(null);
+    setAfterImage(null);
+    setVideo(null);
+    setIsEditing(true);
+    setCurrentStep(1);
+  };
+
+  const renderContent = () => {
+    // Show loading indicator while fetching testimonies
+    if (loadingTestimonies) {
+      return (
+        <View style={styles.loadingContainer}>
+          <BodyText>Loading your testimonies...</BodyText>
+        </View>
+      );
+    }
+
+    // Handle different steps and states
+    switch (currentStep) {
+      case 1: // Form/View/Edit step
+        if (isEditing) {
+          // Edit mode - show form to create or edit testimony
+          return (
+            <EditTestimony
+              initialTestimony={currentTestimony}
+              initialBeforeImage={beforeImage}
+              initialAfterImage={afterImage}
+              initialVideo={video}
+              onSubmit={handleSubmitTestimony}
+              onCancel={handleCancelEdit}
+              loading={loading}
+              errorState={errorState}
+              isEdit={!!currentTestimony}
+            />
+          );
+        } else if (currentTestimony) {
+          // Read mode - show testimony in read-only view
+          return (
+            <ReadTestimony
+              testimony={currentTestimony}
+              colors={colors}
+              onEdit={handleEdit}
+              status={currentTestimony.status}
+            />
+          );
+        } else if (userTestimonies.length === 0 && canSubmit) {
+          // No testimony yet and can submit - show create form
+          return (
+            <EditTestimony
+              onSubmit={handleSubmitTestimony}
+              onCancel={handleCancelEdit}
+              loading={loading}
+              errorState={errorState}
+              isEdit={false}
+            />
+          );
+        } else {
+          // No testimony and can't submit - show message
+          return (
+            <View style={styles.emptyStateContainer}>
+              <HeaderText>No Testimonies Found</HeaderText>
+              <BodyText style={styles.emptyStateText}>
+                {canSubmit
+                  ? "You haven't created any testimonies yet."
+                  : "You have reached the maximum number of testimonies allowed."}
+              </BodyText>
+              {canSubmit && (
+                <CustomButton
+                  title="Create Testimony"
+                  variant="primary"
+                  onPress={handleNewTestimony}
+                  style={styles.emptyStateButton}
+                />
+              )}
+            </View>
+          );
+        }
+
+      case 2: // Connect step
+        return (
+          <ConnectTestimony
+            matchingSouls={matchingSouls}
+            onSubmit={handleClaimSubmit}
+            onBack={handleBackFromClaims}
+            loading={loading}
+            errorState={errorState}
+            colors={colors}
+          />
+        );
+
+      case 3: // Confirmation step
+        return (
+          <ConfirmationPage
+            colors={colors}
+            onNavigateToDashboard={navigateToDashboard}
+          />
+        );
+
+      default:
+        return null;
+    }
   };
 
   // If profile is incomplete, show the ProfileIncomplete component
@@ -159,134 +458,65 @@ export const MyTestimonyScreen = ({ navigation }) => {
   return (
     <FormContainer
       style={{ backgroundColor: colors.background }}
-      contentContainerStyle={styles.contentContainer}
+      contentContainerStyle={[
+        styles.contentContainer,
+        currentStep === 3 && { justifyContent: "center" },
+      ]}
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.inner}>
-          <TouchableOpacity
-            style={[
-              styles.backButton,
-              isDark && { backgroundColor: colors.card },
-            ]}
-            onPress={handleBackPress}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
+      {currentStep !== 3 && (
+        <TouchableOpacity
+          style={[
+            styles.backButton,
+            isDark && { backgroundColor: colors.card },
+          ]}
+          onPress={currentStep === 1 ? handleBackPress : handleBackFromClaims}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+      )}
 
-          <View style={styles.headerContainer}>
-            <HeaderText>Share Your Testimony</HeaderText>
-            <SubtitleText>
-              Tell us your story and inspire others with your journey
-            </SubtitleText>
-          </View>
-
-          <Formik
-            initialValues={{ testimony: "" }}
-            validationSchema={testimonyValidationSchema}
-            onSubmit={handleSubmitTestimony}
-          >
-            {({
-              values,
-              touched,
-              errors,
-              handleChange,
-              handleSubmit,
-              handleBlur,
-            }) => (
-              <View style={styles.formContainer}>
-                <View style={styles.profileInfoCard}>
-                  <BodyText style={styles.profileInfoTitle}>
-                    Your Information
-                  </BodyText>
-                  <View style={styles.profileInfoRow}>
-                    <BodyText style={styles.profileInfoLabel}>Name:</BodyText>
-                    <BodyText>
-                      {profile?.firstName} {profile?.lastName}
-                    </BodyText>
-                  </View>
-                  <View style={styles.profileInfoRow}>
-                    <BodyText style={styles.profileInfoLabel}>Email:</BodyText>
-                    <BodyText>{profile?.email}</BodyText>
-                  </View>
-                  <View style={styles.profileInfoRow}>
-                    <BodyText style={styles.profileInfoLabel}>Phone:</BodyText>
-                    <BodyText>{profile?.phoneNumber}</BodyText>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.editProfileLink}
-                    onPress={() => navigation.navigate("Profile")}
-                  >
-                    <BodyText style={{ color: colors.primary }}>
-                      Edit Profile
-                    </BodyText>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={16}
-                      color={colors.primary}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                <TextAreaInput
-                  label="Your Testimony"
-                  placeholder="Share your story here (minimum 50 characters)"
-                  value={values.testimony}
-                  onChangeText={handleChange("testimony")}
-                  onBlur={handleBlur("testimony")}
-                  error={errors.testimony}
-                  touched={touched.testimony}
-                  numberOfLines={8}
-                  maxLength={2000}
-                />
-
-                <View style={styles.mediaSection}>
-                  <BodyText style={styles.mediaSectionTitle}>
-                    Add Media (Optional)
-                  </BodyText>
-
-                  <View style={styles.imageRow}>
-                    <MediaUpload
-                      label="Before Image"
-                      imageUri={beforeImage}
-                      onImageSelected={setBeforeImage}
-                      style={styles.imageUpload}
-                      placeholder="Before"
-                    />
-
-                    <MediaUpload
-                      label="After Image"
-                      imageUri={afterImage}
-                      onImageSelected={setAfterImage}
-                      style={styles.imageUpload}
-                      placeholder="After"
-                    />
-                  </View>
-
-                  <VideoUpload
-                    label="Your Story Video"
-                    videoUri={video}
-                    onVideoSelected={setVideo}
-                    placeholder="Share a short video of your story"
-                    maxDuration={120} // 2 minutes
-                  />
-                </View>
-
-                {errorState !== "" && <ErrorText>{errorState}</ErrorText>}
-
-                <CustomButton
-                  title="Submit Testimony"
-                  onPress={handleSubmit}
-                  loading={loading}
-                  disabled={loading || !canSubmit}
-                  variant="primary"
-                  size="large"
-                  style={styles.submitButton}
-                />
-              </View>
-            )}
-          </Formik>
+      {/* Show header for steps 1 and 2 */}
+      {currentStep !== 3 && !isEditing && currentTestimony && (
+        <View style={styles.headerContainer}>
+          <HeaderText>
+            {currentStep === 1 ? "My Testimony" : "Connect Your Testimony"}
+          </HeaderText>
+          <SubtitleText>
+            {currentStep === 1
+              ? "View and manage your testimony"
+              : "Link your testimony to your name on The Wall"}
+          </SubtitleText>
         </View>
-      </ScrollView>
+      )}
+
+      {/* Main content */}
+      {currentStep === 3 ? (
+        renderContent()
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollView}
+        >
+          <View style={styles.inner}>{renderContent()}</View>
+        </ScrollView>
+      )}
+
+      {/* Action buttons for testimony management */}
+      {currentStep === 1 &&
+        !isEditing &&
+        canSubmit &&
+        userTestimonies.length > 0 && (
+          <View style={styles.floatingButtonContainer}>
+            <CustomButton
+              title="New Testimony"
+              variant="primary"
+              onPress={handleNewTestimony}
+              icon="add-circle-outline"
+              style={styles.floatingButton}
+              disabled={!canSubmit}
+            />
+          </View>
+        )}
     </FormContainer>
   );
 };
@@ -295,9 +525,8 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.lg,
   },
-  content: {
+  scrollView: {
     flex: 1,
-    padding: spacing.lg,
   },
   inner: {
     flex: 1,
@@ -316,94 +545,42 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: spacing.xl,
   },
-  formContainer: {
-    width: "100%",
-    maxWidth: 600,
-    alignSelf: "center",
-  },
-  profileInfoCard: {
-    backgroundColor: "rgba(0,0,0,0.03)",
-    borderRadius: 8,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  profileInfoTitle: {
-    fontWeight: "bold",
-    marginBottom: spacing.sm,
-  },
-  profileInfoRow: {
-    flexDirection: "row",
-    marginBottom: spacing.xs,
-  },
-  profileInfoLabel: {
-    fontWeight: "500",
-    marginRight: spacing.sm,
-    width: 60,
-  },
-  editProfileLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    marginTop: spacing.sm,
-  },
-  mediaSection: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  mediaSectionTitle: {
-    fontWeight: "bold",
-    marginBottom: spacing.md,
-  },
-  imageRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing.md,
-  },
-  imageUpload: {
+  loadingContainer: {
     flex: 1,
-    marginRight: spacing.md,
-  },
-  submitButton: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.xl,
-  },
-  incompleteProfileContainer: {
-    flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
     padding: spacing.xl,
   },
-  incompleteTitle: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    textAlign: "center",
-  },
-  incompleteSubtitle: {
-    textAlign: "center",
-    marginBottom: spacing.xl,
-  },
-  missingFieldsContainer: {
-    width: "100%",
-    maxWidth: 400,
-    backgroundColor: "rgba(0,0,0,0.03)",
-    borderRadius: 8,
-    padding: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  missingFieldsTitle: {
-    fontWeight: "bold",
-    marginBottom: spacing.sm,
-  },
-  missingFieldRow: {
-    flexDirection: "row",
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: spacing.xs,
+    padding: spacing.xl,
   },
-  missingFieldText: {
-    marginLeft: spacing.xs,
+  emptyStateText: {
+    textAlign: "center",
+    marginVertical: spacing.lg,
   },
-  completeProfileButton: {
-    width: "100%",
-    maxWidth: 400,
+  emptyStateButton: {
+    marginTop: spacing.lg,
+    minWidth: 200,
+  },
+  floatingButtonContainer: {
+    position: "absolute",
+    bottom: spacing.xl,
+    right: spacing.xl,
+    zIndex: 100,
+  },
+  floatingButton: {
+    borderRadius: 30,
+    paddingHorizontal: spacing.lg,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });

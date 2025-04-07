@@ -3,8 +3,10 @@ import {
   updateDocument,
   deleteDocument,
   queryDocuments,
+  getDocumentById,
 } from "./firebaseUtils";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { linkTestimonyToSoul as linkSoulTestimonyRecord } from "./soulsUtils";
 
 /**
  * Upload a file to Firebase Storage
@@ -43,13 +45,15 @@ export const uploadFile = async (uri, path) => {
  * @param {string} beforeImageUri - Local URI of before image
  * @param {string} afterImageUri - Local URI of after image
  * @param {string} videoUri - Local URI of video
+ * @param {string} soulId - ID of the soul this testimony is connected to (optional)
  * @returns {Promise<string>} - New testimony ID
  */
 export const submitTestimony = async (
   testimonyData,
   beforeImageUri,
   afterImageUri,
-  videoUri
+  videoUri,
+  soulId = null
 ) => {
   try {
     const userId = testimonyData.userId;
@@ -94,19 +98,49 @@ export const submitTestimony = async (
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
-    // Add testimony document with media URLs
+    // Add testimony document with media URLs and soul ID
     const completeTestimonyData = {
       ...testimonyData,
       beforeImage: beforeImageUrl,
       afterImage: afterImageUrl,
       video: videoUrl,
-      status: "pending", // Pending approval
+      // Set status based on whether a soul was linked immediately
+      status: soulId ? "pending" : "unlinked",
       submittedAt: new Date().toISOString(),
+      soulId: soulId || null, // Add the soul ID connection
     };
 
     return await addDocument("testimonies", completeTestimonyData);
   } catch (error) {
     console.error("Error submitting testimony:", error);
+    throw error;
+  }
+};
+
+/**
+ * Link a testimony to a soul and update status to pending
+ * @param {string} testimonyId - Testimony ID
+ * @param {string} soulId - Soul ID
+ * @returns {Promise<boolean>} - Success status
+ */
+export const linkTestimonyToSoulRecord = async (testimonyId, soulId) => {
+  try {
+    // Update the testimony with the soul ID and change status to pending
+    await updateDocument("testimonies", testimonyId, {
+      soulId,
+      status: "pending", // Update to pending when linked to a soul
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Also update the soul with the testimony ID
+    await linkSoulTestimonyRecord(soulId, testimonyId);
+
+    return true;
+  } catch (error) {
+    console.error(
+      `Error linking testimony ${testimonyId} to soul ${soulId}:`,
+      error
+    );
     throw error;
   }
 };
@@ -138,7 +172,7 @@ export const getAllTestimonies = async (
  */
 export const getUserTestimonies = async (
   userId,
-  sortBy = "createdAt",
+  sortBy = "submittedAt",
   sortDirection = "desc"
 ) => {
   try {
@@ -150,6 +184,45 @@ export const getUserTestimonies = async (
   } catch (error) {
     console.error(`Error getting testimonies for user ${userId}:`, error);
     return [];
+  }
+};
+
+/**
+ * Get a testimony by ID
+ * @param {string} testimonyId - Testimony ID
+ * @returns {Promise<Object|null>} - Testimony object or null if not found
+ */
+export const getTestimonyById = async (testimonyId) => {
+  try {
+    // Use getDocumentById instead of queryDocuments for direct document lookup
+    return await getDocumentById("testimonies", testimonyId);
+  } catch (error) {
+    console.error(`Error getting testimony ${testimonyId}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Get a specific testimony by user ID and testimony ID
+ * @param {string} userId - User ID
+ * @param {string} testimonyId - Testimony ID (optional)
+ * @returns {Promise<Object|null>} - Testimony object or null if not found
+ */
+export const getUserTestimonyById = async (userId, testimonyId = null) => {
+  try {
+    // If testimonyId is provided, find that specific testimony
+    if (testimonyId) {
+      const testimony = await getTestimonyById(testimonyId);
+      // Return the testimony only if it belongs to the user
+      return testimony && testimony.userId === userId ? testimony : null;
+    }
+
+    // If no testimonyId is provided, get the most recent testimony for this user
+    const testimonies = await getUserTestimonies(userId, "submittedAt", "desc");
+    return testimonies.length > 0 ? testimonies[0] : null;
+  } catch (error) {
+    console.error(`Error getting testimony for user ${userId}:`, error);
+    return null;
   }
 };
 
@@ -176,7 +249,13 @@ export const countUserTestimonies = async (userId) => {
  */
 export const updateTestimony = async (testimonyId, testimonyData) => {
   try {
-    return await updateDocument("testimonies", testimonyId, testimonyData);
+    // Add updated timestamp
+    const updatedData = {
+      ...testimonyData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return await updateDocument("testimonies", testimonyId, updatedData);
   } catch (error) {
     console.error(`Error updating testimony ${testimonyId}:`, error);
     throw error;

@@ -1,12 +1,24 @@
 "use client";
 
 import { FlatList } from "react-native";
-import { Surface, List, IconButton, Text, useTheme } from "react-native-paper";
+import {
+  Surface,
+  List,
+  IconButton,
+  Text,
+  useTheme,
+  Chip,
+} from "react-native-paper";
 import { View } from "components/View";
 import { useState, useEffect, useContext } from "react";
 import { AuthenticatedUserContext } from "providers";
-import { getUserSouls, deleteSoul, countUserSouls } from "utils/firebaseUtils";
+import {
+  getUserSouls,
+  deleteSoul as deleteSoulFirebase,
+  countUserSouls,
+} from "utils/soulsUtils";
 import { DatabaseErrorScreen } from "components/error/DatabaseErrorScreen";
+import { CustomDialog } from "components";
 
 export const SoulsList = ({
   navigation,
@@ -26,6 +38,7 @@ export const SoulsList = ({
   const [error, setError] = useState(null);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [selectedSoul, setSelectedSoul] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -41,7 +54,7 @@ export const SoulsList = ({
       setSouls(soulsList);
 
       // Get count for display
-      const count = await countUserSouls(user.uid);
+      const count = soulsList.length;
       setSoulCount(count);
     } catch (error) {
       console.error("Error fetching user souls:", error);
@@ -58,6 +71,17 @@ export const SoulsList = ({
   };
 
   const handleDeleteSoul = (soul) => {
+    // Reset any previous error messages
+    setErrorMessage("");
+
+    // Check if the soul has a linked testimony
+    if (soul.testimonyId) {
+      setErrorMessage(
+        "This soul has a linked testimony and cannot be deleted."
+      );
+      return;
+    }
+
     setSelectedSoul(soul);
     setDialogVisible(true);
   };
@@ -66,12 +90,15 @@ export const SoulsList = ({
     if (!selectedSoul) return;
 
     try {
-      await deleteSoul(selectedSoul.id);
+      await deleteSoulFirebase(selectedSoul.id);
       // Update local state
       setSouls(souls.filter((soul) => soul.id !== selectedSoul.id));
       setSoulCount((prevCount) => prevCount - 1);
     } catch (error) {
       console.error("Error deleting soul:", error);
+      setErrorMessage(
+        error.message || "Failed to delete soul. Please try again."
+      );
     } finally {
       setDialogVisible(false);
       setSelectedSoul(null);
@@ -81,10 +108,28 @@ export const SoulsList = ({
   const renderSoul = ({ item }) => {
     const isSelected = selectedSouls.includes(item.id);
     const isPrivate = item.visibility === "private";
+    const hasLinkedTestimony = !!item.testimonyId;
 
     return (
       <List.Item
-        title={item.name}
+        title={
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text>{item.name}</Text>
+            {hasLinkedTestimony && (
+              <Chip
+                icon="link"
+                compact
+                mode="outlined"
+                style={{
+                  marginLeft: 8,
+                  backgroundColor: theme.colors.surfaceVariant,
+                }}
+              >
+                Linked
+              </Chip>
+            )}
+          </View>
+        }
         description={`Added on ${new Date(
           item.createdAt
         ).toLocaleDateString()}`}
@@ -94,22 +139,31 @@ export const SoulsList = ({
               {...props}
               icon={isSelected ? "checkbox-marked" : "checkbox-blank-outline"}
               onPress={() => onSelect && onSelect(item)}
+              disabled={hasLinkedTestimony && !isSelected}
             />
           ) : (
-            <List.Icon {...props} icon={isPrivate ? "lock" : "earth"} />
+            <List.Icon
+              {...props}
+              icon={hasLinkedTestimony ? "link" : isPrivate ? "lock" : "earth"}
+              color={hasLinkedTestimony ? theme.colors.primary : undefined}
+            />
           )
         }
         right={(props) =>
           !selectable && (
             <View style={{ flexDirection: "row" }}>
-              <IconButton
-                icon={isPrivate ? "eye-off" : "eye"}
-                onPress={() => onVisibilityToggle && onVisibilityToggle(item)}
-              />
+              {!hasLinkedTestimony && (
+                <IconButton
+                  icon={isPrivate ? "eye-off" : "eye"}
+                  onPress={() => onVisibilityToggle && onVisibilityToggle(item)}
+                />
+              )}
               <IconButton icon="pencil" onPress={() => handleEditSoul(item)} />
               <IconButton
                 icon="delete"
                 onPress={() => handleDeleteSoul(item)}
+                disabled={hasLinkedTestimony}
+                color={hasLinkedTestimony ? theme.colors.outline : undefined}
               />
             </View>
           )
@@ -143,6 +197,19 @@ export const SoulsList = ({
         padding: 16,
       }}
     >
+      {errorMessage ? (
+        <Chip
+          icon="alert-circle"
+          mode="flat"
+          style={{
+            backgroundColor: theme.colors.errorContainer,
+            marginBottom: 16,
+          }}
+        >
+          {errorMessage}
+        </Chip>
+      ) : null}
+
       {souls.length === 0 ? (
         <Text
           variant="bodyLarge"
@@ -161,6 +228,23 @@ export const SoulsList = ({
           contentContainerStyle={{ paddingBottom: 16 }}
         />
       )}
+
+      <CustomDialog
+        visible={dialogVisible}
+        onDismiss={() => setDialogVisible(false)}
+        title="Delete Soul"
+        content="Are you sure you want to delete this soul? This action cannot be undone."
+        actions={[
+          {
+            label: "Cancel",
+            onPress: () => setDialogVisible(false),
+          },
+          {
+            label: "Delete",
+            onPress: confirmDelete,
+          },
+        ]}
+      />
     </Surface>
   );
 };
