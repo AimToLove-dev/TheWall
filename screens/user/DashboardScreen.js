@@ -31,7 +31,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Surface, Card, Avatar, Divider, useTheme } from "react-native-paper";
 
 export const DashboardScreen = ({ navigation }) => {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const { user, profile, setUser } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
@@ -41,6 +41,11 @@ export const DashboardScreen = ({ navigation }) => {
   const theme = useTheme();
   const [greeting, setGreeting] = useState("Welcome");
   const [lovedOnesCount, setLovedOnesCount] = useState(0); // State for loved ones count
+  const [testimoniesCount, setTestimoniesCount] = useState(0); // State for testimonies count
+  const [pendingTestimoniesCount, setPendingTestimoniesCount] = useState(0); // State for pending testimonies
+
+  // Check if user is admin
+  const isAdmin = profile?.isAdmin || user?.isAdmin || false;
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -165,6 +170,10 @@ export const DashboardScreen = ({ navigation }) => {
 
   const handleTestimonyPress = () => {
     navigation.navigate("MyTestimony");
+  };
+
+  const handleTestimonyAdminPress = () => {
+    navigation.navigate("TestimonyAdmin");
   };
 
   return (
@@ -295,6 +304,49 @@ export const DashboardScreen = ({ navigation }) => {
           </View>
         </View>
 
+        {/* Admin Section - Only visible to admins */}
+        {isAdmin && (
+          <View style={styles.adminSection}>
+            <HeaderText style={styles.sectionTitle}>
+              Admin Functions
+              <View style={styles.adminBadge}>
+                <BodyText style={styles.adminBadgeText}>Admin</BodyText>
+              </View>
+            </HeaderText>
+            <Surface
+              mode="elevated"
+              elevation={1}
+              style={[styles.adminCard, { backgroundColor: colors.surface }]}
+            >
+              <TouchableOpacity
+                style={styles.adminButton}
+                onPress={handleTestimonyAdminPress}
+              >
+                <View style={styles.adminIconContainer}>
+                  <Ionicons
+                    name="shield-checkmark"
+                    size={24}
+                    color={colors.primary}
+                  />
+                </View>
+                <View style={styles.adminButtonText}>
+                  <BodyText style={styles.adminButtonTitle}>
+                    Testimony Approval
+                  </BodyText>
+                  <BodyText style={styles.adminButtonDescription}>
+                    Manage pending testimony submissions
+                  </BodyText>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={24}
+                  color={colors.textSecondary}
+                />
+              </TouchableOpacity>
+            </Surface>
+          </View>
+        )}
+
         {/* Recent activity section */}
         <View style={styles.recentActivitySection}>
           <HeaderText style={styles.sectionTitle}>Recent Activity</HeaderText>
@@ -380,6 +432,8 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginBottom: spacing.sm,
     fontSize: 18,
+    flexDirection: "row",
+    alignItems: "center",
   },
   statsContainer: {
     marginBottom: spacing.lg,
@@ -412,6 +466,50 @@ const styles = StyleSheet.create({
   },
   quickActionsLarge: {
     alignSelf: "center",
+  },
+  adminSection: {
+    marginBottom: spacing.lg,
+  },
+  adminBadge: {
+    backgroundColor: "#FF6B00",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginLeft: spacing.sm,
+  },
+  adminBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  adminCard: {
+    borderRadius: borderRadius.md,
+    ...shadows.small,
+  },
+  adminButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: spacing.md,
+  },
+  adminIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.05)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing.md,
+  },
+  adminButtonText: {
+    flex: 1,
+  },
+  adminButtonTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  adminButtonDescription: {
+    fontSize: 12,
+    opacity: 0.7,
   },
   recentActivitySection: {
     flex: 1,

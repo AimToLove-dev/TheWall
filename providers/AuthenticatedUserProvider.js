@@ -10,6 +10,7 @@ export const AuthenticatedUserContext = createContext({
   profile: null,
   refreshProfile: () => {},
   updateProfile: () => {},
+  isEmailVerified: false,
 });
 
 export const AuthenticatedUserProvider = ({ children }) => {
@@ -33,6 +34,50 @@ export const AuthenticatedUserProvider = ({ children }) => {
     dob: "",
   });
 
+  // Email verification state
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+
+  // Check if user email is verified
+  useEffect(() => {
+    if (user?.email) {
+      // Check if email is verified
+      const isVerified = user.emailVerified === true;
+      setIsEmailVerified(isVerified);
+
+      // Set admin status only if from aimtolove.com domain AND email is verified
+      if (
+        user.email.toLowerCase().endsWith("@aimtolove.com") &&
+        isVerified &&
+        user?.uid
+      ) {
+        setUser((prevUser) => ({
+          ...prevUser,
+          isAdmin: true,
+        }));
+
+        // Update the profile in Firestore to set isAdmin flag
+        const updateAdminStatus = async () => {
+          try {
+            await setDoc(
+              doc(db, "profiles", user.uid),
+              {
+                isAdmin: true,
+                updatedAt: new Date().toISOString(),
+              },
+              { merge: true }
+            );
+          } catch (error) {
+            console.error("Error updating admin status:", error);
+          }
+        };
+
+        updateAdminStatus();
+      }
+    } else {
+      setIsEmailVerified(false);
+    }
+  }, [user?.email, user?.emailVerified, user?.uid]);
+
   // Function to fetch user profile data from Firestore
   const refreshProfile = async () => {
     if (user?.uid) {
@@ -46,8 +91,35 @@ export const AuthenticatedUserProvider = ({ children }) => {
             uid: user.uid,
             email: user.email || profileData.email, // Prefer auth email
           });
+
+          // If the user has a verified @aimtolove.com email, make sure isAdmin is true in profile
+          if (
+            user.email &&
+            user.email.toLowerCase().endsWith("@aimtolove.com") &&
+            user.emailVerified === true &&
+            !profileData.isAdmin
+          ) {
+            await setDoc(
+              doc(db, "profiles", user.uid),
+              {
+                isAdmin: true,
+                updatedAt: new Date().toISOString(),
+              },
+              { merge: true }
+            );
+
+            // Update local profile state
+            setProfile((prev) => ({
+              ...prev,
+              isAdmin: true,
+            }));
+          }
         } else {
           // If no profile exists, create one with basic user data
+          const isAimToLoveDomain =
+            user.email &&
+            user.email.toLowerCase().endsWith("@aimtolove.com") &&
+            user.emailVerified === true;
           const initialProfile = {
             uid: user.uid,
             email: user.email,
@@ -56,6 +128,8 @@ export const AuthenticatedUserProvider = ({ children }) => {
             phoneNumber: "",
             address: "",
             dob: "",
+            isAdmin: isAimToLoveDomain, // Set admin status based on verified email domain
+            createdAt: new Date().toISOString(),
           };
           await setDoc(doc(db, "profiles", user.uid), initialProfile);
           setProfile(initialProfile);
@@ -76,6 +150,15 @@ export const AuthenticatedUserProvider = ({ children }) => {
           uid: user.uid, // Ensure UID matches
           email: user.email, // Keep auth email
         };
+
+        // Preserve admin status if user has verified @aimtolove.com email
+        if (
+          user.email &&
+          user.email.toLowerCase().endsWith("@aimtolove.com") &&
+          user.emailVerified === true
+        ) {
+          sanitizedProfileData.isAdmin = true;
+        }
 
         await setDoc(
           doc(db, "profiles", user.uid),
@@ -127,6 +210,7 @@ export const AuthenticatedUserProvider = ({ children }) => {
         profile,
         refreshProfile,
         updateProfile,
+        isEmailVerified,
       }}
     >
       {children}
