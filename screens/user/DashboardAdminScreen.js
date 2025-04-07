@@ -6,31 +6,29 @@ import {
   useColorScheme,
   useWindowDimensions,
   TouchableOpacity,
-  Image,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 
 import { signOut } from "firebase/auth";
 import { auth } from "config";
 import { AuthenticatedUserContext } from "providers";
-import { getUserSouls } from "utils"; // Import getUserSouls function
+import { queryDocuments } from "utils/firebaseUtils"; // Import query function
+import { getUserSouls } from "utils";
 
 import {
   View,
   HeaderText,
   SubtitleText,
   BodyText,
-  CustomButton,
   CustomDialog,
   FormContainer,
-  CardGrid,
 } from "components";
 
 import { getThemeColors, spacing, shadows, borderRadius } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Surface, Card, Avatar, Divider, useTheme } from "react-native-paper";
+import { Surface, Avatar, useTheme } from "react-native-paper";
 
-export const DashboardScreen = ({ navigation }) => {
+export const DashboardAdminScreen = ({ navigation }) => {
   const { user, profile, setUser } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -40,18 +38,11 @@ export const DashboardScreen = ({ navigation }) => {
   const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);
   const theme = useTheme();
   const [greeting, setGreeting] = useState("Welcome");
-  const [lovedOnesCount, setLovedOnesCount] = useState(0); // State for loved ones count
-  const [testimoniesCount, setTestimoniesCount] = useState(0); // State for testimonies count
 
-  // Check if user is admin to redirect to admin dashboard
-  const isAdmin = profile?.isAdmin || user?.isAdmin || false;
-
-  useEffect(() => {
-    // Redirect to admin dashboard if user is an admin
-    if (isAdmin) {
-      navigation.replace("DashboardAdmin");
-    }
-  }, [isAdmin, navigation]);
+  // Admin-specific stats
+  const [totalSoulsCount, setTotalSoulsCount] = useState(0);
+  const [pendingTestimoniesCount, setPendingTestimoniesCount] = useState(0);
+  const [approvedTestimoniesCount, setApprovedTestimoniesCount] = useState(0);
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -65,20 +56,39 @@ export const DashboardScreen = ({ navigation }) => {
     }
   }, []);
 
-  // Fetch souls count for the user
+  // Fetch admin stats
   useEffect(() => {
-    const fetchSoulsCount = async () => {
+    const fetchAdminStats = async () => {
       if (user) {
         try {
-          const userSouls = await getUserSouls(user.uid);
-          setLovedOnesCount(userSouls.length);
+          // Get total souls count
+          const allSouls = await queryDocuments("souls", [], [], 0);
+          setTotalSoulsCount(allSouls.length);
+
+          // Get pending testimonies count
+          const pendingTestimonies = await queryDocuments(
+            "testimonies",
+            [["status", "==", "pending"]],
+            [],
+            0
+          );
+          setPendingTestimoniesCount(pendingTestimonies.length);
+
+          // Get approved testimonies count
+          const approvedTestimonies = await queryDocuments(
+            "testimonies",
+            [["status", "==", "approved"]],
+            [],
+            0
+          );
+          setApprovedTestimoniesCount(approvedTestimonies.length);
         } catch (error) {
-          console.error("Error fetching souls count:", error);
+          console.error("Error fetching admin stats:", error);
         }
       }
     };
 
-    fetchSoulsCount();
+    fetchAdminStats();
   }, [user]);
 
   // Get initials for avatar
@@ -113,7 +123,6 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   const handleBackPress = () => {
-    // Use goBack with custom animation options to slide from left to right
     navigation.navigate("Home", {
       transitionSpec: {
         open: {
@@ -131,7 +140,6 @@ export const DashboardScreen = ({ navigation }) => {
           },
         },
       },
-      // Reverse the animation direction for back navigation
       cardStyleInterpolator: ({ current, next, layouts }) => {
         return {
           cardStyle: {
@@ -144,7 +152,6 @@ export const DashboardScreen = ({ navigation }) => {
               },
             ],
           },
-          // Handle next screen animation
           nextCardStyle: next
             ? {
                 transform: [
@@ -170,12 +177,8 @@ export const DashboardScreen = ({ navigation }) => {
     navigation.navigate("Profile");
   };
 
-  const handleMyWallPress = () => {
-    navigation.navigate("MyWall");
-  };
-
-  const handleTestimonyPress = () => {
-    navigation.navigate("MyTestimony");
+  const handleTestimonyAdminPress = () => {
+    navigation.navigate("TestimonyAdmin");
   };
 
   return (
@@ -220,23 +223,36 @@ export const DashboardScreen = ({ navigation }) => {
               <SubtitleText style={styles.emailText}>
                 {user?.email || "No email provided"}
               </SubtitleText>
-              <View style={styles.profileEditBadge}>
-                <Ionicons
-                  name="pencil-outline"
-                  size={12}
-                  color={colors.primary}
-                />
-                <BodyText
-                  style={{ color: colors.primary, fontSize: 12, marginLeft: 4 }}
+
+              <View style={styles.adminBadgeContainer}>
+                <View style={styles.adminBadge}>
+                  <BodyText style={styles.adminBadgeText}>Admin</BodyText>
+                </View>
+                <TouchableOpacity
+                  style={styles.profileEditBadge}
+                  onPress={handleProfilePress}
                 >
-                  Edit profile
-                </BodyText>
+                  <Ionicons
+                    name="pencil-outline"
+                    size={12}
+                    color={colors.primary}
+                  />
+                  <BodyText
+                    style={{
+                      color: colors.primary,
+                      fontSize: 12,
+                      marginLeft: 4,
+                    }}
+                  >
+                    Edit profile
+                  </BodyText>
+                </TouchableOpacity>
               </View>
             </View>
           </TouchableOpacity>
         </Surface>
 
-        {/* Dashboard stats section */}
+        {/* Admin Dashboard stats section */}
         <View style={styles.statsContainer}>
           <HeaderText style={styles.sectionTitle}>Overview</HeaderText>
           <View style={styles.statsGrid}>
@@ -248,62 +264,70 @@ export const DashboardScreen = ({ navigation }) => {
                 size={24}
                 color={colors.primary}
               />
-              <BodyText style={styles.statValue}>{lovedOnesCount}</BodyText>
-              <BodyText style={styles.statLabel}>Loved Ones</BodyText>
+              <BodyText style={styles.statValue}>{totalSoulsCount}</BodyText>
+              <BodyText style={styles.statLabel}>Total Souls</BodyText>
+            </Surface>
+
+            <Surface
+              style={[styles.statCard, { backgroundColor: colors.surface }]}
+            >
+              <Ionicons name="hourglass-outline" size={24} color="#FF9800" />
+              <BodyText style={styles.statValue}>
+                {pendingTestimoniesCount}
+              </BodyText>
+              <BodyText style={styles.statLabel}>Pending Testimonies</BodyText>
             </Surface>
 
             <Surface
               style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
               <Ionicons
-                name="document-text-outline"
+                name="checkmark-circle-outline"
                 size={24}
-                color={colors.primary}
+                color="#4CAF50"
               />
-              <BodyText style={styles.statValue}>{testimoniesCount}</BodyText>
-              <BodyText style={styles.statLabel}>Testimonies</BodyText>
-            </Surface>
-
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons name="heart-outline" size={24} color={colors.primary} />
-              <BodyText style={styles.statValue}>0</BodyText>
-              <BodyText style={styles.statLabel}>Prayers</BodyText>
+              <BodyText style={styles.statValue}>
+                {approvedTestimoniesCount}
+              </BodyText>
+              <BodyText style={styles.statLabel}>Approved Testimonies</BodyText>
             </Surface>
           </View>
         </View>
 
-        {/* Quick actions section */}
-        <View style={styles.quickActionsSection}>
-          <HeaderText style={styles.sectionTitle}>Quick Actions</HeaderText>
-          <View
-            style={[
-              styles.quickActions,
-              isLargeScreen && styles.quickActionsLarge,
-            ]}
+        {/* Admin Section */}
+        <View style={styles.adminSection}>
+          <HeaderText style={styles.sectionTitle}>Admin Functions</HeaderText>
+          <Surface
+            mode="elevated"
+            elevation={1}
+            style={[styles.adminCard, { backgroundColor: colors.surface }]}
           >
-            <CardGrid
-              cards={[
-                {
-                  image: require("assets/whale_wall.png"),
-                  text: "My\nLoved Ones",
-                  onPress: handleMyWallPress,
-                },
-                {
-                  image: require("assets/bird_wall.png"),
-                  text: "My\nTestimony",
-                  onPress: handleTestimonyPress,
-                },
-                {
-                  image: require("assets/whale.png"),
-                  text: "My\nProfile",
-                  onPress: handleProfilePress,
-                },
-              ]}
-              gap={spacing.md}
-            />
-          </View>
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={handleTestimonyAdminPress}
+            >
+              <View style={styles.adminIconContainer}>
+                <Ionicons
+                  name="shield-checkmark"
+                  size={24}
+                  color={colors.primary}
+                />
+              </View>
+              <View style={styles.adminButtonText}>
+                <BodyText style={styles.adminButtonTitle}>
+                  Testimony Approval
+                </BodyText>
+                <BodyText style={styles.adminButtonDescription}>
+                  Manage pending testimony submissions
+                </BodyText>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </Surface>
         </View>
 
         {/* Recent activity section */}
@@ -384,9 +408,14 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
     opacity: 0.7,
   },
+  adminBadgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   profileEditBadge: {
     flexDirection: "row",
     alignItems: "center",
+    marginLeft: spacing.sm,
   },
   sectionTitle: {
     marginBottom: spacing.sm,
@@ -416,15 +445,50 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 12,
     opacity: 0.7,
+    textAlign: "center",
   },
-  quickActionsSection: {
+  adminSection: {
     marginBottom: spacing.lg,
   },
-  quickActions: {
-    width: "100%",
+  adminBadge: {
+    backgroundColor: "#FF6B00",
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 12,
   },
-  quickActionsLarge: {
-    alignSelf: "center",
+  adminBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  adminCard: {
+    borderRadius: borderRadius.md,
+    ...shadows.small,
+  },
+  adminButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: spacing.md,
+  },
+  adminIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "rgba(0,0,0,0.05)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing.md,
+  },
+  adminButtonText: {
+    flex: 1,
+  },
+  adminButtonTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  adminButtonDescription: {
+    fontSize: 12,
+    opacity: 0.7,
   },
   recentActivitySection: {
     flex: 1,
