@@ -1,27 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { Button, TextInput, Text, useTheme } from "react-native-paper";
-import { updateUserProfile } from "utils/userUtils";
+import { updateUserProfile } from "@utils/profileUtils";
 
-export const EditProfileForm = ({ user, onSuccess, onCancel }) => {
+// Rename prop to profile instead of user to match what we're actually using
+export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    displayName: user?.displayName || "",
-    email: user?.email || "",
-    phoneNumber: user?.phoneNumber || "",
-    address: user?.address || "",
-    dob: user?.dob || "",
+    displayName: profile?.displayName || "",
+    email: profile?.email || "",
+    phoneNumber: profile?.phoneNumber || "",
+    address: profile?.address || "",
+    dob: profile?.dob || "",
+    firstName: profile?.firstName || "",
+    lastName: profile?.lastName || "",
   });
 
   const theme = useTheme();
 
+  // Split displayName into firstName and lastName on component mount
+  useEffect(() => {
+    if (profile?.displayName) {
+      const nameParts = profile.displayName.split(" ");
+      const firstName = nameParts[0] || "";
+      const lastName = nameParts.slice(1).join(" ") || "";
+
+      setFormData((prev) => ({
+        ...prev,
+        firstName,
+        lastName,
+      }));
+    }
+  }, [profile?.displayName]);
+
   const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
-      [field]: value,
+    setFormData((prev) => {
+      const newData = {
+        ...prev,
+        [field]: value,
+      };
+
+      // If firstName or lastName changes, update displayName
+      if (field === "firstName" || field === "lastName") {
+        const fullName = `${newData.firstName || ""} ${
+          newData.lastName || ""
+        }`.trim();
+        newData.displayName = fullName;
+      }
+
+      return newData;
     });
   };
 
@@ -41,7 +71,8 @@ export const EditProfileForm = ({ user, onSuccess, onCancel }) => {
     setError("");
 
     try {
-      await updateUserProfile(user.uid, formData);
+      // Use profile.uid instead of user.uid
+      await updateUserProfile(profile.uid, formData);
       onSuccess(formData);
     } catch (err) {
       setError("Failed to update profile. Please try again.");
@@ -53,14 +84,24 @@ export const EditProfileForm = ({ user, onSuccess, onCancel }) => {
 
   return (
     <View style={{ width: "100%" }}>
-      <TextInput
-        label="Full Name"
-        value={formData.displayName}
-        onChangeText={(text) => handleInputChange("displayName", text)}
-        mode="outlined"
-        left={<TextInput.Icon icon="account" />}
-        style={{ marginBottom: 16 }}
-      />
+      <View style={{ flexDirection: "row", gap: 8, marginBottom: 16 }}>
+        <TextInput
+          label="First Name"
+          value={formData.firstName}
+          onChangeText={(text) => handleInputChange("firstName", text)}
+          mode="outlined"
+          left={<TextInput.Icon icon="account" />}
+          style={{ flex: 1 }}
+        />
+        <TextInput
+          label="Last Name"
+          value={formData.lastName}
+          onChangeText={(text) => handleInputChange("lastName", text)}
+          mode="outlined"
+          left={<TextInput.Icon icon="account" />}
+          style={{ flex: 1 }}
+        />
+      </View>
 
       <TextInput
         label="Email"

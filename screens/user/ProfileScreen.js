@@ -9,7 +9,6 @@ import {
   Divider,
   IconButton,
   Text,
-  TextInput,
   Title,
   Subheading,
   Paragraph,
@@ -21,40 +20,22 @@ import {
 import { View } from "components/View";
 import { AuthenticatedUserContext } from "providers";
 import { FormContainer } from "components/FormContainer";
-import { checkProfileCompleteness } from "utils/userUtils";
+import { checkProfileCompleteness } from "@utils/profileUtils";
+import { EditProfileForm } from "components/EditProfileForm";
 
 export const ProfileScreen = ({ navigation, route }) => {
-  const { user, setUser, refreshProfile } = useContext(
+  const { user, profile, updateProfile, refreshProfile } = useContext(
     AuthenticatedUserContext
   );
   const [isEditing, setIsEditing] = useState(
     route?.params?.startEditing || false
   );
-  const [formData, setFormData] = useState({
-    displayName: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-    dob: "",
-  });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   const theme = useTheme();
 
-  const { isComplete, missingFields } = checkProfileCompleteness(user);
-
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        displayName: user.displayName || "",
-        email: user.email || "",
-        phoneNumber: user.phoneNumber || "",
-        address: user.address || "",
-        dob: user.dob || "",
-      });
-    }
-  }, [user]);
+  console.log(profile);
+  const { isComplete, missingFields } = checkProfileCompleteness(profile);
 
   const handleBackPress = () => {
     navigation.navigate("Dashboard");
@@ -66,35 +47,16 @@ export const ProfileScreen = ({ navigation, route }) => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setFormData({
-      displayName: user.displayName || "",
-      email: user.email || "",
-      phoneNumber: user.phoneNumber || "",
-      address: user.address || "",
-      dob: user.dob || "",
-    });
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData({
-      ...formData,
-      [field]: value,
-    });
-  };
-
-  const handleSaveProfile = async () => {
+  const handleProfileUpdate = async (updatedProfile) => {
     setLoading(true);
-    setError("");
 
     try {
-      setUser({
-        ...user,
-        ...formData,
-      });
+      await updateProfile(updatedProfile);
       await refreshProfile();
       setIsEditing(false);
     } catch (err) {
-      setError("Failed to update profile. Please try again.");
       console.error("Error updating profile:", err);
     } finally {
       setLoading(false);
@@ -102,93 +64,13 @@ export const ProfileScreen = ({ navigation, route }) => {
   };
 
   const getInitials = () => {
-    if (user?.displayName) {
-      return user.displayName.charAt(0).toUpperCase();
+    if (profile?.displayName) {
+      return profile.displayName.charAt(0).toUpperCase();
     } else if (user?.email) {
       return user.email.charAt(0).toUpperCase();
     }
     return "U";
   };
-
-  const renderEditForm = () => (
-    <Card>
-      <Card.Content>
-        <Title>Edit Profile</Title>
-        <Divider style={{ marginVertical: 16 }} />
-
-        <TextInput
-          label="Full Name"
-          value={formData.displayName}
-          onChangeText={(text) => handleInputChange("displayName", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="account" />}
-          style={{ marginBottom: 16 }}
-        />
-
-        <TextInput
-          label="Email"
-          value={formData.email}
-          onChangeText={(text) => handleInputChange("email", text)}
-          mode="outlined"
-          disabled={true}
-          left={<TextInput.Icon icon="email" />}
-          style={{ marginBottom: 16 }}
-        />
-
-        <TextInput
-          label="Phone Number"
-          value={formData.phoneNumber}
-          onChangeText={(text) => handleInputChange("phoneNumber", text)}
-          mode="outlined"
-          keyboardType="phone-pad"
-          left={<TextInput.Icon icon="phone" />}
-          style={{ marginBottom: 16 }}
-        />
-
-        <TextInput
-          label="Address"
-          value={formData.address}
-          onChangeText={(text) => handleInputChange("address", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="home" />}
-          style={{ marginBottom: 16 }}
-        />
-
-        <TextInput
-          label="Date of Birth (YYYY-MM-DD)"
-          value={formData.dob}
-          onChangeText={(text) => handleInputChange("dob", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="calendar" />}
-          style={{ marginBottom: 16 }}
-        />
-
-        {error ? (
-          <Text style={{ color: theme.colors.error, marginBottom: 16 }}>
-            {error}
-          </Text>
-        ) : null}
-
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Button
-            mode="outlined"
-            onPress={handleCancelEdit}
-            style={{ flex: 1, marginRight: 8 }}
-          >
-            Cancel
-          </Button>
-          <Button
-            mode="contained"
-            onPress={handleSaveProfile}
-            loading={loading}
-            style={{ flex: 1, marginLeft: 8 }}
-          >
-            Save Changes
-          </Button>
-        </View>
-      </Card.Content>
-    </Card>
-  );
 
   const renderProfileInfo = () => (
     <>
@@ -205,7 +87,9 @@ export const ProfileScreen = ({ navigation, route }) => {
           label={getInitials()}
           style={{ marginBottom: 16 }}
         />
-        <Title style={{ marginBottom: 4 }}>{user?.displayName || "User"}</Title>
+        <Title style={{ marginBottom: 4 }}>
+          {profile?.displayName || "User"}
+        </Title>
         <Subheading style={{ marginBottom: 16 }}>
           {user?.email || "No email provided"}
         </Subheading>
@@ -237,7 +121,7 @@ export const ProfileScreen = ({ navigation, route }) => {
             }}
           >
             <Paragraph style={{ fontWeight: "bold" }}>Full Name:</Paragraph>
-            <Paragraph>{user?.displayName || "Not provided"}</Paragraph>
+            <Paragraph>{profile?.displayName || "Not provided"}</Paragraph>
           </View>
 
           <View
@@ -259,7 +143,7 @@ export const ProfileScreen = ({ navigation, route }) => {
             }}
           >
             <Paragraph style={{ fontWeight: "bold" }}>Phone:</Paragraph>
-            <Paragraph>{user?.phoneNumber || "Not provided"}</Paragraph>
+            <Paragraph>{profile?.phoneNumber || "Not provided"}</Paragraph>
           </View>
 
           <View
@@ -270,7 +154,7 @@ export const ProfileScreen = ({ navigation, route }) => {
             }}
           >
             <Paragraph style={{ fontWeight: "bold" }}>Address:</Paragraph>
-            <Paragraph>{user?.address || "Not provided"}</Paragraph>
+            <Paragraph>{profile?.address || "Not provided"}</Paragraph>
           </View>
 
           <View
@@ -281,7 +165,7 @@ export const ProfileScreen = ({ navigation, route }) => {
             }}
           >
             <Paragraph style={{ fontWeight: "bold" }}>Date of Birth:</Paragraph>
-            <Paragraph>{user?.dob || "Not provided"}</Paragraph>
+            <Paragraph>{profile?.dob || "Not provided"}</Paragraph>
           </View>
         </Card.Content>
       </Card>
@@ -338,7 +222,21 @@ export const ProfileScreen = ({ navigation, route }) => {
             onPress={handleBackPress}
             style={{ marginBottom: 16, alignSelf: "flex-start" }}
           />
-          {isEditing ? renderEditForm() : renderProfileInfo()}
+          {isEditing ? (
+            <Card>
+              <Card.Content>
+                <Title>Edit Profile</Title>
+                <Divider style={{ marginVertical: 16 }} />
+                <EditProfileForm
+                  profile={{ ...profile, uid: user.uid }}
+                  onSuccess={handleProfileUpdate}
+                  onCancel={handleCancelEdit}
+                />
+              </Card.Content>
+            </Card>
+          ) : (
+            renderProfileInfo()
+          )}
         </ScrollView>
       </FormContainer>
     </PaperProvider>

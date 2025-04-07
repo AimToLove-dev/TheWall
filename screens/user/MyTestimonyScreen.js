@@ -21,6 +21,7 @@ import {
   MediaUpload,
   VideoUpload,
 } from "components";
+import { ProfileIncomplete } from "components/ProfileIncomplete";
 import {
   HeaderText,
   SubtitleText,
@@ -29,7 +30,7 @@ import {
 } from "components/Typography";
 import { getThemeColors, spacing } from "styles/theme";
 import { submitTestimony, canAddMoreTestimonies } from "utils/testimoniesUtils";
-import { checkProfileCompleteness } from "utils/userUtils";
+import { checkProfileCompleteness, getFullName } from "@utils/profileUtils";
 
 // Validation schema for the testimony form
 const testimonyValidationSchema = Yup.object().shape({
@@ -40,7 +41,7 @@ const testimonyValidationSchema = Yup.object().shape({
 });
 
 export const MyTestimonyScreen = ({ navigation }) => {
-  const { user } = useContext(AuthenticatedUserContext);
+  const { user, profile } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
   const [beforeImage, setBeforeImage] = useState(null);
@@ -58,7 +59,7 @@ export const MyTestimonyScreen = ({ navigation }) => {
   useEffect(() => {
     if (user) {
       // Check profile completeness
-      const { isComplete, missingFields } = checkProfileCompleteness(user);
+      const { isComplete, missingFields } = checkProfileCompleteness(profile);
       setProfileComplete(isComplete);
       setMissingFields(missingFields);
 
@@ -109,12 +110,12 @@ export const MyTestimonyScreen = ({ navigation }) => {
     try {
       const testimonyData = {
         ...values,
-        userId: user.uid,
-        userEmail: user.email,
-        displayName: user.displayName,
-        phoneNumber: user.phoneNumber,
-        address: user.address,
-        dob: user.dob,
+        userId: profile.uid || user.uid,
+        userEmail: profile.email,
+        displayName: getFullName(profile),
+        phoneNumber: profile?.phoneNumber,
+        address: profile?.address,
+        dob: profile?.dob,
       };
 
       await submitTestimony(testimonyData, beforeImage, afterImage, video);
@@ -141,70 +142,16 @@ export const MyTestimonyScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
-  // If profile is incomplete, show a message and a button to complete profile
+  // If profile is incomplete, show the ProfileIncomplete component
   if (!profileComplete) {
     return (
       <FormContainer style={{ backgroundColor: colors.background }}>
-        <View style={styles.content}>
-          <TouchableOpacity
-            style={[
-              styles.backButton,
-              isDark && { backgroundColor: colors.card },
-            ]}
-            onPress={handleBackPress}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-
-          <View style={styles.incompleteProfileContainer}>
-            <Ionicons
-              name="alert-circle-outline"
-              size={80}
-              color={colors.warning}
-            />
-            <HeaderText style={styles.incompleteTitle}>
-              Profile Incomplete
-            </HeaderText>
-            <SubtitleText style={styles.incompleteSubtitle}>
-              Please complete your profile before submitting a testimony
-            </SubtitleText>
-
-            <View style={styles.missingFieldsContainer}>
-              <BodyText style={styles.missingFieldsTitle}>
-                Missing information:
-              </BodyText>
-              {missingFields.map((field, index) => (
-                <View key={index} style={styles.missingFieldRow}>
-                  <Ionicons
-                    name="close-circle-outline"
-                    size={16}
-                    color={colors.error}
-                  />
-                  <BodyText style={styles.missingFieldText}>
-                    {field === "displayName"
-                      ? "Full Name"
-                      : field === "phoneNumber"
-                      ? "Phone Number"
-                      : field === "dob"
-                      ? "Date of Birth"
-                      : field.charAt(0).toUpperCase() + field.slice(1)}
-                  </BodyText>
-                </View>
-              ))}
-            </View>
-
-            <CustomButton
-              title="Complete Your Profile"
-              onPress={handleCompleteProfile}
-              variant="primary"
-              size="large"
-              style={styles.completeProfileButton}
-              leftIcon={
-                <Ionicons name="person-outline" size={20} color="#FFFFFF" />
-              }
-            />
-          </View>
-        </View>
+        <ProfileIncomplete
+          missingFields={missingFields}
+          colors={colors}
+          onCompleteProfile={handleCompleteProfile}
+          onBack={handleBackPress}
+        />
       </FormContainer>
     );
   }
@@ -253,15 +200,17 @@ export const MyTestimonyScreen = ({ navigation }) => {
                   </BodyText>
                   <View style={styles.profileInfoRow}>
                     <BodyText style={styles.profileInfoLabel}>Name:</BodyText>
-                    <BodyText>{user?.displayName}</BodyText>
+                    <BodyText>
+                      {profile?.firstName} {profile?.lastName}
+                    </BodyText>
                   </View>
                   <View style={styles.profileInfoRow}>
                     <BodyText style={styles.profileInfoLabel}>Email:</BodyText>
-                    <BodyText>{user?.email}</BodyText>
+                    <BodyText>{profile?.email}</BodyText>
                   </View>
                   <View style={styles.profileInfoRow}>
                     <BodyText style={styles.profileInfoLabel}>Phone:</BodyText>
-                    <BodyText>{user?.phoneNumber}</BodyText>
+                    <BodyText>{profile?.phoneNumber}</BodyText>
                   </View>
                   <TouchableOpacity
                     style={styles.editProfileLink}

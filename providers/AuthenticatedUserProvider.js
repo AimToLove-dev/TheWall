@@ -13,34 +13,52 @@ export const AuthenticatedUserContext = createContext({
 });
 
 export const AuthenticatedUserProvider = ({ children }) => {
+  // Core user state (auth data)
   const [user, setUser] = useState({
     uid: null,
-    displayName: "",
     email: "",
     emailVerified: null,
-    phoneNumber: "",
-    address: "",
-    dob: "",
     isAnonymous: null,
     isAdmin: false,
   });
 
-  const [profile, setProfile] = useState(null);
+  // Profile state (user profile data)
+  const [profile, setProfile] = useState({
+    uid: null,
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    address: "",
+    dob: "",
+  });
 
   // Function to fetch user profile data from Firestore
   const refreshProfile = async () => {
-    if (user && user.uid) {
+    if (user?.uid) {
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userDoc = await getDoc(doc(db, "profiles", user.uid));
         if (userDoc.exists()) {
           const profileData = userDoc.data();
-          setProfile(profileData);
-
-          // Update user state with profile data
-          setUser((prevUser) => ({
-            ...prevUser,
+          // Merge profile data, giving priority to core user fields
+          setProfile({
             ...profileData,
-          }));
+            uid: user.uid,
+            email: user.email || profileData.email, // Prefer auth email
+          });
+        } else {
+          // If no profile exists, create one with basic user data
+          const initialProfile = {
+            uid: user.uid,
+            email: user.email,
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
+            address: "",
+            dob: "",
+          };
+          await setDoc(doc(db, "profiles", user.uid), initialProfile);
+          setProfile(initialProfile);
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -50,25 +68,29 @@ export const AuthenticatedUserProvider = ({ children }) => {
 
   // Function to update user profile in Firestore
   const updateProfile = async (profileData) => {
-    if (user && user.uid) {
+    if (user?.uid) {
       try {
+        // Don't allow updating core user fields through profile
+        const sanitizedProfileData = {
+          ...profileData,
+          uid: user.uid, // Ensure UID matches
+          email: user.email, // Keep auth email
+        };
+
         await setDoc(
-          doc(db, "users", user.uid),
+          doc(db, "profiles", user.uid),
           {
-            ...profileData,
+            ...sanitizedProfileData,
             updatedAt: new Date().toISOString(),
           },
           { merge: true }
         );
 
-        // Update local state
-        setUser((prevUser) => ({
-          ...prevUser,
-          ...profileData,
+        // Update local profile state
+        setProfile((prevProfile) => ({
+          ...prevProfile,
+          ...sanitizedProfileData,
         }));
-
-        // Refresh profile
-        await refreshProfile();
 
         return true;
       } catch (error) {
@@ -82,10 +104,20 @@ export const AuthenticatedUserProvider = ({ children }) => {
   // Refresh profile when user changes
   useEffect(() => {
     if (user?.uid) {
-      // Add null check here
       refreshProfile();
+    } else {
+      // Reset profile when user is null
+      setProfile({
+        uid: null,
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        dob: "",
+      });
     }
-  }, [user?.uid]); // Change dependency to include null check
+  }, [user?.uid]);
 
   return (
     <AuthenticatedUserContext.Provider
