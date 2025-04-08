@@ -56,7 +56,6 @@ export const EmailVerificationScreen = () => {
       lineHeight: 24,
       padding: spacing.md,
       backgroundColor: "rgba(0,255,0,0.1)",
-      borderRadius: 8,
     },
     verificationButton: {
       minWidth: 200,

@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { View, Image, StyleSheet, Animated } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const SpeakingImage = ({
   imageSrc,
@@ -15,7 +16,7 @@ export const SpeakingImage = ({
   bubbleStyle,
 }) => {
   const [animation] = useState(new Animated.Value(0));
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   useEffect(() => {
     Animated.timing(animation, {
@@ -108,14 +109,12 @@ export const SpeakingImage = ({
         style={[
           styles.bubble,
           getBubbleStyle(),
-          { backgroundColor: theme.colors.surface },
+          { backgroundColor: colors.surface },
           bubbleStyle,
         ]}
       >
-        <View
-          style={[getArrowStyle(), { borderColor: theme.colors.surface }]}
-        />
-        <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+        <View style={[getArrowStyle(), { borderColor: colors.surface }]} />
+        <Text variant="bodyMedium" style={{ color: colors.text }}>
           {message}
         </Text>
       </Animated.View>
@@ -136,7 +135,6 @@ const styles = StyleSheet.create({
   bubble: {
     position: "absolute",
     padding: 10,
-    borderRadius: 10,
     width: "max-content",
     elevation: 2,
     zIndex: 2,

@@ -536,7 +536,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     width: 40,
     height: 40,
-    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Platform.OS === "ios" ? "transparent" : "#F0F0F0",
@@ -572,7 +571,6 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   floatingButton: {
-    borderRadius: 30,
     paddingHorizontal: spacing.lg,
     shadowColor: "#000",
     shadowOffset: {

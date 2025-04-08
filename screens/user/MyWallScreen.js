@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     padding: spacing.md,
     backgroundColor: "#f5f5f5",
-    borderRadius: 12,
+
   },
   badgesContainer: {
     flexDirection: "row",
@@ -483,7 +483,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: spacing.sm,
-    borderRadius: 20,
     borderWidth: 1,
     marginRight: spacing.sm,
     marginBottom: spacing.sm,
@@ -500,7 +499,6 @@ const styles = StyleSheet.create({
   checkmark: {
     width: 16,
     height: 16,
-    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -518,7 +516,6 @@ const styles = StyleSheet.create({
   addSoulForm: {
     padding: spacing.md,
     backgroundColor: "#f5f5f5",
-    borderRadius: 12,
     marginBottom: spacing.md,
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.1)",
@@ -532,7 +529,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderRadius: 8,
     padding: spacing.sm,
     marginRight: spacing.sm,
     fontSize: 16,
@@ -553,7 +549,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "stretch",
     padding: spacing.md,
-    borderRadius: 20,
     borderWidth: 1,
     marginRight: spacing.sm,
     marginBottom: spacing.sm,
@@ -562,7 +557,6 @@ const styles = StyleSheet.create({
   simpleInput: {
     flex: 1,
     borderWidth: 1,
-    borderRadius: 8,
     padding: spacing.sm,
     marginRight: spacing.sm,
     fontSize: 14,
@@ -574,7 +568,6 @@ const styles = StyleSheet.create({
   },
   badgeButton: {
     borderWidth: 1,
-    borderRadius: 8,
     padding: spacing.sm,
     justifyContent: "center",
     alignItems: "center",
@@ -603,7 +596,6 @@ const styles = StyleSheet.create({
   actionIconButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: spacing.xs,

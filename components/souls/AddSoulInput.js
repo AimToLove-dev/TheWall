@@ -8,7 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { TextInput, HelperText, Button, useTheme } from "react-native-paper";
+import { TextInput, HelperText, Button } from "react-native-paper";
 import { addSoul } from "../../utils/soulsUtils";
 import Animated, {
   useSharedValue,
@@ -19,6 +19,7 @@ import Animated, {
   useAnimatedKeyboard,
 } from "react-native-reanimated";
 import { SpeakingImage } from "../SpeakingImage"; // Ensure you have this component in your project
+import { getThemeColors } from "styles/theme";
 
 export const AddSoulInput = ({
   onSuccess,
@@ -32,7 +33,7 @@ export const AddSoulInput = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const inputRef = useRef(null);
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   const styles = StyleSheet.create({
     container: {
@@ -54,7 +55,6 @@ export const AddSoulInput = ({
     iconButton: {
       width: 56,
       height: 56,
-      borderRadius: 28,
       justifyContent: "center",
       alignItems: "center",
       zIndex: 101,
@@ -67,8 +67,7 @@ export const AddSoulInput = ({
     },
     inputContainer: {
       flexDirection: "row",
-      backgroundColor: theme.colors.surface,
-      borderRadius: 30,
+      backgroundColor: colors.surface,
       width: 280,
       height: 50,
       alignItems: "center",
@@ -82,15 +81,14 @@ export const AddSoulInput = ({
       flex: 1,
       fontSize: 16,
       marginRight: 10,
-      color: theme.colors.onSurface,
+      color: colors.text,
     },
     sendButton: {
       width: 40,
       height: 40,
-      borderRadius: 20,
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: theme.colors.primary,
+      backgroundColor: colors.primary,
     },
   });
 
@@ -204,7 +202,7 @@ export const AddSoulInput = ({
             }
             onSubmitEditing={handleSubmit}
             returnKeyType="send"
-            style={{ backgroundColor: theme.colors.surface }}
+            style={{ backgroundColor: colors.surface }}
           />
           {error && (
             <HelperText type="error" visible={!!error}>

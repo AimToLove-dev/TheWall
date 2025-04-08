@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
   },
   card: {
     padding: 20,
-    borderRadius: 10,
     marginBottom: 15,
   },
   cardTitle: {

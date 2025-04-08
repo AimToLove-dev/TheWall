@@ -1,13 +1,14 @@
 "use client";
 
 import { Image } from "react-native";
-import { Appbar, useTheme } from "react-native-paper";
+import { Appbar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getThemeColors } from "styles/theme";
 
 export const Header = ({ onMenuPress }) => {
   const navigation = useNavigation();
-  const theme = useTheme();
+  const colors = getThemeColors();
   const insets = useSafeAreaInsets();
 
   const handleLogoPress = () => {
@@ -19,7 +20,7 @@ export const Header = ({ onMenuPress }) => {
       mode="small"
       elevated
       style={{
-        backgroundColor: theme.colors.surface,
+        backgroundColor: colors.surface,
         marginTop: insets.top,
       }}
     >

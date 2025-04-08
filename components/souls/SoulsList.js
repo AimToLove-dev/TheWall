@@ -170,7 +170,6 @@ export const SoulsList = ({
         }
         style={{
           backgroundColor: theme.colors.surface,
-          borderRadius: 8,
           marginBottom: 8,
         }}
       />

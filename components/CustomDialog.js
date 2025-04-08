@@ -1,7 +1,8 @@
 "use client";
 
 import { Modal, TouchableWithoutFeedback } from "react-native";
-import { Dialog, Portal, Text, Button, useTheme } from "react-native-paper";
+import { Dialog, Portal, Text, Button } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const CustomDialog = ({
   visible,
@@ -15,7 +16,7 @@ export const CustomDialog = ({
   cancelVariant = "outlined",
   isDestructive = false,
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <Portal>
@@ -38,7 +39,7 @@ export const CustomDialog = ({
             <Button
               mode={confirmVariant}
               onPress={onConfirm}
-              textColor={isDestructive ? theme.colors.error : undefined}
+              textColor={isDestructive ? colors.error : undefined}
             >
               {confirmText}
             </Button>

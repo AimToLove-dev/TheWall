@@ -1,7 +1,8 @@
 "use client";
 
 import { View, Text, StyleSheet, Image } from "react-native";
-import { Surface, useTheme } from "react-native-paper";
+import { Surface } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 // Import brick SVGs
 const brickImages = [
@@ -19,7 +20,7 @@ export const WallBrick = ({
   isFlipped = false,
   style,
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   // Format name to First Name & Last Initial
   const formatName = (fullName) => {

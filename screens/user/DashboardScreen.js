@@ -26,7 +26,7 @@ import {
   CardGrid,
 } from "components";
 
-import { getThemeColors, spacing, shadows, borderRadius } from "styles/theme";
+import { getThemeColors, spacing, shadows } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Surface, Card, Avatar, Divider, useTheme } from "react-native-paper";
 
@@ -356,7 +356,6 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: spacing.sm,
@@ -364,7 +363,6 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     padding: spacing.md,
-    borderRadius: borderRadius.lg,
     marginBottom: spacing.lg,
     ...shadows.small,
   },
@@ -404,7 +402,6 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     padding: spacing.md,
-    borderRadius: borderRadius.md,
     alignItems: "center",
     ...shadows.small,
   },
@@ -432,7 +429,6 @@ const styles = StyleSheet.create({
   },
   activityCard: {
     padding: spacing.md,
-    borderRadius: borderRadius.md,
     flex: 1,
   },
   emptyState: {

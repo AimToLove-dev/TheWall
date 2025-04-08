@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs / 2,
-    borderRadius: 20,
   },
   statusText: {
     color: "#FFFFFF",
@@ -294,7 +293,6 @@ const styles = StyleSheet.create({
     marginLeft: spacing.xs / 2,
   },
   card: {
-    borderRadius: 8,
     padding: spacing.md,
     marginBottom: spacing.lg,
   },
@@ -321,14 +319,12 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 180,
-    borderRadius: 8,
   },
   videoContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: spacing.md,
     backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 8,
   },
   videoText: {
     marginLeft: spacing.sm,
@@ -355,7 +351,6 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 18,
     height: 18,
-    borderRadius: 9,
     borderWidth: 1,
     borderColor: "#AAAAAA",
     justifyContent: "center",

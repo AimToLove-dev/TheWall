@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { Surface, Text, Button, useTheme } from "react-native-paper";
+import { Surface, Text, Button } from "react-native-paper";
 import { View } from "components/View";
+import { getThemeColors } from "styles/theme";
 
 const __DEV__ = process.env.NODE_ENV !== "production";
 
@@ -39,7 +40,7 @@ class ErrorBoundaryClass extends React.Component {
 
 // Default fallback component
 const DefaultErrorFallback = ({ error, resetError }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <Surface
@@ -63,7 +64,7 @@ const DefaultErrorFallback = ({ error, resetError }) => {
           style={{
             marginBottom: 24,
             textAlign: "center",
-            color: theme.colors.onSurfaceVariant,
+            color: colors.textSecondary,
           }}
         >
           We're sorry, but we encountered an unexpected error.
@@ -75,15 +76,12 @@ const DefaultErrorFallback = ({ error, resetError }) => {
             elevation={1}
             style={{
               padding: 16,
-              borderRadius: 8,
               width: "100%",
               marginBottom: 24,
-              backgroundColor: theme.colors.errorContainer,
+              backgroundColor: colors.error + "15", // Adding 15% opacity
             }}
           >
-            <Text style={{ color: theme.colors.error }}>
-              {error.toString()}
-            </Text>
+            <Text style={{ color: colors.error }}>{error.toString()}</Text>
           </Surface>
         )}
 

@@ -34,7 +34,6 @@ export const EditSoul = ({ soul, onSave, onCancel, style }) => {
       style={[
         {
           padding: 16,
-          borderRadius: 8,
         },
         style,
       ]}

@@ -1,6 +1,7 @@
 "use client";
 
-import { TextInput, HelperText, useTheme } from "react-native-paper";
+import { TextInput, HelperText } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const CustomInput = ({
   label,
@@ -17,7 +18,7 @@ export const CustomInput = ({
   disabled,
   ...props
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <>
@@ -36,7 +37,7 @@ export const CustomInput = ({
         disabled={disabled}
         mode="outlined"
         style={{
-          backgroundColor: theme.colors.surface,
+          backgroundColor: colors.surface,
           marginBottom: error ? 0 : 16,
         }}
         {...props}

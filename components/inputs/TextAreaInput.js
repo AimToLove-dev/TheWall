@@ -1,6 +1,7 @@
 "use client";
 
-import { TextInput, HelperText, useTheme } from "react-native-paper";
+import { TextInput, HelperText } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 /**
  * A multi-line text input component with label and error handling
@@ -17,7 +18,7 @@ export const TextAreaInput = ({
   style,
   ...props
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <>
@@ -32,7 +33,7 @@ export const TextAreaInput = ({
         numberOfLines={numberOfLines}
         maxLength={maxLength}
         mode="outlined"
-        style={{ backgroundColor: theme.colors.surface }}
+        style={{ backgroundColor: colors.surface }}
         {...props}
       />
       {error && (

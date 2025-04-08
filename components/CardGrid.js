@@ -1,7 +1,8 @@
 "use client";
 
 import { View } from "react-native";
-import { Card, Text, useTheme } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const CardGrid = ({
   cards = [],
@@ -9,7 +10,7 @@ export const CardGrid = ({
   gap = 16,
   direction = "row",
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <View
@@ -50,7 +51,7 @@ export const CardGrid = ({
           />
           <Text
             style={{
-              color: theme.colors.onSurface,
+              color: colors.text,
               fontWeight: "bold",
               textAlign: "center",
               textTransform: "uppercase",

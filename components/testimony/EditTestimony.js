@@ -442,7 +442,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     padding: spacing.md,
     backgroundColor: "rgba(0,0,0,0.02)",
-    borderRadius: 8,
   },
   faithInstructions: {
     marginBottom: spacing.md,
@@ -493,7 +492,6 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 18,
     height: 18,
-    borderRadius: 9,
     borderWidth: 1,
     borderColor: "#AAAAAA",
     justifyContent: "center",
@@ -503,7 +501,6 @@ const styles = StyleSheet.create({
   clearOption: {
     width: 18,
     height: 18,
-    borderRadius: 3,
     borderWidth: 1,
     borderColor: "#AAAAAA",
     justifyContent: "center",
@@ -522,7 +519,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     padding: spacing.md,
     backgroundColor: "rgba(0,0,0,0.02)",
-    borderRadius: 8,
   },
   radioItem: {
     marginBottom: spacing.lg,
@@ -536,7 +532,6 @@ const styles = StyleSheet.create({
   radioButton: {
     width: 20,
     height: 20,
-    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#AAAAAA",
     marginRight: spacing.sm,
@@ -547,7 +542,6 @@ const styles = StyleSheet.create({
   radioSelected: {
     width: 10,
     height: 10,
-    borderRadius: 5,
     backgroundColor: "#4CAF50",
   },
   radioLabel: {

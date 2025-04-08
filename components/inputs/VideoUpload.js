@@ -44,7 +44,6 @@ export const VideoUpload = ({
       style={[
         {
           padding: 16,
-          borderRadius: 8,
         },
         style,
       ]}
@@ -57,7 +56,7 @@ export const VideoUpload = ({
         <View>
           <Video
             source={{ uri: video }}
-            style={{ width: 200, height: 150, borderRadius: 4 }}
+            style={{ width: 200, height: 150 }}
             useNativeControls
             resizeMode="contain"
           />
@@ -90,7 +89,6 @@ export const VideoUpload = ({
             borderWidth: 1,
             borderColor: theme.colors.outline,
             borderStyle: "dashed",
-            borderRadius: 4,
             padding: 16,
             alignItems: "center",
             width: 200,

@@ -3,21 +3,18 @@ import { StatusBar, useColorScheme, View, Image } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Provider as PaperProvider,
-  MD3DarkTheme,
-  MD3LightTheme,
-  Surface,
-} from "react-native-paper";
+import { Provider as PaperProvider, Surface } from "react-native-paper";
 import { AuthenticatedUserProvider } from "./providers";
 import { RootNavigator } from "./navigation/RootNavigator";
 import { ErrorBoundary } from "components";
+import { getThemeColors } from "./styles/theme";
 import "./styles/global.css";
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const theme = getThemeColors(isDark);
 
   useEffect(() => {
     async function prepareApp() {
@@ -54,7 +51,7 @@ export default function App() {
   }
 
   return (
-    <PaperProvider theme={isDark ? MD3DarkTheme : MD3LightTheme}>
+    <PaperProvider theme={theme}>
       <SafeAreaProvider>
         <ErrorBoundary>
           <AuthenticatedUserProvider>

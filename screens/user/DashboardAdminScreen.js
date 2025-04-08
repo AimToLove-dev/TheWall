@@ -24,7 +24,7 @@ import {
   FormContainer,
 } from "components";
 
-import { getThemeColors, spacing, shadows, borderRadius } from "styles/theme";
+import { getThemeColors, spacing, shadows } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Surface, Avatar, useTheme } from "react-native-paper";
 
@@ -32,7 +32,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
   const { user, profile, setUser } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColors();
   const { width } = useWindowDimensions();
   const isLargeScreen = width > 768;
   const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);
@@ -179,6 +179,143 @@ export const DashboardAdminScreen = ({ navigation }) => {
   const handleTestimonyAdminPress = () => {
     navigation.navigate("TestimonyAdmin");
   };
+
+  const styles = StyleSheet.create({
+    content: {
+      flex: 1,
+      paddingHorizontal: spacing.lg,
+      paddingBottom: spacing.lg,
+      paddingTop: spacing.sm,
+    },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: spacing.md,
+    },
+    iconButton: {
+      width: 40,
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: spacing.sm,
+      ...shadows.small,
+    },
+    profileCard: {
+      padding: spacing.md,
+      marginBottom: spacing.lg,
+      ...shadows.small,
+    },
+    avatarContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    profileInfo: {
+      marginLeft: spacing.md,
+      flex: 1,
+    },
+    welcomeText: {
+      marginBottom: spacing.xs / 2,
+      fontSize: 20,
+    },
+    emailText: {
+      marginBottom: spacing.xs,
+      opacity: 0.7,
+    },
+    adminBadgeContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    profileEditBadge: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginLeft: spacing.sm,
+    },
+    sectionTitle: {
+      marginBottom: spacing.sm,
+      fontSize: 18,
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    statsContainer: {
+      marginBottom: spacing.lg,
+    },
+    statsGrid: {
+      flexDirection: "row",
+      gap: spacing.sm,
+    },
+    statCard: {
+      flex: 1,
+      padding: spacing.md,
+      alignItems: "center",
+      ...shadows.small,
+    },
+    statValue: {
+      fontSize: 20,
+      fontWeight: "bold",
+      marginVertical: spacing.xs,
+    },
+    statLabel: {
+      fontSize: 12,
+      opacity: 0.7,
+      textAlign: "center",
+    },
+    adminSection: {
+      marginBottom: spacing.lg,
+    },
+    adminBadge: {
+      backgroundColor: "#FF6B00",
+      paddingHorizontal: spacing.sm,
+      paddingVertical: 2,
+    },
+    adminBadgeText: {
+      color: "#FFFFFF",
+      fontSize: 12,
+      fontWeight: "bold",
+    },
+    adminCard: {
+      ...shadows.small,
+    },
+    adminButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      padding: spacing.md,
+    },
+    adminIconContainer: {
+      width: 40,
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: spacing.md,
+    },
+    adminButtonText: {
+      flex: 1,
+    },
+    adminButtonTitle: {
+      fontWeight: "bold",
+      fontSize: 16,
+    },
+    adminButtonDescription: {
+      fontSize: 12,
+      opacity: 0.7,
+    },
+    recentActivitySection: {
+      flex: 1,
+      marginBottom: spacing.lg,
+    },
+    activityCard: {
+      padding: spacing.md,
+      flex: 1,
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    emptyStateText: {
+      marginTop: spacing.sm,
+      opacity: 0.7,
+    },
+  });
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
@@ -363,148 +500,3 @@ export const DashboardAdminScreen = ({ navigation }) => {
     </FormContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.lg,
-    paddingTop: spacing.sm,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing.md,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: spacing.sm,
-    ...shadows.small,
-  },
-  profileCard: {
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-    ...shadows.small,
-  },
-  avatarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profileInfo: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
-  welcomeText: {
-    marginBottom: spacing.xs / 2,
-    fontSize: 20,
-  },
-  emailText: {
-    marginBottom: spacing.xs,
-    opacity: 0.7,
-  },
-  adminBadgeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profileEditBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: spacing.sm,
-  },
-  sectionTitle: {
-    marginBottom: spacing.sm,
-    fontSize: 18,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  statsContainer: {
-    marginBottom: spacing.lg,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  statCard: {
-    flex: 1,
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    alignItems: "center",
-    ...shadows.small,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: spacing.xs,
-  },
-  statLabel: {
-    fontSize: 12,
-    opacity: 0.7,
-    textAlign: "center",
-  },
-  adminSection: {
-    marginBottom: spacing.lg,
-  },
-  adminBadge: {
-    backgroundColor: "#FF6B00",
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  adminBadgeText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  adminCard: {
-    borderRadius: borderRadius.md,
-    ...shadows.small,
-  },
-  adminButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: spacing.md,
-  },
-  adminIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(0,0,0,0.05)",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: spacing.md,
-  },
-  adminButtonText: {
-    flex: 1,
-  },
-  adminButtonTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  adminButtonDescription: {
-    fontSize: 12,
-    opacity: 0.7,
-  },
-  recentActivitySection: {
-    flex: 1,
-    marginBottom: spacing.lg,
-  },
-  activityCard: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    flex: 1,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyStateText: {
-    marginTop: spacing.sm,
-    opacity: 0.7,
-  },
-});

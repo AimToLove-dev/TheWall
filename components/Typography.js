@@ -6,8 +6,8 @@ import {
   Subheading,
   Paragraph,
   Caption,
-  useTheme,
 } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const HeaderText = ({ children, style, numberOfLines, onPress }) => (
   <Title style={style} numberOfLines={numberOfLines} onPress={onPress}>
@@ -34,11 +34,12 @@ export const CaptionText = ({ children, style, numberOfLines, onPress }) => (
 );
 
 export const LinkText = ({ children, style, numberOfLines, onPress }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
+
   return (
     <PaperText
       style={[
-        { color: theme.colors.primary, textDecorationLine: "underline" },
+        { color: colors.primary, textDecorationLine: "underline" },
         style,
       ]}
       numberOfLines={numberOfLines}
@@ -50,10 +51,11 @@ export const LinkText = ({ children, style, numberOfLines, onPress }) => {
 };
 
 export const ErrorText = ({ children, style, numberOfLines, onPress }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
+
   return (
     <PaperText
-      style={[{ color: theme.colors.error }, style]}
+      style={[{ color: colors.error }, style]}
       numberOfLines={numberOfLines}
       onPress={onPress}
     >

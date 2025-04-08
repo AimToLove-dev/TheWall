@@ -23,7 +23,7 @@ import {
   ReadTestimony,
 } from "components";
 import { AuthenticatedUserContext } from "providers";
-import { getThemeColors, spacing, shadows, borderRadius } from "styles/theme";
+import { getThemeColors, spacing, shadows } from "styles/theme";
 import { queryDocuments, updateDocument } from "utils/firebaseUtils";
 
 export const TestimonyAdminScreen = ({ navigation }) => {
@@ -308,6 +308,163 @@ export const TestimonyAdminScreen = ({ navigation }) => {
     </View>
   );
 
+  const styles = StyleSheet.create({
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    backButton: {
+      width: 40,
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: spacing.md,
+      ...shadows.small,
+    },
+    titleContainer: {
+      flex: 1,
+    },
+    title: {
+      fontSize: 22,
+    },
+    subtitle: {
+      opacity: 0.7,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    loadingText: {
+      marginTop: spacing.md,
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: spacing.xl,
+    },
+    emptyText: {
+      marginTop: spacing.md,
+      textAlign: "center",
+    },
+    errorText: {
+      textAlign: "center",
+      margin: spacing.md,
+    },
+    listContainer: {
+      padding: spacing.lg,
+    },
+    testimonyCard: {
+      padding: spacing.md,
+      marginBottom: spacing.md,
+      ...shadows.small,
+    },
+    testimonyHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: spacing.xs,
+    },
+    nameText: {
+      fontWeight: "bold",
+    },
+    dateText: {
+      fontSize: 12,
+      opacity: 0.7,
+    },
+    testimonyContent: {
+      marginVertical: spacing.sm,
+    },
+    testimonyText: {
+      lineHeight: 20,
+    },
+    mediaIndicators: {
+      flexDirection: "row",
+      marginBottom: spacing.sm,
+    },
+    mediaIndicator: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginRight: spacing.md,
+    },
+    mediaText: {
+      fontSize: 12,
+      marginLeft: 4,
+    },
+    actionButtons: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      borderTopWidth: 1,
+      borderTopColor: "rgba(0,0,0,0.1)",
+      paddingTop: spacing.sm,
+      marginTop: spacing.xs,
+    },
+    actionButton: {
+      flex: 1,
+      minHeight: 48,
+      marginHorizontal: 0,
+      ...shadows.small,
+    },
+    approveButton: {
+      backgroundColor: "#4CAF50",
+    },
+    approveButtonText: {
+      color: "#FFFFFF",
+      fontWeight: "bold",
+    },
+    rejectButtonText: {
+      color: "#D32F2F",
+      fontWeight: "bold",
+    },
+    loadingMoreContainer: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: spacing.md,
+    },
+    loadingMoreText: {
+      marginLeft: spacing.sm,
+    },
+    reviewContainer: {
+      flex: 1,
+      paddingBottom: spacing.lg,
+    },
+    actionButtonsContainer: {
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderColor,
+    },
+    rejectButton: {
+      borderColor: "#D32F2F",
+      borderWidth: 1,
+    },
+    reviewButtonContainer: {
+      backgroundColor: colors.surface,
+      paddingTop: spacing.sm,
+      marginTop: spacing.xs,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderColor,
+    },
+    reviewButton: {
+      width: "100%",
+    },
+    buttonsRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      gap: spacing.sm,
+    },
+    cancelButtonText: {
+      color: "#666666",
+      fontWeight: "500",
+    },
+  });
+
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       {renderHeader()}
@@ -323,16 +480,7 @@ export const TestimonyAdminScreen = ({ navigation }) => {
             status={reviewingTestimony.status}
           />
 
-          <View
-            style={[
-              styles.actionButtonsContainer,
-              {
-                backgroundColor: isDark
-                  ? "rgba(30,30,30,0.95)"
-                  : "rgba(255,255,255,0.95)",
-              },
-            ]}
-          >
+          <View style={styles.actionButtonsContainer}>
             {processing[reviewingTestimony.id] ? (
               <ActivityIndicator color={colors.primary} size="large" />
             ) : (
@@ -416,161 +564,3 @@ export const TestimonyAdminScreen = ({ navigation }) => {
     </FormContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: spacing.md,
-    ...shadows.small,
-  },
-  titleContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 22,
-  },
-  subtitle: {
-    opacity: 0.7,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginTop: spacing.md,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: spacing.xl,
-  },
-  emptyText: {
-    marginTop: spacing.md,
-    textAlign: "center",
-  },
-  errorText: {
-    textAlign: "center",
-    margin: spacing.md,
-  },
-  listContainer: {
-    padding: spacing.lg,
-  },
-  testimonyCard: {
-    padding: spacing.md,
-    borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
-    ...shadows.small,
-  },
-  testimonyHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  nameText: {
-    fontWeight: "bold",
-  },
-  dateText: {
-    fontSize: 12,
-    opacity: 0.7,
-  },
-  testimonyContent: {
-    marginVertical: spacing.sm,
-  },
-  testimonyText: {
-    lineHeight: 20,
-  },
-  mediaIndicators: {
-    flexDirection: "row",
-    marginBottom: spacing.sm,
-  },
-  mediaIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: spacing.md,
-  },
-  mediaText: {
-    fontSize: 12,
-    marginLeft: 4,
-  },
-  actionButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-    paddingTop: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  actionButton: {
-    flex: 1,
-    minHeight: 48,
-    marginHorizontal: 0,
-    ...shadows.small,
-  },
-  approveButton: {
-    backgroundColor: "#4CAF50",
-  },
-  approveButtonText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-  },
-  rejectButtonText: {
-    color: "#D32F2F",
-    fontWeight: "bold",
-  },
-  loadingMoreContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: spacing.md,
-  },
-  loadingMoreText: {
-    marginLeft: spacing.sm,
-  },
-  reviewContainer: {
-    flex: 1,
-    paddingBottom: spacing.lg,
-  },
-  actionButtonsContainer: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-  },
-  rejectButton: {
-    borderColor: "#D32F2F",
-    borderWidth: 1,
-  },
-  reviewButtonContainer: {
-    paddingTop: spacing.sm,
-    marginTop: spacing.xs,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-  },
-  reviewButton: {
-    width: "100%",
-  },
-  buttonsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    gap: spacing.sm,
-  },
-  cancelButtonText: {
-    color: "#666666",
-    fontWeight: "500",
-  },
-});

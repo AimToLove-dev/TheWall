@@ -1,4 +1,4 @@
-import { Platform } from "react-native";
+import { Platform, useColorScheme } from "react-native";
 import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 
 export const spacing = {
@@ -18,15 +18,6 @@ export const fontSizes = {
   xl: 20,
   xxl: 24,
   xxxl: 28,
-};
-
-export const borderRadius = {
-  sm: 4,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  xxl: 20,
-  round: 999,
 };
 
 export const shadows = {
@@ -66,8 +57,25 @@ export const shadows = {
 };
 
 // Helper function to get theme colors while maintaining backward compatibility
-export const getThemeColors = (isDark) => {
+export const getThemeColors = () => {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
   const theme = isDark ? MD3DarkTheme : MD3LightTheme;
+
+  // Override colors here if needed
+  theme.colors = {
+    ...theme.colors,
+    primary: "#1a1c1a",
+    background: "#ffffff",
+    onSurface: "#333333",
+    surface: "#ffffff",
+    surfaceVariant: "#f5f5f5",
+    onSurfaceVariant: "#333333",
+    onSurfaceDisabled: "#cccccc",
+    error: "#b00020",
+    outline: "#cccccc",
+  };
+
   return {
     primary: theme.colors.primary,
     background: theme.colors.background,

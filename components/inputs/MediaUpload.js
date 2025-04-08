@@ -42,7 +42,6 @@ export const MediaUpload = ({
       style={[
         {
           padding: 16,
-          borderRadius: 8,
         },
         style,
       ]}
@@ -55,7 +54,7 @@ export const MediaUpload = ({
         <View>
           <Image
             source={{ uri: image }}
-            style={{ width: 200, height: 150, borderRadius: 4 }}
+            style={{ width: 200, height: 150}}
           />
           <View
             style={{
@@ -86,7 +85,6 @@ export const MediaUpload = ({
             borderWidth: 1,
             borderColor: theme.colors.outline,
             borderStyle: "dashed",
-            borderRadius: 4,
             padding: 16,
             alignItems: "center",
             width: 200,

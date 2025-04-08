@@ -1,7 +1,8 @@
 "use client";
 
-import { Surface, Text, Button, useTheme } from "react-native-paper";
+import { Surface, Text, Button } from "react-native-paper";
 import { View } from "components/View";
+import { getThemeColors } from "styles/theme";
 
 export const ErrorScreen = ({
   title = "Error",
@@ -9,7 +10,7 @@ export const ErrorScreen = ({
   onRetry,
   retryText = "Try Again",
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   return (
     <Surface
@@ -33,7 +34,7 @@ export const ErrorScreen = ({
           style={{
             marginBottom: 24,
             textAlign: "center",
-            color: theme.colors.onSurfaceVariant,
+            color: colors.textSecondary,
           }}
         >
           {message}

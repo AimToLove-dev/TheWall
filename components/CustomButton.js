@@ -1,7 +1,8 @@
 "use client";
 
 import { View } from "react-native";
-import { Button, useTheme } from "react-native-paper";
+import { Button } from "react-native-paper";
+import { getThemeColors } from "styles/theme";
 
 export const CustomButton = ({
   title,
@@ -15,7 +16,23 @@ export const CustomButton = ({
   leftIcon,
   rightIcon,
 }) => {
-  const theme = useTheme();
+  const colors = getThemeColors();
+
+  // Get button colors based on variant
+  const getButtonColors = () => {
+    switch (variant) {
+      case "primary":
+        return { backgroundColor: colors.primary };
+      case "secondary":
+        return { backgroundColor: colors.secondary };
+      case "outline":
+        return { borderColor: colors.primary };
+      case "text":
+        return {};
+      default:
+        return { backgroundColor: colors.primary };
+    }
+  };
 
   // Map our custom variants to Paper modes
   const getMode = () => {
@@ -47,16 +64,22 @@ export const CustomButton = ({
     }
   };
 
+  // Create a render function for the left icon to avoid button nesting issues
+  const renderLeftIcon = leftIcon ? () => leftIcon : undefined;
+
   return (
     <Button
       mode={getMode()}
       onPress={onPress}
       loading={loading}
       disabled={disabled}
-      style={[getContentStyle(), style]}
-      contentStyle={{ flexDirection: "row", alignItems: "center" }}
+      style={[getButtonColors(), style, { borderRadius: 0 }]}
+      contentStyle={[
+        getContentStyle(),
+        { flexDirection: "row", alignItems: "center" },
+      ]}
       labelStyle={textStyle}
-      icon={leftIcon ? () => leftIcon : undefined}
+      icon={renderLeftIcon}
     >
       {title}
       {rightIcon && <View style={{ marginLeft: 8 }}>{rightIcon}</View>}

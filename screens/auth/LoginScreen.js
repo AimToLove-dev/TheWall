@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
   logoPlaceholder: {
     width: 80,
     height: 80,
-    borderRadius: 20,
     backgroundColor: "#5A67F2",
     justifyContent: "center",
     alignItems: "center",
@@ -233,9 +232,13 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     width: 40,
     height: 40,
-    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Platform.OS === "ios" ? "transparent" : "#F0F0F0",
+  },
+  submitButton: {
+    marginVertical: 25,
+    height: 50,
+    justifyContent: "center",
   },
 });

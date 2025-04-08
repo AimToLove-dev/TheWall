@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { View } from "react-native";
-import { Button, TextInput, Text, useTheme } from "react-native-paper";
+
+import { TextInput, Text } from "react-native-paper";
 import { updateUserProfile } from "@utils/profileUtils";
+import { getThemeColors } from "styles/theme";
+import { View } from "components";
+import { CustomButton } from "components/CustomButton";
 
 // Rename prop to profile instead of user to match what we're actually using
 export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
@@ -19,7 +22,7 @@ export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
     lastName: profile?.lastName || "",
   });
 
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   // Split displayName into firstName and lastName on component mount
   useEffect(() => {
@@ -141,27 +144,23 @@ export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
       />
 
       {error ? (
-        <Text style={{ color: theme.colors.error, marginBottom: 16 }}>
-          {error}
-        </Text>
+        <Text style={{ color: colors.error, marginBottom: 16 }}>{error}</Text>
       ) : null}
 
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Button
-          mode="outlined"
+        <CustomButton
+          title="Cancel"
+          variant="outline"
           onPress={onCancel}
           style={{ flex: 1, marginRight: 8 }}
-        >
-          Cancel
-        </Button>
-        <Button
-          mode="contained"
+        />
+        <CustomButton
+          title="Save Changes"
+          variant="primary"
           onPress={handleSubmit}
           loading={loading}
           style={{ flex: 1, marginLeft: 8 }}
-        >
-          Save Changes
-        </Button>
+        />
       </View>
     </View>
   );
