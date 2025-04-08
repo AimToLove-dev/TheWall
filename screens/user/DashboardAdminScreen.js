@@ -73,7 +73,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
             0
           );
           setPendingTestimoniesCount(pendingTestimonies.length);
-
           // Get approved testimonies count
           const approvedTestimonies = await queryDocuments(
             "testimonies",

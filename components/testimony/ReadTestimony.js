@@ -51,6 +51,73 @@ export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
     );
   };
 
+  // Helper function to render a checkbox item
+  const renderCheckboxItem = (question, answer) => {
+    // Three possible states: "Yes", "No", or undefined/null (not set)
+    const isNotSet = !answer || answer === "NotSet";
+    const isYes = answer === "Yes";
+    const isNo = answer === "No";
+
+    return (
+      <View style={styles.checkboxItem}>
+        <BodyText style={styles.checkboxQuestion}>{question}</BodyText>
+        <View style={styles.checkboxOptions}>
+          <View style={styles.optionContainer}>
+            <View
+              style={[
+                styles.checkbox,
+                isYes && {
+                  backgroundColor: colors.primary,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
+              {isYes && <Ionicons name="checkmark" size={12} color="#FFFFFF" />}
+            </View>
+            <BodyText style={styles.optionLabel}>Yes</BodyText>
+          </View>
+
+          <View style={styles.optionContainer}>
+            <View
+              style={[
+                styles.checkbox,
+                isNo && {
+                  backgroundColor: colors.primary,
+                  borderColor: colors.primary,
+                },
+              ]}
+            >
+              {isNo && <Ionicons name="checkmark" size={12} color="#FFFFFF" />}
+            </View>
+            <BodyText style={styles.optionLabel}>No</BodyText>
+          </View>
+
+          {isNotSet && (
+            <BodyText style={styles.notSetLabel}>(Not answered)</BodyText>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  // Helper function to render a radio option item with multiple choices
+  const renderRadioItem = (question, answer, options) => {
+    const isNotSet = !answer || answer === "NotSet";
+
+    return (
+      <View style={styles.checkboxItem}>
+        <BodyText style={styles.checkboxQuestion}>{question}</BodyText>
+        <View style={styles.radioOptions}>
+          {isNotSet ? (
+            <BodyText style={styles.notSetLabel}>(Not answered)</BodyText>
+          ) : (
+            <BodyText style={styles.selectedAnswer}>{answer}</BodyText>
+          )}
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -65,6 +132,86 @@ export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
         <BodyText style={styles.testimonyContent}>
           {testimony.testimony}
         </BodyText>
+      </View>
+
+      {/* Faith questions section */}
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <BodyText style={styles.testimonySectionTitle}>
+          Faith Questions
+        </BodyText>
+
+        {renderCheckboxItem(
+          "Do you believe that Jesus is the Son of God?",
+          testimony.believeJesusSonOfGod
+        )}
+
+        {renderCheckboxItem(
+          "Do you believe that Jesus was crucified on the cross and rose from the dead?",
+          testimony.believeJesusResurrection
+        )}
+
+        {renderCheckboxItem(
+          "Have you repented from your sins? (sin referring to actions, thoughts, or behaviors that go against God's will and commands)",
+          testimony.repentedFromSins
+        )}
+
+        {renderCheckboxItem(
+          "Do you confess Jesus as your Lord and Savior?",
+          testimony.confessJesusLord
+        )}
+
+        {renderCheckboxItem(
+          "Do you consider yourself born again?",
+          testimony.bornAgain
+        )}
+
+        {renderCheckboxItem(
+          "Do you consider yourself as baptized with the Holy Spirit?",
+          testimony.baptizedHolySpirit
+        )}
+      </View>
+
+      {/* Sexuality questions section */}
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <BodyText style={styles.testimonySectionTitle}>
+          Sexuality Questions
+        </BodyText>
+
+        {renderRadioItem(
+          "Do you claim to still struggle with same-sex attraction?",
+          testimony.struggleSameSexAttraction,
+          [
+            "Yes, but I pick up my cross and I deny myself from acting on same-sex attraction.",
+            "Yes, and I still have relationships (emotionally and/or physically) with the same sex.",
+            "No, I do not struggle with same-sex attraction.",
+            "I'm not sure.",
+          ]
+        )}
+
+        {renderCheckboxItem(
+          "Do you identify as part of the LGBTQ+ community?",
+          testimony.identifyAsLGBTQ
+        )}
+
+        {renderCheckboxItem(
+          "Do you vow purity and holiness over your body?",
+          testimony.vowPurity
+        )}
+
+        {renderCheckboxItem(
+          "Do you have any emotionally dependent relationships with the same sex?",
+          testimony.emotionallyDependentSameSex
+        )}
+
+        {renderCheckboxItem(
+          "Have you been delivered and/or healed from homosexuality?",
+          testimony.healedFromHomosexuality
+        )}
+
+        {renderCheckboxItem(
+          "Have you repented and renounced homosexuality?",
+          testimony.repentedHomosexuality
+        )}
       </View>
 
       {(testimony.beforeImage || testimony.afterImage) && (
@@ -105,7 +252,8 @@ export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
         </View>
       )}
 
-      {status !== "approved" && status !== "review" && (
+      {/* Only show edit button if onEdit function is provided and status is appropriate */}
+      {onEdit && status !== "pending" && (
         <CustomButton
           title="Edit Testimony"
           variant="primary"
@@ -187,5 +335,49 @@ const styles = StyleSheet.create({
   },
   editButton: {
     marginTop: spacing.md,
+  },
+  checkboxItem: {
+    marginBottom: spacing.md,
+  },
+  checkboxQuestion: {
+    marginBottom: spacing.xs,
+  },
+  checkboxOptions: {
+    flexDirection: "row",
+    marginTop: spacing.xs / 2,
+    alignItems: "center",
+  },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: spacing.md,
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: "#AAAAAA",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: spacing.xs / 2,
+  },
+  optionLabel: {
+    fontSize: 14,
+  },
+  notSetLabel: {
+    fontSize: 14,
+    fontStyle: "italic",
+    color: "#888888",
+    marginLeft: spacing.xs,
+  },
+  selectedAnswer: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#4CAF50",
+    marginTop: spacing.xs,
+  },
+  radioOptions: {
+    marginTop: spacing.xs,
   },
 });

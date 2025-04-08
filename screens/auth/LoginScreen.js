@@ -46,7 +46,7 @@ export const LoginScreen = ({ navigation }) => {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         // Only navigate to Dashboard after successful login
-        navigation.navigate("App", { screen: "Dashboard" });
+        navigation.navigate("Home");
       })
       .catch((error) => {
         let errorMessage = "An error occurred during login";

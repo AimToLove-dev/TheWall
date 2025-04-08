@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
   StyleSheet,
   View,
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  BackHandler,
 } from "react-native";
 import { useColorScheme } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Surface } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 import {
   HeaderText,
   SubtitleText,
@@ -18,6 +20,7 @@ import {
   ErrorText,
   CustomButton,
   FormContainer,
+  ReadTestimony,
 } from "components";
 import { AuthenticatedUserContext } from "providers";
 import { getThemeColors, spacing, shadows, borderRadius } from "styles/theme";
@@ -35,12 +38,57 @@ export const TestimonyAdminScreen = ({ navigation }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [processing, setProcessing] = useState({});
+  const [reviewingTestimony, setReviewingTestimony] = useState(null);
 
   const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
     fetchTestimonies();
   }, []);
+
+  // Handle Android back button when reviewing a testimony
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (reviewingTestimony) {
+          // Revert to pending status and return to list
+          handleCancelReview();
+          return true; // Prevent default behavior
+        }
+        return false; // Let default behavior happen (navigate back)
+      };
+
+      // Add back button handler for Android
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () => {
+        // Clean up event listener
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+      };
+    }, [reviewingTestimony])
+  );
+
+  // Cleanup function - ensure we reset any testimony in review state when navigating away
+  useEffect(() => {
+    // This will run when the component unmounts
+    return () => {
+      if (reviewingTestimony) {
+        // Reset testimony status to pending if it's in review state
+        resetTestimonyToPending(reviewingTestimony.id);
+      }
+    };
+  }, [reviewingTestimony]);
+
+  const resetTestimonyToPending = async (testimonyId) => {
+    try {
+      await updateDocument("testimonies", testimonyId, {
+        status: "pending",
+      });
+      console.log(`Testimony ${testimonyId} reset to pending status`);
+    } catch (err) {
+      console.error(`Error resetting testimony ${testimonyId}:`, err);
+    }
+  };
 
   const fetchTestimonies = async (page = 1) => {
     if (page === 1) {
@@ -82,15 +130,75 @@ export const TestimonyAdminScreen = ({ navigation }) => {
   };
 
   const handleBackPress = () => {
-    navigation.goBack();
+    if (reviewingTestimony) {
+      // Return to the testimony list view and reset status to pending
+      handleCancelReview();
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  // New function to handle canceling review
+  const handleCancelReview = async () => {
+    if (!reviewingTestimony) return;
+
+    setProcessing((prev) => ({ ...prev, [reviewingTestimony.id]: true }));
+
+    try {
+      // Reset testimony status back to pending
+      await updateDocument("testimonies", reviewingTestimony.id, {
+        status: "pending",
+      });
+
+      // Update local state to reflect this change
+      setTestimonies((prev) =>
+        prev.map((t) =>
+          t.id === reviewingTestimony.id ? { ...t, status: "pending" } : t
+        )
+      );
+
+      // Exit review mode
+      setReviewingTestimony(null);
+    } catch (err) {
+      console.error(`Error resetting testimony ${reviewingTestimony.id}:`, err);
+      setError(`Failed to reset testimony status. Please try again.`);
+    } finally {
+      setProcessing((prev) => ({ ...prev, [reviewingTestimony.id]: false }));
+    }
+  };
+
+  const handleReview = async (testimony) => {
+    setProcessing((prev) => ({ ...prev, [testimony.id]: true }));
+
+    try {
+      // Update status to "review"
+      await updateDocument("testimonies", testimony.id, {
+        status: "review",
+      });
+
+      // Set the current testimony being reviewed with updated status
+      setReviewingTestimony({
+        ...testimony,
+        status: "review",
+      });
+    } catch (err) {
+      console.error(`Error updating testimony ${testimony.id}:`, err);
+      setError(`Failed to update testimony status. Please try again.`);
+    } finally {
+      setProcessing((prev) => ({ ...prev, [testimony.id]: false }));
+    }
   };
 
   const handleApprove = async (testimony) => {
     await updateTestimonyStatus(testimony.id, "approved");
+    // Return to list view after approval
+    setReviewingTestimony(null);
   };
 
   const handleReject = async (testimony) => {
     await updateTestimonyStatus(testimony.id, "rejected");
+    // Return to list view after rejection
+    setReviewingTestimony(null);
   };
 
   const updateTestimonyStatus = async (testimonyId, status) => {
@@ -113,7 +221,7 @@ export const TestimonyAdminScreen = ({ navigation }) => {
     }
   };
 
-  const renderItem = ({ item }) => {
+  const renderTestimonyCard = ({ item }) => {
     const isProcessing = processing[item.id];
 
     return (
@@ -165,53 +273,111 @@ export const TestimonyAdminScreen = ({ navigation }) => {
           )}
         </View>
 
-        <View style={styles.actionButtons}>
-          {isProcessing ? (
-            <ActivityIndicator color={colors.primary} />
-          ) : (
-            <>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.rejectButton]}
-                onPress={() => handleReject(item)}
-              >
-                <Ionicons name="close-circle" size={20} color="#D32F2F" />
-                <BodyText style={styles.rejectButtonText}>Reject</BodyText>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.approveButton]}
-                onPress={() => handleApprove(item)}
-              >
-                <Ionicons name="checkmark-circle" size={20} color="#388E3C" />
-                <BodyText style={styles.approveButtonText}>Approve</BodyText>
-              </TouchableOpacity>
-            </>
-          )}
+        <View style={styles.reviewButtonContainer}>
+          <CustomButton
+            title="Review"
+            variant="primary"
+            onPress={() => handleReview(item)}
+            loading={isProcessing}
+            disabled={isProcessing}
+            style={styles.reviewButton}
+          />
         </View>
       </Surface>
     );
   };
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={handleBackPress}
+      >
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <HeaderText style={styles.title}>
+          {reviewingTestimony ? "Review Testimony" : "Testimony Admin"}
+        </HeaderText>
+        <SubtitleText style={styles.subtitle}>
+          {reviewingTestimony
+            ? "Review and make a decision"
+            : "Manage pending testimonies"}
+        </SubtitleText>
+      </View>
+    </View>
+  );
+
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: colors.card }]}
-          onPress={handleBackPress}
-        >
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <View style={styles.titleContainer}>
-          <HeaderText style={styles.title}>Testimony Admin</HeaderText>
-          <SubtitleText style={styles.subtitle}>
-            Manage pending testimonies
-          </SubtitleText>
-        </View>
-      </View>
+      {renderHeader()}
 
       {error && <ErrorText style={styles.errorText}>{error}</ErrorText>}
 
-      {loading && testimonies.length === 0 ? (
+      {reviewingTestimony ? (
+        // Show ReadTestimony component with approval/reject buttons
+        <View style={styles.reviewContainer}>
+          <ReadTestimony
+            testimony={reviewingTestimony}
+            colors={colors}
+            status={reviewingTestimony.status}
+          />
+
+          <View
+            style={[
+              styles.actionButtonsContainer,
+              {
+                backgroundColor: isDark
+                  ? "rgba(30,30,30,0.95)"
+                  : "rgba(255,255,255,0.95)",
+              },
+            ]}
+          >
+            {processing[reviewingTestimony.id] ? (
+              <ActivityIndicator color={colors.primary} size="large" />
+            ) : (
+              <View style={styles.buttonsRow}>
+                <CustomButton
+                  title="Cancel"
+                  variant="outline"
+                  leftIcon={
+                    <Ionicons name="arrow-back" size={20} color="#666666" />
+                  }
+                  onPress={handleCancelReview}
+                  style={styles.actionButton}
+                  textStyle={styles.cancelButtonText}
+                />
+
+                <CustomButton
+                  title="Reject"
+                  variant="outline"
+                  leftIcon={
+                    <Ionicons name="close-circle" size={20} color="#D32F2F" />
+                  }
+                  textStyle={styles.rejectButtonText}
+                  onPress={() => handleReject(reviewingTestimony)}
+                  style={[styles.actionButton, styles.rejectButton]}
+                />
+
+                <CustomButton
+                  title="Approve"
+                  variant="primary"
+                  leftIcon={
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={20}
+                      color="#FFFFFF"
+                    />
+                  }
+                  onPress={() => handleApprove(reviewingTestimony)}
+                  style={[styles.actionButton, styles.approveButton]}
+                  textStyle={styles.approveButtonText}
+                />
+              </View>
+            )}
+          </View>
+        </View>
+      ) : loading && testimonies.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <BodyText style={styles.loadingText}>Loading testimonies...</BodyText>
@@ -230,7 +396,7 @@ export const TestimonyAdminScreen = ({ navigation }) => {
       ) : (
         <FlatList
           data={testimonies}
-          renderItem={renderItem}
+          renderItem={renderTestimonyCard}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContainer}
           onEndReached={loadMoreTestimonies}
@@ -349,23 +515,19 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: spacing.sm,
+    minHeight: 48,
+    marginHorizontal: 0,
+    ...shadows.small,
   },
   approveButton: {
-    borderLeftWidth: 1,
-    borderLeftColor: "rgba(0,0,0,0.1)",
+    backgroundColor: "#4CAF50",
   },
   approveButtonText: {
-    color: "#388E3C",
-    marginLeft: spacing.xs,
+    color: "#FFFFFF",
     fontWeight: "bold",
   },
   rejectButtonText: {
     color: "#D32F2F",
-    marginLeft: spacing.xs,
     fontWeight: "bold",
   },
   loadingMoreContainer: {
@@ -376,5 +538,39 @@ const styles = StyleSheet.create({
   },
   loadingMoreText: {
     marginLeft: spacing.sm,
+  },
+  reviewContainer: {
+    flex: 1,
+    paddingBottom: spacing.lg,
+  },
+  actionButtonsContainer: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.1)",
+  },
+  rejectButton: {
+    borderColor: "#D32F2F",
+    borderWidth: 1,
+  },
+  reviewButtonContainer: {
+    paddingTop: spacing.sm,
+    marginTop: spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.1)",
+  },
+  reviewButton: {
+    width: "100%",
+  },
+  buttonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    gap: spacing.sm,
+  },
+  cancelButtonText: {
+    color: "#666666",
+    fontWeight: "500",
   },
 });
