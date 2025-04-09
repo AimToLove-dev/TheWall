@@ -11,7 +11,7 @@ import { AuthStack } from "./AuthStack";
 import { UserStack } from "./UserStack";
 import { HomeScreen, WailingWallScreen, TestimonyWallScreen } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
-import { Header } from "components";
+// import { Header } from "components";
 import { auth } from "config";
 
 const Stack = createStackNavigator();
@@ -67,7 +67,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer linking={linking}>
-      <Header></Header>
+      {/* <Header></Header> */}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* Home screen is always accessible */}
         <Stack.Screen name="Home" component={HomeScreen} />

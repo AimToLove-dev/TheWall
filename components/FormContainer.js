@@ -14,7 +14,7 @@ export const FormContainer = ({
   children,
   style,
   contentContainerStyle,
-  dismissKeyboard = true,
+  dismissKeyboard = false,
 }) => {
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -29,10 +29,10 @@ export const FormContainer = ({
           >
             {dismissKeyboard ? (
               <TouchableWithoutFeedback>
-                <View style={{ minHeight: "100%" }}>{children}</View>
+                <View style={{ flex: 1 }}>{children}</View>
               </TouchableWithoutFeedback>
             ) : (
-              <View style={{ minHeight: "100%" }}>{children}</View>
+              <View style={{ flex: 1 }}>{children}</View>
             )}
           </ScrollView>
         </KeyboardAvoidingView>

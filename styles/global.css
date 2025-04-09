@@ -1,3 +1,18 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  
+}
+
+body{
+  overflow-y: auto;
+}
+
+
+body::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar in webkit browsers (Chrome, Safari) */
+}
+
 input:focus {
   border: none;
   outline: none;

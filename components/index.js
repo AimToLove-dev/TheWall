@@ -13,12 +13,11 @@ import {
   HeaderText,
   LinkText,
   ErrorText,
+  CaptionText,
 } from "./Typography";
+import BottomSheet from "./BottomSheet";
 
 // Import from feature folders directly to avoid cycles
-import { WallBrick } from "./WallBrick";
-import { TestimonyWall } from "./TestimonyWall";
-import { WailingWall } from "./WailingWall";
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
 import { ErrorBoundary } from "./error/ErrorBoundary";
 import { ErrorScreen } from "./error/ErrorScreen";
@@ -41,9 +40,6 @@ export {
   CustomButton,
   FormContainer,
   CustomDialog,
-  WallBrick,
-  TestimonyWall,
-  WailingWall,
   Header,
   SubtitleText,
   BodyText,
@@ -51,6 +47,8 @@ export {
   CardGrid,
   LinkText,
   ErrorText,
+  CaptionText,
+  BottomSheet,
   DatabaseErrorScreen,
   ErrorBoundary,
   ErrorScreen,
