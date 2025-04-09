@@ -5,6 +5,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { ActivityIndicator, Surface } from "react-native-paper";
+import { Linking } from "react-native";
 
 import { AuthStack } from "./AuthStack";
 import { UserStack } from "./UserStack";
@@ -33,6 +34,26 @@ export const RootNavigator = () => {
     return unsubscribeAuthStateChanged;
   }, []);
 
+  // Simple deep linking configuration
+  const linking = {
+    prefixes: ["thewall://", "https://thewall.app"],
+    config: {
+      screens: {
+        Home: "",
+        WailingWall: "wailing-wall",
+        TestimonyWall: "testimonies",
+        Auth: {
+          screens: {
+            Login: "login", // Maps /login to the existing LoginScreen
+            Signup: "signup",
+            ForgotPassword: "forgot-password",
+          },
+        },
+        App: "dashboard",
+      },
+    },
+  };
+
   if (isLoading) {
     return (
       <Surface
@@ -45,7 +66,7 @@ export const RootNavigator = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       <Header></Header>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* Home screen is always accessible */}

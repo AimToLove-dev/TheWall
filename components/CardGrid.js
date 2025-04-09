@@ -17,7 +17,6 @@ export const CardGrid = ({
       style={[
         {
           flexDirection: direction,
-          justifyContent: "center",
           width: "100%",
           gap,
         },
@@ -32,6 +31,7 @@ export const CardGrid = ({
           style={{
             width: 150,
             height: 150,
+            borderRadius: 0,
           }}
           contentStyle={{
             padding: 16,
@@ -45,6 +45,7 @@ export const CardGrid = ({
             style={{
               width: 120,
               height: 70,
+
               backgroundColor: "transparent",
             }}
             resizeMode="contain"

@@ -1,14 +1,7 @@
 "use client";
 
 import { FlatList } from "react-native";
-import {
-  Surface,
-  List,
-  IconButton,
-  Text,
-  useTheme,
-  Chip,
-} from "react-native-paper";
+import { Surface, List, IconButton, Text, Chip } from "react-native-paper";
 import { View } from "components/View";
 import { useState, useEffect, useContext } from "react";
 import { AuthenticatedUserContext } from "providers";
@@ -19,6 +12,7 @@ import {
 } from "utils/soulsUtils";
 import { DatabaseErrorScreen } from "components/error/DatabaseErrorScreen";
 import { CustomDialog } from "components";
+import { getThemeColors } from "styles/theme";
 
 export const SoulsList = ({
   navigation,
@@ -30,7 +24,7 @@ export const SoulsList = ({
   onSelect,
 }) => {
   const { user } = useContext(AuthenticatedUserContext);
-  const theme = useTheme();
+  const colors = getThemeColors();
 
   const [souls, setSouls] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -119,10 +113,10 @@ export const SoulsList = ({
               <Chip
                 icon="link"
                 compact
-                mode="outlined"
+                variant="outlined"
                 style={{
                   marginLeft: 8,
-                  backgroundColor: theme.colors.surfaceVariant,
+                  backgroundColor: colors.surfaceVariant,
                 }}
               >
                 Linked
@@ -145,7 +139,7 @@ export const SoulsList = ({
             <List.Icon
               {...props}
               icon={hasLinkedTestimony ? "link" : isPrivate ? "lock" : "earth"}
-              color={hasLinkedTestimony ? theme.colors.primary : undefined}
+              color={hasLinkedTestimony ? colors.primary : undefined}
             />
           )
         }
@@ -163,13 +157,13 @@ export const SoulsList = ({
                 icon="delete"
                 onPress={() => handleDeleteSoul(item)}
                 disabled={hasLinkedTestimony}
-                color={hasLinkedTestimony ? theme.colors.outline : undefined}
+                color={hasLinkedTestimony ? colors.outline : undefined}
               />
             </View>
           )
         }
         style={{
-          backgroundColor: theme.colors.surface,
+          backgroundColor: colors.surface,
           marginBottom: 8,
         }}
       />
@@ -192,7 +186,7 @@ export const SoulsList = ({
       mode="flat"
       style={{
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: colors.background,
         padding: 16,
       }}
     >
@@ -201,7 +195,7 @@ export const SoulsList = ({
           icon="alert-circle"
           mode="flat"
           style={{
-            backgroundColor: theme.colors.errorContainer,
+            backgroundColor: colors.errorContainer,
             marginBottom: 16,
           }}
         >
@@ -214,7 +208,7 @@ export const SoulsList = ({
           variant="bodyLarge"
           style={{
             textAlign: "center",
-            color: theme.colors.onSurfaceVariant,
+            color: colors.onSurfaceVariant,
           }}
         >
           No souls added yet

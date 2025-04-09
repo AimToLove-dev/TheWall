@@ -44,7 +44,14 @@ export const LoginScreen = ({ navigation }) => {
     setErrorState("");
 
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
+      .then((result) => {
+        //TODO: enable login for non-admin users
+        if (!email.endsWith("@aimtolove.com")) {
+          const error = new Error("Login is admin only");
+          error.code = "auth/user-not-admin";
+          throw error;
+        }
+        console.log(result);
         // Only navigate to Dashboard after successful login
         navigation.navigate("Home");
       })
@@ -64,6 +71,8 @@ export const LoginScreen = ({ navigation }) => {
             break;
           case "auth/network-request-failed":
             errorMessage = "Network error. Please check your connection";
+          case "auth/user-not-admin":
+            errorMessage = "Login is admin only";
             break;
         }
         setErrorState(errorMessage);

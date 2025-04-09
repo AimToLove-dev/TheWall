@@ -71,28 +71,30 @@ export const HomeScreen = ({ navigation }) => {
       </View>
 
       {/* Authentication buttons */}
-      <View style={styles.authContainer}>
-        {user ? (
-          <CustomButton
-            title="Go to Dashboard"
-            onPress={handleDashboardPress}
-            mode="contained"
-          />
-        ) : (
-          <>
+      {user && user?.isAdmin && (
+        <View style={styles.authContainer}>
+          {user ? (
             <CustomButton
-              title="Login"
-              onPress={handleLoginPress}
-              mode="outlined"
+              title="Go to Dashboard"
+              onPress={handleDashboardPress}
+              mode="primary"
             />
-            <CustomButton
-              title="Sign Up"
-              onPress={handleSignupPress}
-              mode="contained"
-            />
-          </>
-        )}
-      </View>
+          ) : (
+            <>
+              <CustomButton
+                title="Login"
+                onPress={handleLoginPress}
+                variant="outline"
+              />
+              <CustomButton
+                title="Sign Up"
+                onPress={handleSignupPress}
+                variant="primary"
+              />
+            </>
+          )}
+        </View>
+      )}
     </Surface>
   );
 };

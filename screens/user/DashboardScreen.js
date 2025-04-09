@@ -215,7 +215,7 @@ export const DashboardScreen = ({ navigation }) => {
             )}
             <View style={styles.profileInfo}>
               <HeaderText style={styles.welcomeText}>
-                {greeting}, {user?.displayName || "User"}
+                {greeting}, {user?.displayName || profile?.displayName || ""}
               </HeaderText>
               <SubtitleText style={styles.emailText}>
                 {user?.email || "No email provided"}

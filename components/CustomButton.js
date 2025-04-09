@@ -34,6 +34,22 @@ export const CustomButton = ({
     }
   };
 
+  // Get text color based on variant
+  const getTextColor = () => {
+    switch (variant) {
+      case "primary":
+        return "white";
+      case "secondary":
+        return "white";
+      case "outline":
+        return colors.text;
+      case "text":
+        return colors.text;
+      default:
+        return "white";
+    }
+  };
+
   // Map our custom variants to Paper modes
   const getMode = () => {
     switch (variant) {
@@ -78,7 +94,8 @@ export const CustomButton = ({
         getContentStyle(),
         { flexDirection: "row", alignItems: "center" },
       ]}
-      labelStyle={textStyle}
+      labelStyle={[{ color: getTextColor() }, textStyle]}
+      textColor={getTextColor()}
       icon={renderLeftIcon}
     >
       {title}

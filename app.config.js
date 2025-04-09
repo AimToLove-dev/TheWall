@@ -6,10 +6,6 @@ export default {
     slug: "the-wall",
     privacy: "public",
     platforms: ["web", "ios", "android"],
-    web: {
-      favicon: "./assets/heart.png",
-      assetBundlePatterns: ["**/*"],
-    },
     version: "0.19.0",
     orientation: "portrait",
     icon: "./assets/whale.svg",
@@ -24,6 +20,12 @@ export default {
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
+    },
+    // Deep linking configuration
+    scheme: "thewall",
+    web: {
+      favicon: "./assets/heart.png",
+      assetBundlePatterns: ["**/*"],
     },
     extra: {
       apiKey: process.env.API_KEY,
