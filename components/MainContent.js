@@ -1,13 +1,27 @@
 import React from "react";
-import { StyleSheet, TouchableOpacity, Image, Text, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Text,
+  View,
+  Dimensions,
+} from "react-native";
 import { HeaderText, BodyText, CustomButton, CaptionText } from "components";
 
 export const MainContent = ({
   navigateToWailingWall,
   navigateToTestimonyWall,
 }) => {
+  const screenWidth = Dimensions.get("window").width;
   return (
-    <View style={{ padding: 20, maxWidth: 800, marginHorizontal: "auto" }}>
+    <View
+      style={{
+        padding: 20,
+        maxWidth: Math.min(screenWidth, 800),
+        marginHorizontal: "auto",
+      }}
+    >
       {/* Main Content */}
       <View style={styles.mainContent}>
         {/* Two Column News Section */}

@@ -70,7 +70,7 @@ export const HomeScreen = ({ navigation }) => {
           <ImageBackground
             source={require("../assets/wall.png")}
             style={styles.wallBackground}
-            resizeMode="repeat"
+            resizeMode="repeat-x"
           >
             <View style={{ padding: 20, paddingBottom: 0 }}>
               {/* Masthead */}
