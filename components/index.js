@@ -23,7 +23,7 @@ import { ScrollableScreenView } from "./ScrollableScreenView";
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
 import { ErrorBoundary } from "./error/ErrorBoundary";
 import { ErrorScreen } from "./error/ErrorScreen";
-import { AddSoulInput } from "./souls/AddSoulInput";
+import { AddSoulForm } from "./souls/AddSoulInput";
 import { EditSoul } from "./souls/EditSoul";
 import { SoulsList } from "./souls/SoulsList";
 import { CustomInput } from "./inputs/CustomInput";
@@ -57,7 +57,7 @@ export {
   DatabaseErrorScreen,
   ErrorBoundary,
   ErrorScreen,
-  AddSoulInput,
+  AddSoulForm,
   EditSoul,
   SoulsList,
   CustomInput,

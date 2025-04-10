@@ -21,7 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import BottomSheet from "components/BottomSheet";
 // Assuming these components exist in your project
-import { AddSoulInput, HeaderText, BodyText, BackButton } from "components";
+import { AddSoulForm, HeaderText, BodyText, BackButton } from "components";
 import { setSouls } from "utils/soulsUtils";
 
 // Hardcoded test list of names (FirstName LastInitial)
@@ -256,14 +256,10 @@ export const WailingWallScreen = () => {
         duration={400}
       >
         <View style={styles.bottomSheetContent}>
-          <HeaderText style={styles.bottomSheetTitle}>
-            Add a New Prayer
-          </HeaderText>
-          <BodyText style={styles.bottomSheetDescription}>
-            Enter the name of someone you'd like to pray for
-          </BodyText>
-
-          <AddSoulInput onSuccess={handleSoulAdded} />
+          <AddSoulForm
+            onSuccess={handleSoulAdded}
+            onCancel={toggleBottomSheet}
+          />
         </View>
       </BottomSheet>
     </View>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, Text } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import { TestimonyWall } from "components";
-import { AddSoulInput } from "components";
+import { AddSoulForm } from "components";
 import { getAllTestimonies } from "utils/testimoniesUtils";
 
 export const TestimonyWallScreen = () => {

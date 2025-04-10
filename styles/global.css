@@ -19,3 +19,8 @@ input:focus {
   outline: none;
 
 }
+input:autofill, input:-webkit-autofill,input:-internal-autofill-selected {
+  box-shadow: 0 0 0px 1000px transparent inset !important;
+  -webkit-text-fill-color: #000 !important;  /* Set text color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevent autofill background from reverting */
+}
