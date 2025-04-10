@@ -16,6 +16,8 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
+import { Ionicons } from "@expo/vector-icons";
+
 import BottomSheet from "components/BottomSheet";
 // Assuming these components exist in your project
 import { AddSoulInput, HeaderText, BodyText } from "components";
@@ -210,6 +212,7 @@ export const WailingWallScreen = () => {
 
   return (
     <View
+      className="wailing-wall-screen"
       style={[styles.container, { height: Dimensions.get("window").height }]}
     >
       <ImageBackground
@@ -231,20 +234,19 @@ export const WailingWallScreen = () => {
               <NamesListComponent />
             </VerticalMarquee>
           </Pressable>
-
-          {/* Plus Button */}
-          <TouchableOpacity
-            style={styles.plusButton}
-            onPress={toggleBottomSheet}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.plusButtonText}>+</Text>
-          </TouchableOpacity>
         </View>
       </ImageBackground>
-
+      {/* Plus Button */}
+      <TouchableOpacity
+        style={styles.plusButton}
+        onPress={toggleBottomSheet}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="add" size={32} color="white" />
+      </TouchableOpacity>
       {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
       <BottomSheet
+        style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
         isVisible={isBottomSheetVisible}
         onClose={toggleBottomSheet}
         duration={400}
@@ -326,8 +328,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   plusButton: {
-    position: "absolute",
-    right: 20,
+    position: "fixed",
+    right: 30,
     bottom: 30,
     width: 60,
     height: 60,
@@ -363,7 +365,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    position: "relative",
     zIndex: 0,
   },
 });

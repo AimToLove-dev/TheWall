@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 20,
     width: "100%",
-    position: "absolute",
+    position: "fixed",
     bottom: 0,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,

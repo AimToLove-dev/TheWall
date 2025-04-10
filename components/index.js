@@ -32,6 +32,7 @@ import { ConnectTestimony } from "./testimony/ConnectTestimony";
 import { ConfirmationPage } from "./testimony/ConfirmationPage";
 import { ReadTestimony } from "./testimony/ReadTestimony";
 import { EditTestimony } from "./testimony/EditTestimony";
+import { MainContent } from "./MainContent";
 
 export {
   View,
@@ -63,4 +64,5 @@ export {
   ConfirmationPage,
   ReadTestimony,
   EditTestimony,
+  MainContent,
 };

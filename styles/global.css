@@ -5,8 +5,9 @@ html, body, #root {
 }
 
 body{
-  overflow-y: auto;
+  position: relative;
 }
+
 
 
 body::-webkit-scrollbar {
