@@ -17,10 +17,11 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 import BottomSheet from "components/BottomSheet";
 // Assuming these components exist in your project
-import { AddSoulInput, HeaderText, BodyText } from "components";
+import { AddSoulInput, HeaderText, BodyText, BackButton } from "components";
 import { setSouls } from "utils/soulsUtils";
 
 // Hardcoded test list of names (FirstName LastInitial)
@@ -189,6 +190,7 @@ export const WailingWallScreen = () => {
   const [isPaused, setIsPaused] = useState(false);
   // Use a regular boolean state instead of a shared value
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const navigation = useNavigation();
 
   const handleSoulAdded = (soulId, soulData) => {
     // Add the new soul to the list without refetching everything
@@ -236,6 +238,8 @@ export const WailingWallScreen = () => {
           </Pressable>
         </View>
       </ImageBackground>
+      {/* Back Button */}
+      <BackButton customOnPress={() => navigation.navigate("Home")} />
       {/* Plus Button */}
       <TouchableOpacity
         style={styles.plusButton}

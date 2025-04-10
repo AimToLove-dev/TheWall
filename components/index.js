@@ -2,6 +2,7 @@
 import { View } from "./View";
 import { Logo } from "./Logo";
 import { Icon } from "./Icon";
+import { BackButton } from "./BackButton";
 import { CustomButton } from "./CustomButton";
 import { FormContainer } from "./FormContainer";
 import { CustomDialog } from "./CustomDialog";
@@ -16,6 +17,7 @@ import {
   CaptionText,
 } from "./Typography";
 import BottomSheet from "./BottomSheet";
+import { ScrollableScreenView } from "./ScrollableScreenView";
 
 // Import from feature folders directly to avoid cycles
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
@@ -38,6 +40,7 @@ export {
   View,
   Logo,
   Icon,
+  BackButton,
   CustomButton,
   FormContainer,
   CustomDialog,
@@ -50,6 +53,7 @@ export {
   ErrorText,
   CaptionText,
   BottomSheet,
+  ScrollableScreenView,
   DatabaseErrorScreen,
   ErrorBoundary,
   ErrorScreen,

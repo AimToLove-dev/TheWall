@@ -26,7 +26,7 @@ import { getThemeColors } from "../styles/theme";
 import { AuthenticatedUserContext } from "../providers";
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { MainContent } from "../components/MainContent";
+import { MainContent, ScrollableScreenView } from "components";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -60,19 +60,16 @@ export const HomeScreen = ({ navigation }) => {
   });
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
       <ImageBackground
         source={require("../assets/paper.jpg")}
-        style={[styles.backgroundImage]}
+        style={styles.backgroundImage}
         resizeMode="repeat"
       >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-        >
+        <ScrollableScreenView>
           <ImageBackground
             source={require("../assets/wall.png")}
-            style={styles.backgroundImage}
+            style={styles.wallBackground}
             resizeMode="repeat"
           >
             <View style={{ padding: 20, paddingBottom: 0 }}>
@@ -144,9 +141,9 @@ export const HomeScreen = ({ navigation }) => {
 
           {/* Page Number */}
           <CaptionText style={styles.pageNumber}>Page 1 of 24</CaptionText>
-        </ScrollView>
+        </ScrollableScreenView>
       </ImageBackground>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -212,5 +209,13 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 40,
+  },
+  container: {
+    flex: 1,
+  },
+  wallBackground: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
 });

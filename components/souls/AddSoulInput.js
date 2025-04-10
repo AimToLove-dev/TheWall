@@ -35,62 +35,6 @@ export const AddSoulInput = ({
   const inputRef = useRef(null);
   const colors = getThemeColors();
 
-  const styles = StyleSheet.create({
-    container: {
-      position: "absolute",
-      bottom: 20,
-      right: 20,
-      alignItems: "flex-end",
-      zIndex: 100,
-    },
-    backdrop: {
-      position: "absolute",
-      top: -1000,
-      left: -1000,
-      right: -1000,
-      bottom: -1000,
-      backgroundColor: "rgba(0,0,0,0.5)",
-      zIndex: 99,
-    },
-    iconButton: {
-      width: 56,
-      height: 56,
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 101,
-      backgroundColor: "transparent",
-    },
-    icon: {
-      width: 56,
-      height: 56,
-      resizeMode: "contain",
-    },
-    inputContainer: {
-      flexDirection: "row",
-      backgroundColor: colors.surface,
-      width: 280,
-      height: 50,
-      alignItems: "center",
-      paddingHorizontal: 15,
-      zIndex: 100,
-      marginRight: 20,
-      marginBottom: 10,
-      paddingRight: 5,
-    },
-    input: {
-      flex: 1,
-      fontSize: 16,
-      marginRight: 10,
-      color: colors.text,
-    },
-    sendButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: colors.primary,
-    },
-  });
 
   // Animation values
   const progress = useSharedValue(0);
@@ -176,56 +120,8 @@ export const AddSoulInput = ({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      {isOpen && (
-        <TouchableWithoutFeedback onPress={toggleInput}>
-          <Animated.View style={[styles.backdrop, backdropStyle]} />
-        </TouchableWithoutFeedback>
-      )}
+    <View>
 
-      {isOpen && (
-        <Animated.View style={[styles.inputContainer, inputContainerStyle]}>
-          <TextInput
-            ref={inputRef}
-            value={soulName}
-            onChangeText={setSoulName}
-            placeholder="Enter name for prayer..."
-            mode="outlined"
-            error={!!error}
-            left={<TextInput.Icon icon="account-heart" />}
-            right={
-              <TextInput.Icon
-                icon="send"
-                disabled={!soulName.trim() || isSubmitting}
-                onPress={handleSubmit}
-              />
-            }
-            onSubmitEditing={handleSubmit}
-            returnKeyType="send"
-            style={{ backgroundColor: colors.surface }}
-          />
-          {error && (
-            <HelperText type="error" visible={!!error}>
-              {error}
-            </HelperText>
-          )}
-        </Animated.View>
-      )}
-
-      <TouchableOpacity
-        style={styles.iconButton}
-        onPress={toggleInput}
-        disabled={isSubmitting}
-      >
-        <SpeakingImage
-          source={iconSource}
-          imageStyle={{ width: 70, height: 70 }}
-          message="Add a loved one!"
-          position="left"
-          delay={10000}
-          duration={10000}
-        />
-      </TouchableOpacity>
     </View>
   );
 };
