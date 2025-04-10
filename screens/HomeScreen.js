@@ -86,7 +86,7 @@ export const HomeScreen = ({ navigation }) => {
                 <View style={styles.dateStrip}>
                   <CaptionText>Est. 2025</CaptionText>
                   <CaptionText>{currentDate}</CaptionText>
-                  <CaptionText>Price: $2.50</CaptionText>
+                  <CaptionText>Price: FREE</CaptionText>
                 </View>
               </View>
             </View>

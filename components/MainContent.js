@@ -14,6 +14,13 @@ export const MainContent = ({
   navigateToTestimonyWall,
 }) => {
   const screenWidth = Dimensions.get("window").width;
+
+  // Create custom style for justified body text
+  const justifiedTextStyle = {
+    textAlign: "justify",
+    hyphens: "auto",
+  };
+
   return (
     <View
       style={{
@@ -39,14 +46,14 @@ export const MainContent = ({
               />
             </View>
             <BodyText>By Sarah Chen, Technology Reporter</BodyText>
-            <BodyText style={styles.firstCharDropCap}>
+            <BodyText style={[styles.firstCharDropCap, justifiedTextStyle]}>
               The Wailing Wall — is a sanctuary of intercession, where the
               faithful gather to pray fervently for those who have yet to come
               to know the saving grace of Christ. It is a sacred place where
               prayers ascend like incense, carrying the hopes and burdens of the
               lost.
             </BodyText>
-            <BodyText>
+            <BodyText style={justifiedTextStyle}>
               This wall is not only a symbol of sorrow but of hope. It
               represents the deep desire of the Church to see lives transformed,
               hearts healed, and souls brought into the fullness of God's love.
@@ -66,7 +73,7 @@ export const MainContent = ({
               Sharing the Glory of God's Transformative Power
             </HeaderText>
             <BodyText>By Michael Rodriguez, Financial Correspondent</BodyText>
-            <BodyText style={styles.firstCharDropCap}>
+            <BodyText style={[styles.firstCharDropCap, justifiedTextStyle]}>
               The Testimony Wall — stands as a living testament to the
               miraculous work of Jesus Christ in the lives of individuals who
               have walked away from the LGBT lifestyle. Each story shared on
@@ -75,7 +82,7 @@ export const MainContent = ({
               lighting the way for others to come to the knowledge of truth and
               salvation.
             </BodyText>
-            <BodyText>
+            <BodyText style={justifiedTextStyle}>
               As people share their personal journeys of transformation, the
               Testimony Wall becomes a source of inspiration, reminding all who
               see it that no soul is beyond God's reach. It is a place where the
@@ -117,7 +124,7 @@ export const MainContent = ({
               A Divine Invitation
             </HeaderText>
             <View style={styles.twoColumnText}>
-              <BodyText style={styles.boldText}>
+              <BodyText style={[styles.boldText, justifiedTextStyle]}>
                 The Wall (.love) is not just an initiative; it is a sacred
                 invitation to reclaim those who have been cast aside, to restore
                 the brokenhearted, and to bring healing to the LGBT community
@@ -126,14 +133,14 @@ export const MainContent = ({
               <BodyText>
                 <small>By James Wilson, Diplomatic Correspondent</small>
               </BodyText>
-              <BodyText>
+              <BodyText style={justifiedTextStyle}>
                 THE WALL — is a place where God's grace flows like a river,
                 welcoming individuals into a space of repentance, restoration
                 and new beginnings. Here, love transcends labels, and every
                 person is seen with the eyes of God, deserving of His tender
                 mercy.
               </BodyText>
-              <BodyText>
+              <BodyText style={justifiedTextStyle}>
                 This movement is a powerful call to overcomers—those who,
                 through the grace of Jesus, are stepping out of the darkness of
                 sin and into the light of salvation. The Wall (.love) offers a
@@ -142,7 +149,7 @@ export const MainContent = ({
                 Jesus Christ. It is a place to encounter the life-changing love
                 of God and embrace a new identity in Him.
               </BodyText>
-              <BodyText style={styles.continuedText}>
+              <BodyText style={[styles.continuedText, justifiedTextStyle]}>
                 Continued on Page A6, Column 1
               </BodyText>
             </View>
@@ -163,17 +170,17 @@ export const MainContent = ({
             <HeaderText style={styles.sectionTitle}>Related Stories</HeaderText>
             <View style={styles.relatedStories}>
               <TouchableOpacity>
-                <BodyText style={styles.relatedStoryLink}>
+                <BodyText style={[styles.relatedStoryLink, justifiedTextStyle]}>
                   Deciphering the Lingo: What is an Overcomer?
                 </BodyText>
               </TouchableOpacity>
               <TouchableOpacity>
-                <BodyText style={styles.relatedStoryLink}>
+                <BodyText style={[styles.relatedStoryLink, justifiedTextStyle]}>
                   In the Breach: How can I make a difference?
                 </BodyText>
               </TouchableOpacity>
               <TouchableOpacity>
-                <BodyText style={styles.relatedStoryLink}>
+                <BodyText style={[styles.relatedStoryLink, justifiedTextStyle]}>
                   Kingdom Impact: What does becoming a partner look like?
                 </BodyText>
               </TouchableOpacity>
