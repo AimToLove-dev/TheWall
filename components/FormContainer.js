@@ -9,6 +9,7 @@ import {
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View } from "./View";
+import { ScrollableScreenView } from "./ScrollableScreenView";
 
 export const FormContainer = ({
   children,
@@ -23,7 +24,7 @@ export const FormContainer = ({
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <ScrollView
+          <ScrollableScreenView
             style={{ flex: 1 }}
             contentContainerStyle={[{ flexGrow: 1 }, contentContainerStyle]}
           >
@@ -34,7 +35,7 @@ export const FormContainer = ({
             ) : (
               <View style={{ flex: 1 }}>{children}</View>
             )}
-          </ScrollView>
+          </ScrollableScreenView>
         </KeyboardAvoidingView>
       </Surface>
     </SafeAreaView>
