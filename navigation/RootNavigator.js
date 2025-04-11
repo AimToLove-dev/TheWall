@@ -49,7 +49,7 @@ export const RootNavigator = () => {
             ForgotPassword: "forgot-password",
           },
         },
-        App: "dashboard",
+        User: "user",
       },
     },
   };
@@ -80,7 +80,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Auth" component={AuthStack} />
 
         {/* Protected routes that require authentication */}
-        <Stack.Screen name="App" component={UserStack} />
+        <Stack.Screen name="User" component={UserStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

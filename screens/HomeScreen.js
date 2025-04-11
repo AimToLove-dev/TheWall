@@ -27,6 +27,7 @@ import { AuthenticatedUserContext } from "../providers";
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainContent, ScrollableScreenView } from "components";
+import { Link } from "@react-navigation/native";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -41,7 +42,7 @@ export const HomeScreen = ({ navigation }) => {
   };
 
   const handleDashboardPress = () => {
-    navigation.navigate("App", { screen: "Dashboard" });
+    navigation.navigate("User");
   };
 
   const navigateToWailingWall = () => {
@@ -134,7 +135,7 @@ export const HomeScreen = ({ navigation }) => {
             </CaptionText>
             <TouchableOpacity>
               <CaptionText style={styles.link}>
-                www.thewall.com/subscribe
+                <Link to={"/login"}>www.thewall.love/login</Link>
               </CaptionText>
             </TouchableOpacity>
           </View>

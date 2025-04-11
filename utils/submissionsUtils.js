@@ -3,7 +3,7 @@ import { setDoc, doc, serverTimestamp } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { httpsCallable, getFunctions } from "firebase/functions";
 
-const functions = getFunctions(getApp(), "us-central1");
+const functions = getFunctions();
 const submitSoulFormCallable = httpsCallable(functions, "submitSoulForm");
 /**
  * Submit soul form to submissions collection

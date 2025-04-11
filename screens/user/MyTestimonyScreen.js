@@ -132,7 +132,7 @@ export const MyTestimonyScreen = ({ navigation }) => {
   };
 
   const navigateToDashboard = () => {
-    navigation.navigate("Dashboard");
+    navigation.navigate("user");
   };
 
   // Function to handle editing an existing testimony

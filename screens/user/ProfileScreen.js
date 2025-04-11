@@ -37,7 +37,7 @@ export const ProfileScreen = ({ navigation, route }) => {
   const { isComplete, missingFields } = checkProfileCompleteness(profile);
 
   const handleBackPress = () => {
-    navigation.navigate("Dashboard");
+    navigation.navigate("user");
   };
 
   const handleEditProfile = () => {

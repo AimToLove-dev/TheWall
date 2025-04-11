@@ -108,9 +108,6 @@ export const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <View style={styles.logoContainer}>
-          <View style={styles.logoPlaceholder}>
-            <HeaderText style={styles.logoText}>App</HeaderText>
-          </View>
           <HeaderText>Welcome back!</HeaderText>
           <SubtitleText>Sign in to continue</SubtitleText>
         </View>

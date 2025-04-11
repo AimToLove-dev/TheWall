@@ -50,7 +50,7 @@ export const SignupScreen = ({ navigation }) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
         // Navigate to Dashboard after successful signup
-        navigation.navigate("App", { screen: "Dashboard" });
+        navigation.navigate("User");
       })
       .catch((error) => {
         // Translate Firebase error messages to user-friendly messages
