@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { TextInput, Text } from "react-native-paper";
-import { addSoul } from "@utils/soulsUtils";
+import { TextInput, Text, Divider } from "react-native-paper";
+import { submitSoulForm } from "@utils/submissionsUtils";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
 import { CustomButton } from "components/CustomButton";
@@ -30,43 +30,46 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   const colors = getThemeColors();
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
+    setFormData({
+      ...formData,
       [field]: value,
-    }));
+    });
 
-    // Clear validation error for this field when user types
-    if (formSubmitted && validationErrors[field]) {
-      setValidationErrors((prev) => ({
-        ...prev,
+    // Clear validation errors when user types
+    if (validationErrors[field]) {
+      setValidationErrors({
+        ...validationErrors,
         [field]: false,
-      }));
+      });
     }
   };
 
   const validateForm = () => {
-    const errors = {
-      submitterEmail: !formData.submitterEmail,
-      firstName: !formData.firstName,
-      lastName: !formData.lastName,
-    };
+    const errors = {};
 
-    // Email format validation
+    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.submitterEmail && !emailRegex.test(formData.submitterEmail)) {
+    if (!formData.submitterEmail || !emailRegex.test(formData.submitterEmail)) {
       errors.submitterEmail = true;
     }
 
-    setValidationErrors(errors);
+    // Required fields validation
+    if (!formData.firstName.trim()) {
+      errors.firstName = true;
+    }
 
-    return !Object.values(errors).some((isError) => isError);
+    if (!formData.lastName.trim()) {
+      errors.lastName = true;
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async () => {
     setFormSubmitted(true);
 
     if (!validateForm()) {
-      setError("Please fill in all required fields correctly");
       return;
     }
 
@@ -74,15 +77,12 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setError("");
 
     try {
-      await addSoul(formData);
-      setSuccessMessage(
-        "Soul added successfully! Please check your email for verification."
-      );
-      onSuccess(formData);
+      const response = await submitSoulForm(formData);
+      setSuccessMessage(response.message);
+      onSuccess();
     } catch (err) {
-      setError("Failed to add soul. Please try again.");
-      console.error("Error adding soul:", err);
-      if (onCancel) onCancel(err);
+      console.error(err.message);
+      setError("An error occurred while submitting the form.");
     } finally {
       setLoading(false);
     }
@@ -98,10 +98,10 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   return (
     <View style={{ width: "100%" }}>
       <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Submitter Email (required)
+        Submitter Information
       </Text>
       <TextInput
-        label="Your Email (required)"
+        label="Your Email*"
         value={formData.submitterEmail}
         onChangeText={(text) => handleInputChange("submitterEmail", text)}
         mode="outlined"
@@ -129,8 +129,10 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         </Text>
       )}
 
+      <Divider style={{ width: "100%", marginBottom: "2em" }} />
+
       <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Loved One's Name (required)
+        Loved One's Information
       </Text>
 
       <View
@@ -146,7 +148,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       >
         <View style={{ flex: 1 }}>
           <TextInput
-            label="Loved One's First Name"
+            label="First Name*"
             value={formData.firstName}
             onChangeText={(text) => handleInputChange("firstName", text)}
             mode="outlined"
@@ -170,7 +172,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
 
         <View style={{ flex: 1 }}>
           <TextInput
-            label="Loved One's Last Name"
+            label="Last Name*"
             value={formData.lastName}
             onChangeText={(text) => handleInputChange("lastName", text)}
             mode="outlined"
@@ -197,10 +199,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         formSubmitted &&
         (validationErrors.firstName || validationErrors.lastName)
       ) && <View style={{ height: 0 }} />}
-
-      <Text style={{ fontWeight: "bold", marginBottom: 8, marginTop: 8 }}>
-        Loved One's Locale (Optional)
-      </Text>
 
       <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
         <TextInput
@@ -232,43 +230,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         Adding location information allows this tribute to appear on local walls
       </Text>
 
-      <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Loved One's Contact (Optional)
-      </Text>
-      <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-        <TextInput
-          label="Loved One's Phone"
-          value={formData.phone}
-          onChangeText={(text) => handleInputChange("phone", text)}
-          mode="outlined"
-          keyboardType="phone-pad"
-          left={<TextInput.Icon icon="phone" />}
-          style={{ flex: 1 }}
-        />
-
-        <TextInput
-          label="Loved One's Email"
-          value={formData.email}
-          onChangeText={(text) => handleInputChange("email", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="email" />}
-          keyboardType="email-address"
-          style={{ flex: 1 }}
-        />
-      </View>
-
-      <Text
-        style={{
-          fontSize: 12,
-          color: colors.text,
-          marginBottom: 16,
-          fontStyle: "italic",
-        }}
-      >
-        Contact information helps notify you if a testimony is submitted for
-        your loved one
-      </Text>
-
       {error ? (
         <Text style={{ color: colors.error, marginBottom: 16 }}>{error}</Text>
       ) : null}
@@ -291,7 +252,8 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           variant="primary"
           onPress={handleSubmit}
           loading={loading}
-          style={{ flex: 1, marginLeft: 8 }}
+          disabled={loading}
+          style={{ flex: 1 }}
         />
       </View>
     </View>

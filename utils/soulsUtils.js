@@ -5,6 +5,20 @@ import {
   queryDocuments,
   getDocumentById,
 } from "./firebaseUtils";
+import { auth, db, signup } from "../config";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { sendPasswordResetEmail } from "firebase/auth";
+
+// Generate a random password for new user accounts
+const generateRandomPassword = () => {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+  let password = "";
+  for (let i = 0; i < 12; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+};
 
 /**
  * Get all souls
