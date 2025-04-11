@@ -1,16 +1,35 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { StyleSheet, SafeAreaView, Text } from "react-native";
+import {
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
-import { TestimonyWall } from "components";
-import { AddSoulForm } from "components";
+import { TestimonyWall } from "components/testimony";
+import { BackButton, BottomSheet } from "components";
+import { Ionicons } from "@expo/vector-icons";
 import { getAllTestimonies } from "utils/testimoniesUtils";
+import { AddSoulInput as AddSoulForm } from "components/souls";
+import { useNavigation } from "@react-navigation/native";
 
 export const TestimonyWallScreen = () => {
+  const navigation = useNavigation();
   const [testimonies, setTestimonies] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+
+  const toggleBottomSheet = () => setIsBottomSheetVisible((prev) => !prev);
+
+  const handleSoulAdded = () => {
+    toggleBottomSheet();
+    // You might want to refresh data after adding a soul
+  };
 
   useEffect(() => {
     const fetchTestimonies = async () => {
@@ -49,16 +68,40 @@ export const TestimonyWallScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <TestimonyWall testimonies={testimonies} />
-    </SafeAreaView>
+    <ImageBackground
+      source={require("../assets/paper.jpg")}
+      style={[styles.backgroundImage, { height: "100vh" }]}
+      resizeMode="repeat"
+    >
+      <SafeAreaView style={styles.container}>
+        <BackButton customOnPress={() => navigation.navigate("Home")} />
+
+        <TestimonyWall testimonies={testimonies} />
+
+        {/* Plus Button */}
+        <TouchableOpacity
+          style={styles.plusButton}
+          onPress={toggleBottomSheet}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="add" size={32} color="white" />
+        </TouchableOpacity>
+        {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
+        <BottomSheet
+          style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+          isVisible={isBottomSheetVisible}
+          onClose={toggleBottomSheet}
+          duration={400}
+        ></BottomSheet>
+      </SafeAreaView>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#222",
+    height: "100vh",
   },
   header: {
     padding: 16,
@@ -70,5 +113,22 @@ const styles = StyleSheet.create({
     color: "#FFF",
     textAlign: "center",
     padding: 20,
+  },
+  plusButton: {
+    position: "fixed",
+    right: 30,
+    bottom: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#2e2e2e",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5, // Android shadow
+    shadowColor: "#000", // iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    zIndex: 1,
   },
 });
