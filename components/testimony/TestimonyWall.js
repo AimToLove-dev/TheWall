@@ -15,13 +15,14 @@ import Animated, {
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { SubtitleText, BodyText } from "components/Typography";
-import { spacing } from "styles/theme";
+import { spacing, getThemeColors } from "styles/theme";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH * 0.9;
 const CARD_SPACING = SCREEN_WIDTH * 0.05;
 
 export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
+  const colors = getThemeColors();
   const [testimonies, setTestimonies] = useState(initialTestimonies);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,92 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
     // Navigate to the ReadTestimony screen with the testimony data
     navigation.navigate("ReadTestimony", { testimony });
   };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: "center",
+      height: "100vh",
+    },
+    listContent: {
+      paddingRight: CARD_SPACING,
+      paddingVertical: spacing.lg,
+      alignItems: "center",
+    },
+    card: {
+      width: CARD_WIDTH,
+      marginRight: CARD_SPACING,
+      backgroundColor: "#FFFFFF",
+      borderRadius: 15,
+      overflow: "hidden",
+      elevation: 5,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+    },
+    cardContent: {
+      flex: 1,
+    },
+    image: {
+      width: "100%",
+      height: 200,
+    },
+    imagePlaceholder: {
+      width: "100%",
+      height: 200,
+      backgroundColor: "#e1e1e1",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    imagePlaceholderText: {
+      color: "#888",
+      fontSize: 16,
+      fontWeight: "500",
+    },
+    textContainer: {
+      padding: spacing.md,
+    },
+    nameText: {
+      marginBottom: spacing.sm,
+      fontSize: 18,
+      fontWeight: "bold",
+    },
+    testimonyPreview: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: "#333",
+    },
+    readMore: {
+      color: "#0066cc",
+      marginTop: spacing.sm,
+      fontWeight: "bold",
+    },
+    loaderContainer: {
+      width: CARD_WIDTH * 0.5,
+      height: "80%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      padding: spacing.xl,
+    },
+    emptyText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: colors.primary,
+      textAlign: "center",
+      marginBottom: spacing.md,
+    },
+    emptySubtext: {
+      fontSize: 16,
+      color: colors.primary,
+      textAlign: "center",
+    },
+  });
 
   const renderCard = ({ item, index }) => {
     if (!item) return null;
@@ -152,89 +239,3 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    height: "100vh",
-  },
-  listContent: {
-    paddingRight: CARD_SPACING,
-    paddingVertical: spacing.lg,
-    alignItems: "center",
-  },
-  card: {
-    width: CARD_WIDTH,
-    marginRight: CARD_SPACING,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 15,
-    overflow: "hidden",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  cardContent: {
-    flex: 1,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: 200,
-    backgroundColor: "#e1e1e1",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  imagePlaceholderText: {
-    color: "#888",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  textContainer: {
-    padding: spacing.md,
-  },
-  nameText: {
-    marginBottom: spacing.sm,
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  testimonyPreview: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: "#333",
-  },
-  readMore: {
-    color: "#0066cc",
-    marginTop: spacing.sm,
-    fontWeight: "bold",
-  },
-  loaderContainer: {
-    width: CARD_WIDTH * 0.5,
-    height: "80%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: spacing.xl,
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-    textAlign: "center",
-    marginBottom: spacing.md,
-  },
-  emptySubtext: {
-    fontSize: 16,
-    color: "#CCCCCC",
-    textAlign: "center",
-  },
-});

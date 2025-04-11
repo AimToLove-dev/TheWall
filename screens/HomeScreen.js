@@ -23,7 +23,7 @@ import {
   FormContainer,
 } from "components";
 import { getThemeColors } from "../styles/theme";
-import { AuthenticatedUserContext } from "../providers";
+import { AuthenticatedUserContext } from "providers";
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainContent, ScrollableScreenView } from "components";
@@ -100,30 +100,29 @@ export const HomeScreen = ({ navigation }) => {
           />
 
           {/* Authentication buttons */}
-          {user && user?.isAdmin && (
-            <View style={styles.authContainer}>
-              {user ? (
+
+          <View style={styles.authContainer}>
+            {user ? (
+              <CustomButton
+                title="Go to Dashboard"
+                onPress={handleDashboardPress}
+                mode="primary"
+              />
+            ) : (
+              <>
                 <CustomButton
-                  title="Go to Dashboard"
-                  onPress={handleDashboardPress}
-                  mode="primary"
+                  title="Login"
+                  onPress={handleLoginPress}
+                  variant="outline"
                 />
-              ) : (
-                <>
-                  <CustomButton
-                    title="Login"
-                    onPress={handleLoginPress}
-                    variant="outline"
-                  />
-                  <CustomButton
-                    title="Sign Up"
-                    onPress={handleSignupPress}
-                    variant="primary"
-                  />
-                </>
-              )}
-            </View>
-          )}
+                <CustomButton
+                  title="Sign Up"
+                  onPress={handleSignupPress}
+                  variant="primary"
+                />
+              </>
+            )}
+          </View>
 
           {/* Footer */}
           <View style={styles.pageFooter}>

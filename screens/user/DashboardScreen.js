@@ -32,9 +32,7 @@ import { Surface, Card, Avatar, Divider, useTheme } from "react-native-paper";
 
 export const DashboardScreen = ({ navigation }) => {
   const { user, profile, setUser } = useContext(AuthenticatedUserContext);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const colors = getThemeColors(isDark);
+  const colors = getThemeColors();
   const { width } = useWindowDimensions();
   const isLargeScreen = width > 768;
   const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);

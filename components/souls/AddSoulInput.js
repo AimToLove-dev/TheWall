@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { TextInput, Text, Divider } from "react-native-paper";
-import { submitSoulForm } from "@utils/submissionsUtils";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
 import { CustomButton } from "components/CustomButton";
+import { addSoul } from "@utils/soulsUtils";
+import { AuthenticatedUserContext } from "providers";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "config";
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
+  const { user, isEmailVerified } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -29,7 +33,21 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
 
   const colors = getThemeColors();
 
+  // Clear messages after a timeout
+  const clearMessages = () => {
+    setTimeout(() => {
+      setSuccessMessage("");
+      setError("");
+    }, 5000); // Clear after 5 seconds
+  };
+
   const handleInputChange = (field, value) => {
+    // Clear any success/error messages when user starts typing again
+    if (successMessage || error) {
+      setSuccessMessage("");
+      setError("");
+    }
+
     setFormData({
       ...formData,
       [field]: value,
@@ -73,16 +91,85 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       return;
     }
 
+    // Clear both messages before starting submission
     setLoading(true);
     setError("");
+    setSuccessMessage("");
 
     try {
-      const response = await submitSoulForm(formData);
-      setSuccessMessage(response.message);
-      onSuccess();
-    } catch (err) {
-      console.error(err.message);
-      setError("An error occurred while submitting the form.");
+      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+      let soulId;
+
+      // Path 1: User is logged in and email is verified
+      if (user && isEmailVerified) {
+        // Call the soulUtils/addSoul function with proper data
+        const soulData = {
+          name: fullName,
+          userId: user.uid,
+          email: user.email,
+          city: formData.city || "",
+          state: formData.state || "",
+          createdAt: new Date().toISOString(),
+          isPublic: false,
+        };
+
+        soulId = await addSoul(soulData);
+      }
+      // Path 2: Anonymous submission or user's email not verified
+      else {
+        // Use direct document creation with email as document ID
+        // This follows the security rule: documentId == request.resource.data.email
+        const soulData = {
+          name: fullName,
+          email: formData.submitterEmail,
+          submitterEmail: formData.submitterEmail,
+          city: formData.city || "",
+          state: formData.state || "",
+          createdAt: new Date().toISOString(),
+          isPublic: false,
+          testimonyId: null, // Add this to match the addSoul function's expectations
+        };
+
+        // For anonymous users, use submitterEmail as document ID
+        // to satisfy the security rule requirement
+        const soulRef = doc(db, "souls", formData.submitterEmail);
+        await setDoc(soulRef, soulData);
+        soulId = formData.submitterEmail;
+      }
+
+      // Show success message
+      setSuccessMessage("Soul added successfully!");
+      clearMessages(); // Start timeout to clear messages
+
+      // Reset form
+      setFormData({
+        submitterEmail: "",
+        firstName: "",
+        lastName: "",
+        state: "",
+        city: "",
+        phone: "",
+        email: "",
+      });
+
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess({
+          id: soulId,
+          name: fullName,
+          // Include other data as needed
+        });
+      }
+    } catch (error) {
+      console.error("Error adding soul:", error);
+      // Clear success message if there was one and set error
+      setSuccessMessage("");
+      if (error.message.toLowerCase().includes("permission")) {
+        setError("Only 1 anonymous submission allowed. Please login.");
+      } else {
+        setError(error.message || "Failed to add soul. Please try again.");
+      }
+      clearMessages(); // Start timeout to clear messages
     } finally {
       setLoading(false);
     }
@@ -97,138 +184,150 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
 
   return (
     <View style={{ width: "100%" }}>
-      <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Submitter Information
-      </Text>
-      <TextInput
-        label="Your Email*"
-        value={formData.submitterEmail}
-        onChangeText={(text) => handleInputChange("submitterEmail", text)}
-        mode="outlined"
-        left={<TextInput.Icon icon="email" />}
-        style={{ marginBottom: 16 }}
-        keyboardType="email-address"
-        outlineColor={getOutlineColor("submitterEmail")}
-        outlineStyle={
-          formSubmitted && validationErrors.submitterEmail
-            ? { borderWidth: 2 }
-            : undefined
-        }
-        error={formSubmitted && validationErrors.submitterEmail}
-      />
-      {formSubmitted && validationErrors.submitterEmail && (
-        <Text
-          style={{
-            color: colors.error,
-            fontSize: 12,
-            marginTop: -14,
-            marginBottom: 12,
-          }}
-        >
-          Please enter a valid email address
-        </Text>
-      )}
+      {!error?.toLowerCase().includes("login") && (
+        <>
+          <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+            Submitter Information
+          </Text>
+          <TextInput
+            label="Your Email*"
+            value={formData.submitterEmail}
+            onChangeText={(text) => handleInputChange("submitterEmail", text)}
+            mode="outlined"
+            left={<TextInput.Icon icon="email" />}
+            style={{ marginBottom: 16 }}
+            keyboardType="email-address"
+            outlineColor={getOutlineColor("submitterEmail")}
+            outlineStyle={
+              formSubmitted && validationErrors.submitterEmail
+                ? { borderWidth: 2 }
+                : undefined
+            }
+            error={formSubmitted && validationErrors.submitterEmail}
+          />
+          {formSubmitted && validationErrors.submitterEmail && (
+            <Text
+              style={{
+                color: colors.error,
+                fontSize: 12,
+                marginTop: -14,
+                marginBottom: 12,
+              }}
+            >
+              Please enter a valid email address
+            </Text>
+          )}
 
-      <Divider style={{ width: "100%", marginBottom: "2em" }} />
+          <Divider style={{ width: "100%", marginBottom: "2em" }} />
 
-      <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Loved One's Information
-      </Text>
+          <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+            Loved One's Information
+          </Text>
 
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          marginBottom:
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 8,
+              marginBottom:
+                formSubmitted &&
+                (validationErrors.firstName || validationErrors.lastName)
+                  ? 0
+                  : 16,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <TextInput
+                label="First Name*"
+                value={formData.firstName}
+                onChangeText={(text) => handleInputChange("firstName", text)}
+                mode="outlined"
+                left={<TextInput.Icon icon="account" />}
+                outlineColor={getOutlineColor("firstName")}
+                outlineStyle={
+                  formSubmitted && validationErrors.firstName
+                    ? { borderWidth: 2 }
+                    : undefined
+                }
+                error={formSubmitted && validationErrors.firstName}
+              />
+              {formSubmitted && validationErrors.firstName && (
+                <Text
+                  style={{
+                    color: colors.error,
+                    fontSize: 12,
+                    marginBottom: 12,
+                  }}
+                >
+                  Required
+                </Text>
+              )}
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <TextInput
+                label="Last Name*"
+                value={formData.lastName}
+                onChangeText={(text) => handleInputChange("lastName", text)}
+                mode="outlined"
+                left={<TextInput.Icon icon="account" />}
+                outlineColor={getOutlineColor("lastName")}
+                outlineStyle={
+                  formSubmitted && validationErrors.lastName
+                    ? { borderWidth: 2 }
+                    : undefined
+                }
+                error={formSubmitted && validationErrors.lastName}
+              />
+              {formSubmitted && validationErrors.lastName && (
+                <Text
+                  style={{
+                    color: colors.error,
+                    fontSize: 12,
+                    marginBottom: 12,
+                  }}
+                >
+                  Required
+                </Text>
+              )}
+            </View>
+          </View>
+
+          {!(
             formSubmitted &&
             (validationErrors.firstName || validationErrors.lastName)
-              ? 0
-              : 16,
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <TextInput
-            label="First Name*"
-            value={formData.firstName}
-            onChangeText={(text) => handleInputChange("firstName", text)}
-            mode="outlined"
-            left={<TextInput.Icon icon="account" />}
-            outlineColor={getOutlineColor("firstName")}
-            outlineStyle={
-              formSubmitted && validationErrors.firstName
-                ? { borderWidth: 2 }
-                : undefined
-            }
-            error={formSubmitted && validationErrors.firstName}
-          />
-          {formSubmitted && validationErrors.firstName && (
-            <Text
-              style={{ color: colors.error, fontSize: 12, marginBottom: 12 }}
-            >
-              Required
-            </Text>
-          )}
-        </View>
+          ) && <View style={{ height: 0 }} />}
+          <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+            <TextInput
+              label="City"
+              value={formData.city}
+              onChangeText={(text) => handleInputChange("city", text)}
+              mode="outlined"
+              left={<TextInput.Icon icon="city" />}
+              style={{ flex: 1 }}
+            />
+            <TextInput
+              label="State"
+              value={formData.state}
+              onChangeText={(text) => handleInputChange("state", text)}
+              mode="outlined"
+              left={<TextInput.Icon icon="map-marker" />}
+              style={{ flex: 1 }}
+            />
+          </View>
 
-        <View style={{ flex: 1 }}>
-          <TextInput
-            label="Last Name*"
-            value={formData.lastName}
-            onChangeText={(text) => handleInputChange("lastName", text)}
-            mode="outlined"
-            left={<TextInput.Icon icon="account" />}
-            outlineColor={getOutlineColor("lastName")}
-            outlineStyle={
-              formSubmitted && validationErrors.lastName
-                ? { borderWidth: 2 }
-                : undefined
-            }
-            error={formSubmitted && validationErrors.lastName}
-          />
-          {formSubmitted && validationErrors.lastName && (
-            <Text
-              style={{ color: colors.error, fontSize: 12, marginBottom: 12 }}
-            >
-              Required
-            </Text>
-          )}
-        </View>
-      </View>
-
-      {!(
-        formSubmitted &&
-        (validationErrors.firstName || validationErrors.lastName)
-      ) && <View style={{ height: 0 }} />}
-
-      <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-        <TextInput
-          label="City"
-          value={formData.city}
-          onChangeText={(text) => handleInputChange("city", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="city" />}
-          style={{ flex: 1 }}
-        />
-        <TextInput
-          label="State"
-          value={formData.state}
-          onChangeText={(text) => handleInputChange("state", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="map-marker" />}
-          style={{ flex: 1 }}
-        />
-      </View>
-
-      <Text
-        style={{
-          fontSize: 12,
-          color: colors.text,
-          marginBottom: 16,
-          fontStyle: "italic",
-        }}
-      >
-        Adding location information allows this tribute to appear on local walls
-      </Text>
+          <Text
+            style={{
+              fontSize: 12,
+              color: colors.text,
+              marginBottom: 16,
+              fontStyle: "italic",
+            }}
+          >
+            Adding location information allows this tribute to appear on local
+            walls
+          </Text>
+        </>
+      )}
 
       {error ? (
         <Text style={{ color: colors.error, marginBottom: 16 }}>{error}</Text>
@@ -247,14 +346,23 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           onPress={onCancel}
           style={{ flex: 1, marginRight: 8 }}
         />
-        <CustomButton
-          title="Submit"
-          variant="primary"
-          onPress={handleSubmit}
-          loading={loading}
-          disabled={loading}
-          style={{ flex: 1 }}
-        />
+        {error?.toLowerCase().includes("login") ? (
+          <CustomButton
+            title="Login"
+            variant="primary"
+            onPress={() => navigation.navigate("login")}
+            style={{ flex: 1 }}
+          />
+        ) : (
+          <CustomButton
+            title="Submit"
+            variant="primary"
+            onPress={handleSubmit}
+            loading={loading}
+            disabled={loading}
+            style={{ flex: 1 }}
+          />
+        )}
       </View>
     </View>
   );

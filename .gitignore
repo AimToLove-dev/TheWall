@@ -45,3 +45,4 @@ Temporary Items
 .expo-shared
 .vscode
 node_modules
+firebase.rules

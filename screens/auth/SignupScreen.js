@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { AuthenticatedUserContext } from "providers";
 import { auth } from "config";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomInput, CustomButton, FormContainer } from "components";
@@ -36,11 +37,18 @@ const signupValidationSchema = Yup.object().shape({
 });
 
 export const SignupScreen = ({ navigation }) => {
+  const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
+
+  useEffect(() => {
+    if (user) {
+      navigation.replace("User");
+    }
+  }, []);
 
   const handleSignUp = (values) => {
     const { email, password } = values;

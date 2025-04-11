@@ -19,10 +19,10 @@ import Animated, {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-import BottomSheet from "components/BottomSheet";
+import { BottomSheet } from "components";
 // Assuming these components exist in your project
 import { AddSoulForm, HeaderText, BodyText, BackButton } from "components";
-import { setSouls } from "utils/soulsUtils";
+
 
 // Hardcoded test list of names (FirstName LastInitial)
 const testNames = [
@@ -176,11 +176,11 @@ const marqueeStyles = StyleSheet.create({
 });
 
 // Names component to display in the marquee
-const NamesListComponent = () => (
+const NamesListComponent = ({ souls }) => (
   <View style={styles.namesContainer}>
-    {testNames.map((name, index) => (
+    {souls.map((soul, index) => (
       <View key={index} style={styles.nameItem}>
-        <Text style={styles.nameText}>{name}</Text>
+        <Text style={styles.nameText}>{soul.name}</Text>
       </View>
     ))}
   </View>
@@ -192,19 +192,25 @@ export const WailingWallScreen = () => {
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
   const navigation = useNavigation();
 
-  const handleSoulAdded = (soulId, soulData) => {
-    // Add the new soul to the list without refetching everything
-    setSouls((prevSouls) => [...prevSouls, { id: soulId, ...soulData }]);
+  
+
+  // Add local state for souls
+  const [souls, setSouls] = useState(
+    testNames.map((name, index) => ({
+      id: `test-${index}`,
+      name,
+    }))
+  );
+
+  const handleSoulAdded = (newSoul) => {
+    // Add the new soul to the list using the local state setter
+    setSouls((prevSouls) => [...prevSouls, newSoul]);
     // Close the bottom sheet after adding
     setBottomSheetVisible(false);
   };
 
-  const handlePressIn = useCallback(() => {
-    setIsPaused(true);
-  }, []);
-
-  const handlePressOut = useCallback(() => {
-    setIsPaused(false);
+  const handleTogglePause = useCallback(() => {
+    setIsPaused((prev) => !prev);
   }, []);
 
   // Toggle bottom sheet function
@@ -224,8 +230,7 @@ export const WailingWallScreen = () => {
       >
         <View style={styles.contentContainer}>
           <Pressable
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
+            onPress={handleTogglePause}
             style={styles.pressableContainer}
           >
             <VerticalMarquee
@@ -233,7 +238,7 @@ export const WailingWallScreen = () => {
               duration={50000}
               isPaused={isPaused}
             >
-              <NamesListComponent />
+              <NamesListComponent souls={souls} />
             </VerticalMarquee>
           </Pressable>
         </View>

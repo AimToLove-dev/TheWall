@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import { TestimonyWall } from "components/testimony";
-import { BackButton, BottomSheet } from "components";
+import { BackButton, BottomSheet, CustomButton } from "components";
 import { Ionicons } from "@expo/vector-icons";
 import { getAllTestimonies } from "utils/testimoniesUtils";
 import { AddSoulInput as AddSoulForm } from "components/souls";
@@ -88,11 +88,33 @@ export const TestimonyWallScreen = () => {
         </TouchableOpacity>
         {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
         <BottomSheet
-          style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
           isVisible={isBottomSheetVisible}
           onClose={toggleBottomSheet}
           duration={400}
-        ></BottomSheet>
+        >
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <CustomButton
+              title="Cancel"
+              variant="outline"
+              onPress={toggleBottomSheet}
+              style={{ flex: 1, marginRight: 8 }}
+            />
+            <CustomButton
+              title="Login"
+              variant="primary"
+              onPress={() => navigation.navigate("Auth")}
+              style={{ flex: 1 }}
+            />
+          </View>
+        </BottomSheet>
       </SafeAreaView>
     </ImageBackground>
   );

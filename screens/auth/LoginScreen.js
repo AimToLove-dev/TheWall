@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,7 @@ import {
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { AuthenticatedUserContext } from "providers";
 import { auth } from "config";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomInput, CustomButton, FormContainer } from "components";
@@ -32,11 +33,18 @@ const loginValidationSchema = Yup.object().shape({
 });
 
 export const LoginScreen = ({ navigation }) => {
+  const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [errorState, setErrorState] = useState("");
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
+
+  useEffect(() => {
+    if (user) {
+      navigation.replace("User");
+    }
+  }, []);
 
   const handleLogin = (values) => {
     const { email, password } = values;
@@ -45,12 +53,6 @@ export const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        //TODO: enable login for non-admin users
-        if (!email.endsWith("@aimtolove.com")) {
-          const error = new Error("Login is admin only");
-          error.code = "auth/user-not-admin";
-          throw error;
-        }
         console.log(result);
         // Only navigate to Dashboard after successful login
         navigation.navigate("Home");
