@@ -18,6 +18,7 @@ import {
 } from "./Typography";
 import BottomSheet from "./BottomSheet";
 import { ScrollableScreenView } from "./ScrollableScreenView";
+import { VerticalMarquee } from "./VerticalMarquee";
 
 // Import from feature folders directly to avoid cycles
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
@@ -54,6 +55,7 @@ export {
   CaptionText,
   BottomSheet,
   ScrollableScreenView,
+  VerticalMarquee,
   DatabaseErrorScreen,
   ErrorBoundary,
   ErrorScreen,
