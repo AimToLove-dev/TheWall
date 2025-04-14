@@ -105,14 +105,19 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setSuccessMessage("");
 
     try {
-      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`;
+      const displayName = `${formData.firstName.trim()} ${formData.lastName
+        .trim()
+        .charAt(0)
+        .toUpperCase()}.`;
       let soulId;
 
       // Path 1: User is logged in and email is verified
       if (isAuthenticated) {
         // Call the soulUtils/addSoul function with proper data
         const soulData = {
-          name: fullName,
+          name: displayName,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
           userId: user.uid,
           email: user.email, // Using the logged-in user's email
           city: formData.city || "",
@@ -128,7 +133,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         // Use direct document creation with email as document ID
         // This follows the security rule: documentId == request.resource.data.email
         const soulData = {
-          name: fullName,
+          name: displayName,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
           email: formData.submitterEmail,
           submitterEmail: formData.submitterEmail,
           city: formData.city || "",
@@ -164,7 +171,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       if (onSuccess) {
         onSuccess({
           id: soulId,
-          name: fullName,
+          name: displayName,
           // Include other data as needed
         });
       }

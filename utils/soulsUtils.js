@@ -6,7 +6,7 @@ import {
   getDocumentById,
 } from "./firebaseUtils";
 import { auth, db, signup } from "../config";
-import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { setDoc, doc, serverTimestamp, getDoc } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 // Generate a random password for new user accounts
@@ -41,7 +41,29 @@ export const getAllSouls = async (
       return [];
     }
 
-    const result = await queryDocuments("souls", [], [[sortBy, sortDirection]]);
+    // Get only allowed fields, excluding firstName and lastName
+    const safeFields = [
+      "name",
+      "id",
+      "userId",
+      "email",
+      "submitterEmail",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      "isPublic",
+      "testimonyId",
+    ];
+
+    const result = await queryDocuments(
+      "souls",
+      [],
+      [[sortBy, sortDirection]],
+      100,
+      safeFields
+    );
+
     console.log(`getAllSouls query returned ${result.length} souls`);
 
     // Debug first few results if any exist
@@ -71,10 +93,27 @@ export const getUserSouls = async (
   sortDirection = "desc"
 ) => {
   try {
+    // Get only allowed fields, excluding firstName and lastName
+    const safeFields = [
+      "name",
+      "id",
+      "userId",
+      "email",
+      "submitterEmail",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      "isPublic",
+      "testimonyId",
+    ];
+
     return await queryDocuments(
       "souls",
       [["userId", "==", userId]],
-      [[sortBy, sortDirection]]
+      [[sortBy, sortDirection]],
+      0,
+      safeFields
     );
   } catch (error) {
     console.error(`Error getting souls for user ${userId}:`, error);
@@ -89,7 +128,29 @@ export const getUserSouls = async (
  */
 export const getSoulById = async (soulId) => {
   try {
-    return await getDocumentById("souls", soulId);
+    // Only request safe fields, excluding firstName and lastName
+    const docRef = doc(db, "souls", soulId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      // Only include allowed fields
+      return {
+        id: docSnap.id,
+        name: data.name,
+        userId: data.userId,
+        email: data.email,
+        submitterEmail: data.submitterEmail,
+        city: data.city,
+        state: data.state,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        isPublic: data.isPublic,
+        testimonyId: data.testimonyId,
+      };
+    } else {
+      throw new Error(`Document ${soulId} not found in souls`);
+    }
   } catch (error) {
     console.error(`Error getting soul ${soulId}:`, error);
     return null;
@@ -255,22 +316,29 @@ export const canAddMoreSouls = async (
  */
 export const findMatchingSouls = async (fullName) => {
   try {
-    // Split the name to handle different formats
-    const nameParts = fullName.trim().split(" ");
-    let firstName = "";
-    let lastName = "";
-
-    if (nameParts.length >= 2) {
-      firstName = nameParts[0];
-      lastName = nameParts.slice(1).join(" ");
-    } else {
-      firstName = fullName;
-    }
+    // Define safe fields to retrieve (excluding firstName and lastName)
+    const safeFields = [
+      "name",
+      "id",
+      "userId",
+      "email",
+      "submitterEmail",
+      "city",
+      "state",
+      "createdAt",
+      "updatedAt",
+      "isPublic",
+      "testimonyId",
+    ];
 
     // First try exact match
-    const exactMatches = await queryDocuments("souls", [
-      ["name", "==", fullName.trim()],
-    ]);
+    const exactMatches = await queryDocuments(
+      "souls",
+      [["name", "==", fullName.trim()]],
+      [],
+      0,
+      safeFields
+    );
 
     if (exactMatches.length > 0) {
       return exactMatches;
@@ -278,6 +346,18 @@ export const findMatchingSouls = async (fullName) => {
 
     // If no exact matches, get all souls and filter
     const allSouls = await getAllSouls();
+
+    // Split the name to handle different formats
+    const nameParts = fullName.trim().split(" ");
+    let searchFirstName = "";
+    let searchLastName = "";
+
+    if (nameParts.length >= 2) {
+      searchFirstName = nameParts[0].toLowerCase();
+      searchLastName = nameParts.slice(1).join(" ").toLowerCase();
+    } else {
+      searchFirstName = fullName.toLowerCase();
+    }
 
     return allSouls.filter((soul) => {
       const soulNameLower = soul.name.toLowerCase();
@@ -291,17 +371,17 @@ export const findMatchingSouls = async (fullName) => {
         return true;
       }
 
-      // Check for first name and last name matches
+      // Check for name part matches using the soul's name (not firstName/lastName)
       const soulParts = soul.name.toLowerCase().split(" ");
-      const soulFirstName = soulParts[0];
-      const soulLastName =
+      const soulFirstPart = soulParts[0];
+      const soulLastPart =
         soulParts.length > 1 ? soulParts.slice(1).join(" ") : "";
 
       return (
-        (soulFirstName.includes(firstName.toLowerCase()) ||
-          firstName.toLowerCase().includes(soulFirstName)) &&
-        (soulLastName.includes(lastName.toLowerCase()) ||
-          lastName.toLowerCase().includes(soulLastName))
+        (soulFirstPart.includes(searchFirstName) ||
+          searchFirstName.includes(soulFirstPart)) &&
+        (soulLastPart.includes(searchLastName) ||
+          searchLastName.includes(soulLastPart))
       );
     });
   } catch (error) {

@@ -165,13 +165,15 @@ export const deleteDocument = async (collectionName, docId) => {
  * @param {Array} filters - Array of filter conditions [field, operator, value]
  * @param {Array} orderByFields - Array of fields to order by [field, direction]
  * @param {number} limitCount - Number of documents to limit to
+ * @param {Array} selectFields - Array of fields to select
  * @returns {Promise<Array>} - Array of documents with IDs
  */
 export const queryDocuments = async (
   collectionName,
   filters = [],
   orderByFields = [],
-  limitCount = 0
+  limitCount = 0,
+  selectFields = []
 ) => {
   try {
     // Check if Firestore is initialized
@@ -204,10 +206,26 @@ export const queryDocuments = async (
     }
 
     const querySnapshot = await getDocs(q);
-    const data = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+
+    // If selectFields is provided, only include those fields in the result
+    const data = querySnapshot.docs.map((doc) => {
+      const docData = doc.data();
+      const result = { id: doc.id };
+
+      if (Array.isArray(selectFields) && selectFields.length > 0) {
+        // Only include the specified fields
+        for (const field of selectFields) {
+          if (field in docData) {
+            result[field] = docData[field];
+          }
+        }
+      } else {
+        // Include all fields if no selectFields specified
+        Object.assign(result, docData);
+      }
+
+      return result;
+    });
 
     return data;
   } catch (error) {

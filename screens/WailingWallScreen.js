@@ -19,7 +19,7 @@ import { getAllSouls } from "../utils/soulsUtils";
 
 // Names component to display in a newspaper-like format
 const NewspaperColumn = ({ souls }) => {
-  console.log("Rendering NewspaperColumn with souls:", souls);
+
   const { width } = useWindowDimensions();
 
   // Calculate column width based on screen size
