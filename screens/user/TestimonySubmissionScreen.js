@@ -169,13 +169,15 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           adminEmail: user.email,
           // Use the profile data that was entered for the person
           userEmail: adminSubmissionProfile.email || "",
-          displayName: `${adminSubmissionProfile?.firstName?.trim()} ${adminSubmissionProfile?.lastName
-            ?.trim()
-            ?.charAt(0)
-            ?.toUpperCase()}.`,
-          phoneNumber: adminSubmissionProfile.phoneNumber,
-          address: adminSubmissionProfile.address,
-          dob: adminSubmissionProfile.dob,
+          displayName: `${adminSubmissionProfile?.firstName?.trim() || ""} ${
+            (adminSubmissionProfile?.lastName?.trim() || "")
+              ?.charAt(0)
+              ?.toUpperCase() || ""
+          }.`,
+          // Add null checks for all fields to prevent undefined values
+          phoneNumber: adminSubmissionProfile.phoneNumber || null,
+          address: adminSubmissionProfile.address || null,
+          dob: adminSubmissionProfile.dob || null,
         };
       } else {
         // Regular user submission with their own profile
@@ -184,13 +186,13 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           title: values.title || "",
           userId: profile.uid || user.uid,
           userEmail: profile.email,
-          displayName: `${profile?.firstName?.trim()} ${profile.lastName
-            ?.trim()
-            ?.charAt(0)
-            ?.toUpperCase()}.`,
-          phoneNumber: profile?.phoneNumber,
-          address: profile?.address,
-          dob: profile?.dob,
+          displayName: `${profile?.firstName?.trim() || ""} ${
+            (profile?.lastName?.trim() || "")?.charAt(0)?.toUpperCase() || ""
+          }.`,
+          // Add null checks for all fields to prevent undefined values
+          phoneNumber: profile?.phoneNumber || null,
+          address: profile?.address || null,
+          dob: profile?.dob || null,
         };
       }
 
@@ -265,7 +267,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           isEdit={!!currentTestimony}
           onEditProfile={handleEditProfile}
           profileData={isAdminSubmission ? adminSubmissionProfile : profile}
-          isAdmin={isAdmin && isAdminSubmission}
+          isAdmin={isAdmin}
         />
       );
     } else if (currentTestimony) {
@@ -340,11 +342,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
       >
         <Ionicons name="arrow-back" size={24} color={colors.text} />
       </TouchableOpacity>
-
-      <View style={styles.headerContainer}>
-        <HeaderText>My Testimony</HeaderText>
-        <SubtitleText>View and manage your testimony</SubtitleText>
-      </View>
 
       {/* Main content */}
       <ScrollView

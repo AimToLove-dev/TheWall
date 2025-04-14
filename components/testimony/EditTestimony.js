@@ -260,14 +260,16 @@ export const EditTestimony = ({
           handleBlur,
         }) => (
           <View style={styles.formContainer}>
-            <CustomInput
-              label="Testimony Title"
-              value={values.title}
-              onChangeText={handleChange("title")}
-              onBlur={handleBlur("title")}
-              placeholder="Enter a title for this testimony"
-              style={{ marginBottom: spacing.md }}
-            />
+            {isAdmin && (
+              <CustomInput
+                label="Testimony Title"
+                value={values.title}
+                onChangeText={handleChange("title")}
+                onBlur={handleBlur("title")}
+                placeholder="Enter a title for this testimony"
+                style={{ marginBottom: spacing.md }}
+              />
+            )}
 
             {/* Profile Information Card */}
             {profileData && (

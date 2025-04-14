@@ -541,6 +541,7 @@ export const TestimonyReviewScreen = ({ navigation }) => {
                 onSubmit={handleSaveEdits}
                 onCancel={handleCancelEdit}
                 isEdit={true}
+                isAdmin={true}
               />
             </View>
           ) : (
