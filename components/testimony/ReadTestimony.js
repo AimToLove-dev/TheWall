@@ -76,7 +76,8 @@ export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <HeaderText>My Testimony</HeaderText>
+        <HeaderText>{testimony.title || "My Testimony"}</HeaderText>
+
         {isPublished && (
           <View
             style={[styles.publishedBadge, { backgroundColor: colors.success }]}

@@ -19,8 +19,10 @@ import {
   BodyText,
   ErrorText,
   CustomButton,
+  CustomInput,
   FormContainer,
   ReadTestimony,
+  EditTestimony,
 } from "components";
 import { AuthenticatedUserContext } from "providers";
 import { getThemeColors, spacing, shadows } from "styles/theme";
@@ -29,6 +31,7 @@ import {
   updateDocument,
   addDocument,
   deleteDocument,
+  getDocumentById,
 } from "utils/firebaseUtils";
 
 export const TestimonyReviewScreen = ({ navigation }) => {
@@ -44,6 +47,7 @@ export const TestimonyReviewScreen = ({ navigation }) => {
   const [hasMorePages, setHasMorePages] = useState(true);
   const [processing, setProcessing] = useState({});
   const [reviewingSubmission, setReviewingSubmission] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const ITEMS_PER_PAGE = 20;
 
@@ -130,6 +134,7 @@ export const TestimonyReviewScreen = ({ navigation }) => {
 
   const handleCancelReview = () => {
     setReviewingSubmission(null);
+    setIsEditing(false);
   };
 
   const handleReview = (submission) => {
@@ -140,6 +145,14 @@ export const TestimonyReviewScreen = ({ navigation }) => {
     setProcessing((prev) => ({ ...prev, [submission.id]: true }));
 
     try {
+      // Validate submission title
+      if (
+        !submission.title?.trim() ||
+        submission.title.trim() === "My Testimony"
+      ) {
+        throw new Error("Custom Testimony title is required");
+      }
+
       // Add to testimonies collection
       await addDocument("testimonies", {
         ...submission,
@@ -155,7 +168,9 @@ export const TestimonyReviewScreen = ({ navigation }) => {
       setReviewingSubmission(null);
     } catch (err) {
       console.error(`Error approving submission ${submission.id}:`, err);
-      setError("Failed to approve submission. Please try again.");
+      setError(
+        err.message || "Failed to approve submission. Please try again."
+      );
     } finally {
       setProcessing((prev) => ({ ...prev, [submission.id]: false }));
     }
@@ -181,6 +196,46 @@ export const TestimonyReviewScreen = ({ navigation }) => {
 
   const handleCreateTestimony = () => {
     navigation.navigate("Testimony");
+  };
+
+  const handleEditTestimony = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdits = async (values) => {
+    setProcessing((prev) => ({ ...prev, [reviewingSubmission.id]: true }));
+
+    try {
+      // Update the testimony submission with the edited values
+      await updateDocument("testimonySubmissions", reviewingSubmission.id, {
+        ...reviewingSubmission,
+        ...values,
+        updatedAt: new Date().toISOString(),
+        reviewedBy: user.uid,
+      });
+
+      // Refresh the updated testimony
+      const updatedSubmission = await getDocumentById(
+        "testimonySubmissions",
+        reviewingSubmission.id
+      );
+      setReviewingSubmission(updatedSubmission);
+
+      // Return to review mode
+      setIsEditing(false);
+    } catch (err) {
+      console.error(
+        `Error updating submission ${reviewingSubmission.id}:`,
+        err
+      );
+      setError("Failed to save changes. Please try again.");
+    } finally {
+      setProcessing((prev) => ({ ...prev, [reviewingSubmission.id]: false }));
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
   };
 
   const renderSubmissionCard = ({ item }) => {
@@ -259,11 +314,17 @@ export const TestimonyReviewScreen = ({ navigation }) => {
       </TouchableOpacity>
       <View style={styles.titleContainer}>
         <HeaderText style={styles.title}>
-          {reviewingSubmission ? "Review Submission" : "Testimony Review"}
+          {reviewingSubmission
+            ? isEditing
+              ? "Edit Submission"
+              : "Review Submission"
+            : "Testimony Review"}
         </HeaderText>
         <SubtitleText style={styles.subtitle}>
           {reviewingSubmission
-            ? "Review and make a decision"
+            ? isEditing
+              ? "Edit and save changes"
+              : "Review and make a decision"
             : "Manage pending submissions"}
         </SubtitleText>
       </View>
@@ -394,6 +455,9 @@ export const TestimonyReviewScreen = ({ navigation }) => {
       flex: 1,
       paddingBottom: spacing.lg,
     },
+    titleInputContainer: {
+      margin: spacing.md,
+    },
     actionButtonsContainer: {
       paddingHorizontal: spacing.lg,
       paddingVertical: spacing.md,
@@ -447,8 +511,15 @@ export const TestimonyReviewScreen = ({ navigation }) => {
         <View style={styles.headerRow}>
           {renderHeader()}
 
-          {/* New button for creating a testimony */}
-          {!reviewingSubmission && (
+          {/* Edit button for testimony */}
+          {reviewingSubmission ? (
+            <TouchableOpacity
+              style={[styles.createButton, { backgroundColor: colors.primary }]}
+              onPress={handleEditTestimony}
+            >
+              <Ionicons name="pencil" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          ) : (
             <TouchableOpacity
               style={[styles.createButton, { backgroundColor: colors.primary }]}
               onPress={handleCreateTestimony}
@@ -458,62 +529,89 @@ export const TestimonyReviewScreen = ({ navigation }) => {
           )}
         </View>
 
-        {error && <ErrorText style={styles.errorText}>{error}</ErrorText>}
-
         {reviewingSubmission ? (
-          // Show ReadTestimony component with approval/reject buttons
-          <View style={styles.reviewContainer}>
-            <ReadTestimony
-              testimony={reviewingSubmission}
-              colors={colors}
-              status="review"
-            />
-
-            <View style={styles.actionButtonsContainer}>
-              {processing[reviewingSubmission.id] ? (
-                <ActivityIndicator color={colors.primary} size="large" />
-              ) : (
-                <View style={styles.buttonsRow}>
-                  <CustomButton
-                    title="Cancel"
-                    variant="outline"
-                    leftIcon={
-                      <Ionicons name="arrow-back" size={20} color="#666666" />
-                    }
-                    onPress={handleCancelReview}
-                    style={styles.actionButton}
-                    textStyle={styles.cancelButtonText}
-                  />
-
-                  <CustomButton
-                    title="Reject"
-                    variant="outline"
-                    leftIcon={
-                      <Ionicons name="close-circle" size={20} color="#D32F2F" />
-                    }
-                    textStyle={styles.rejectButtonText}
-                    onPress={() => handleReject(reviewingSubmission)}
-                    style={[styles.actionButton, styles.rejectButton]}
-                  />
-
-                  <CustomButton
-                    title="Approve"
-                    variant="primary"
-                    leftIcon={
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={20}
-                        color="#FFFFFF"
-                      />
-                    }
-                    onPress={() => handleApprove(reviewingSubmission)}
-                    style={[styles.actionButton, styles.approveButton]}
-                    textStyle={styles.approveButtonText}
-                  />
-                </View>
-              )}
+          isEditing ? (
+            // Show EditTestimony component with save/cancel buttons
+            <View style={styles.reviewContainer}>
+              <EditTestimony
+                initialTestimony={reviewingSubmission}
+                initialBeforeImage={reviewingSubmission.beforeImage}
+                initialAfterImage={reviewingSubmission.afterImage}
+                initialVideo={reviewingSubmission.video}
+                onSubmit={handleSaveEdits}
+                onCancel={handleCancelEdit}
+                isEdit={true}
+              />
             </View>
-          </View>
+          ) : (
+            // Show ReadTestimony component with approval/reject buttons
+            <View style={styles.reviewContainer}>
+              <ReadTestimony
+                testimony={reviewingSubmission}
+                colors={colors}
+                status="review"
+                onEdit={handleEditTestimony}
+              />
+
+              <View style={styles.actionButtonsContainer}>
+                {processing[reviewingSubmission.id] ? (
+                  <ActivityIndicator color={colors.primary} size="large" />
+                ) : (
+                  <>
+                    {error && (
+                      <ErrorText style={styles.errorText}>{error}</ErrorText>
+                    )}
+                    <View style={styles.buttonsRow}>
+                      <CustomButton
+                        title="Cancel"
+                        variant="outline"
+                        leftIcon={
+                          <Ionicons
+                            name="arrow-back"
+                            size={20}
+                            color="#666666"
+                          />
+                        }
+                        onPress={handleCancelReview}
+                        style={styles.actionButton}
+                        textStyle={styles.cancelButtonText}
+                      />
+
+                      <CustomButton
+                        title="Reject"
+                        variant="outline"
+                        leftIcon={
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="#D32F2F"
+                          />
+                        }
+                        textStyle={styles.rejectButtonText}
+                        onPress={() => handleReject(reviewingSubmission)}
+                        style={[styles.actionButton, styles.rejectButton]}
+                      />
+
+                      <CustomButton
+                        title="Approve"
+                        variant="primary"
+                        leftIcon={
+                          <Ionicons
+                            name="checkmark-circle"
+                            size={20}
+                            color="#FFFFFF"
+                          />
+                        }
+                        onPress={() => handleApprove(reviewingSubmission)}
+                        style={[styles.actionButton, styles.approveButton]}
+                        textStyle={styles.approveButtonText}
+                      />
+                    </View>
+                  </>
+                )}
+              </View>
+            </View>
+          )
         ) : loading && submissions.length === 0 ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />

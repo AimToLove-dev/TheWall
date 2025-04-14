@@ -163,15 +163,16 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
         // Admin is submitting on behalf of someone else
         data = {
           testimony: values.testimony,
+          title: values.title || "",
           userId: user.uid, // Admin's UID as the submitter
           submittedByAdmin: true,
           adminEmail: user.email,
           // Use the profile data that was entered for the person
           userEmail: adminSubmissionProfile.email || "",
-          displayName: `${adminSubmissionProfile.firstName.trim()} ${adminSubmissionProfile.lastName
-            .trim()
-            .charAt(0)
-            .toUpperCase()}.`,
+          displayName: `${adminSubmissionProfile?.firstName?.trim()} ${adminSubmissionProfile?.lastName
+            ?.trim()
+            ?.charAt(0)
+            ?.toUpperCase()}.`,
           phoneNumber: adminSubmissionProfile.phoneNumber,
           address: adminSubmissionProfile.address,
           dob: adminSubmissionProfile.dob,
@@ -180,12 +181,13 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
         // Regular user submission with their own profile
         data = {
           testimony: values.testimony,
+          title: values.title || "",
           userId: profile.uid || user.uid,
           userEmail: profile.email,
-          displayName: `${profile.firstName.trim()} ${profile.lastName
-            .trim()
-            .charAt(0)
-            .toUpperCase()}.`,
+          displayName: `${profile?.firstName?.trim()} ${profile.lastName
+            ?.trim()
+            ?.charAt(0)
+            ?.toUpperCase()}.`,
           phoneNumber: profile?.phoneNumber,
           address: profile?.address,
           dob: profile?.dob,
@@ -314,55 +316,17 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
   };
 
   // If profile is incomplete, show the ProfileIncomplete component for regular users
-  // For admin users, show a special profile form for the person they're submitting for
-  if (!profileComplete) {
-    if (isAdmin) {
-      return (
-        <FormContainer style={{ backgroundColor: colors.background }}>
-          <View style={styles.adminProfileContainer}>
-            <TouchableOpacity
-              style={[styles.backButton, { backgroundColor: colors.card }]}
-              onPress={handleBackPress}
-            >
-              <Ionicons name="arrow-back" size={24} color={colors.text} />
-            </TouchableOpacity>
-
-            <HeaderText style={styles.adminProfileTitle}>
-              Admin Testimony Submission
-            </HeaderText>
-            <SubtitleText style={styles.adminProfileSubtitle}>
-              Please enter profile information for the person you're submitting
-              a testimony for
-            </SubtitleText>
-
-            <View style={styles.adminFormContainer}>
-              <EditProfileForm
-                profile={adminSubmissionProfile}
-                onSuccess={(updatedProfile) => {
-                  // Store the profile data and move to testimony submission
-                  setAdminSubmissionProfile(updatedProfile);
-                  setIsAdminSubmission(true);
-                  setProfileComplete(true);
-                }}
-                onCancel={handleBackPress}
-                isAdminSubmission={true}
-              />
-            </View>
-          </View>
-        </FormContainer>
-      );
-    } else {
-      return (
-        <FormContainer style={{ backgroundColor: colors.background }}>
-          <ProfileIncomplete
-            missingFields={missingFields}
-            colors={colors}
-            onCompleteProfile={handleCompleteProfile}
-            onBack={handleBackPress}
-          />
-        </FormContainer>
-      );
-    }
+  if (!isAdmin && !profileComplete) {
+    return (
+      <FormContainer style={{ backgroundColor: colors.background }}>
+        <ProfileIncomplete
+          missingFields={missingFields}
+          colors={colors}
+          onCompleteProfile={handleCompleteProfile}
+          onBack={handleBackPress}
+        />
+      </FormContainer>
+    );
   }
 
   return (
@@ -392,7 +356,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
 
       {/* Action buttons for testimony management */}
       {!isEditing && canSubmit && userTestimonies.length > 0 && (
-        <View style={styles.floatingButtonContainer}>
+        <View>
           <CustomButton
             title="New Testimony"
             variant="primary"
@@ -449,12 +413,6 @@ const styles = StyleSheet.create({
   emptyStateButton: {
     marginTop: spacing.lg,
     minWidth: 200,
-  },
-  floatingButtonContainer: {
-    position: "absolute",
-    bottom: spacing.xl,
-    right: spacing.xl,
-    zIndex: 100,
   },
   floatingButton: {
     paddingHorizontal: spacing.lg,

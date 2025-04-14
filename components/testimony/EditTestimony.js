@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import { CustomButton } from "components";
+import { CustomButton, CustomInput } from "components";
 import { TextAreaInput, MediaUpload, VideoUpload } from "components/inputs";
 import { ProfileInfoCard } from "components/profile/ProfileInfoCard";
 import { AuthenticatedUserContext } from "providers";
@@ -244,7 +244,10 @@ export const EditTestimony = ({
       </SubtitleText>
 
       <Formik
-        initialValues={{ testimony: initialTestimony?.testimony || "" }}
+        initialValues={{
+          testimony: initialTestimony?.testimony || "",
+          title: initialTestimony?.title || "",
+        }}
         validationSchema={testimonyValidationSchema}
         onSubmit={handleSubmit}
       >
@@ -257,6 +260,15 @@ export const EditTestimony = ({
           handleBlur,
         }) => (
           <View style={styles.formContainer}>
+            <CustomInput
+              label="Testimony Title"
+              value={values.title}
+              onChangeText={handleChange("title")}
+              onBlur={handleBlur("title")}
+              placeholder="Enter a title for this testimony"
+              style={{ marginBottom: spacing.md }}
+            />
+
             {/* Profile Information Card */}
             {profileData && (
               <View style={styles.profileInfoSection}>
