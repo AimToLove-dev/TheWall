@@ -10,5 +10,5 @@ export { DashboardScreen } from "./user/DashboardScreen";
 export { DashboardAdminScreen } from "./user/DashboardAdminScreen";
 export { ProfileScreen } from "./user/ProfileScreen";
 export { MyWallScreen } from "./user/MyWallScreen";
-export { MyTestimonyScreen } from "./user/MyTestimonyScreen";
-export { TestimonyAdminScreen } from "./user/TestimonyAdminScreen";
+export { TestimonySubmissionScreen } from "./user/TestimonySubmissionScreen";
+export { TestimonyReviewScreen } from "./user/TestimonyReviewScreen";

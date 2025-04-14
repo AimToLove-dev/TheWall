@@ -18,7 +18,7 @@ import { View } from "components/View";
 import { AuthenticatedUserContext } from "providers";
 import { FormContainer } from "components/FormContainer";
 import { checkProfileCompleteness } from "@utils/profileUtils";
-import { EditProfileForm } from "components/EditProfileForm";
+import { EditProfileForm } from "@components/profile/EditProfileForm";
 import { getThemeColors } from "styles/theme";
 import { CustomButton } from "components/CustomButton";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -37,7 +37,7 @@ export const ProfileScreen = ({ navigation, route }) => {
   const { isComplete, missingFields } = checkProfileCompleteness(profile);
 
   const handleBackPress = () => {
-    navigation.navigate("user");
+    navigation.navigate("Dashboard");
   };
 
   const handleEditProfile = () => {

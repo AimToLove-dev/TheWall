@@ -32,11 +32,12 @@ import { CustomInput } from "./inputs/CustomInput";
 import { MediaUpload } from "./inputs/MediaUpload";
 import { VideoUpload } from "./inputs/VideoUpload";
 import { TextAreaInput } from "./inputs/TextAreaInput";
-import { ConnectTestimony } from "./testimony/ConnectTestimony";
 import { ConfirmationPage } from "./testimony/ConfirmationPage";
 import { ReadTestimony } from "./testimony/ReadTestimony";
 import { EditTestimony } from "./testimony/EditTestimony";
 import { MainContent } from "./MainContent";
+import { ProfileIncomplete } from "./profile/ProfileIncomplete";
+import { EditProfileForm } from "./profile/EditProfileForm";
 
 export {
   View,
@@ -67,10 +68,11 @@ export {
   MediaUpload,
   VideoUpload,
   TextAreaInput,
-  ConnectTestimony,
   ConfirmationPage,
   ReadTestimony,
   EditTestimony,
   MainContent,
   WallButtons,
+  ProfileIncomplete,
+  EditProfileForm,
 };

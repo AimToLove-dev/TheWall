@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { CustomButton } from "components";
 import { TextAreaInput, MediaUpload, VideoUpload } from "components/inputs";
+import { ProfileInfoCard } from "components/profile/ProfileInfoCard";
+import { AuthenticatedUserContext } from "providers";
 import {
   HeaderText,
   SubtitleText,
@@ -31,6 +33,9 @@ export const EditTestimony = ({
   loading,
   errorState,
   isEdit = true, // Set to false for creating a new testimony
+  onEditProfile, // Function to handle editing profile
+  profileData, // Profile data to display
+  isAdmin = false, // Whether the current user is an admin
 }) => {
   const [beforeImage, setBeforeImage] = useState(initialBeforeImage || null);
   const [afterImage, setAfterImage] = useState(initialAfterImage || null);
@@ -252,6 +257,17 @@ export const EditTestimony = ({
           handleBlur,
         }) => (
           <View style={styles.formContainer}>
+            {/* Profile Information Card */}
+            {profileData && (
+              <View style={styles.profileInfoSection}>
+                <ProfileInfoCard
+                  profileData={profileData}
+                  isAdmin={isAdmin}
+                  onEditProfile={onEditProfile}
+                />
+              </View>
+            )}
+
             {/* Faith questions section */}
             <View style={styles.faithSection}>
               <BodyText style={styles.mediaSectionTitle}>
@@ -556,5 +572,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.05)",
+  },
+  profileInfoSection: {
+    marginBottom: spacing.lg,
   },
 });

@@ -4,6 +4,7 @@ import {
   deleteDocument,
   queryDocuments,
   getDocumentById,
+  setDocumentWithId,
 } from "./firebaseUtils";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { linkTestimonyToSoul as linkSoulTestimonyRecord } from "./soulsUtils";
@@ -40,13 +41,13 @@ export const uploadFile = async (uri, path) => {
 };
 
 /**
- * Submit a testimony with media files
+ * Submit a testimony with media files to the testimonySubmissions collection
  * @param {Object} testimonyData - Testimony data
  * @param {string} beforeImageUri - Local URI of before image
  * @param {string} afterImageUri - Local URI of after image
  * @param {string} videoUri - Local URI of video
  * @param {string} soulId - ID of the soul this testimony is connected to (optional)
- * @returns {Promise<string>} - New testimony ID
+ * @returns {Promise<string>} - New testimony submission ID
  */
 export const submitTestimony = async (
   testimonyData,
@@ -57,6 +58,7 @@ export const submitTestimony = async (
 ) => {
   try {
     const userId = testimonyData.userId;
+    const userEmail = testimonyData.userEmail;
     const timestamp = new Date().getTime();
 
     // Upload media files if provided
@@ -98,19 +100,33 @@ export const submitTestimony = async (
     // Wait for all uploads to complete
     await Promise.all(uploadPromises);
 
-    // Add testimony document with media URLs and soul ID
+    // Add testimony document with media URLs and soul ID to testimonySubmissions collection
     const completeTestimonyData = {
       ...testimonyData,
       beforeImage: beforeImageUrl,
       afterImage: afterImageUrl,
       video: videoUrl,
-      // Set status based on whether a soul was linked immediately
-      status: soulId ? "pending" : "unlinked",
       submittedAt: new Date().toISOString(),
       soulId: soulId || null, // Add the soul ID connection
     };
 
-    return await addDocument("testimonies", completeTestimonyData);
+    // Check if user is admin
+    const isAdmin = testimonyData.isAdmin === true;
+    debugger;
+    if (isAdmin) {
+      // For admins, continue to use auto-generated IDs
+      return await addDocument("testimonySubmissions", completeTestimonyData);
+    } else {
+      // For regular users, use their email as the document ID to enforce one submission per user
+      if (!userEmail) {
+        throw new Error("User email is required to submit a testimony");
+      }
+      return await setDocumentWithId(
+        "testimonySubmissions",
+        userEmail,
+        completeTestimonyData
+      );
+    }
   } catch (error) {
     console.error("Error submitting testimony:", error);
     throw error;
@@ -118,17 +134,16 @@ export const submitTestimony = async (
 };
 
 /**
- * Link a testimony to a soul and update status to pending
+ * Link a testimony submission to a soul
  * @param {string} testimonyId - Testimony ID
  * @param {string} soulId - Soul ID
  * @returns {Promise<boolean>} - Success status
  */
 export const linkTestimonyToSoulRecord = async (testimonyId, soulId) => {
   try {
-    // Update the testimony with the soul ID and change status to pending
-    await updateDocument("testimonies", testimonyId, {
+    // Update the testimony with the soul ID
+    await updateDocument("testimonySubmissions", testimonyId, {
       soulId,
-      status: "pending", // Update to pending when linked to a soul
       updatedAt: new Date().toISOString(),
     });
 
@@ -146,7 +161,7 @@ export const linkTestimonyToSoulRecord = async (testimonyId, soulId) => {
 };
 
 /**
- * Get all testimonies
+ * Get all published testimonies from the public testimonies collection
  * @param {string} sortBy - Field to sort by
  * @param {string} sortDirection - Sort direction ('asc' or 'desc')
  * @returns {Promise<Array>} - Array of testimonies
@@ -164,11 +179,33 @@ export const getAllTestimonies = async (
 };
 
 /**
- * Get testimonies by user ID
+ * Get all testimony submissions that an admin can review
+ * @param {string} sortBy - Field to sort by
+ * @param {string} sortDirection - Sort direction ('asc' or 'desc')
+ * @returns {Promise<Array>} - Array of testimony submissions
+ */
+export const getAllTestimonySubmissions = async (
+  sortBy = "submittedAt",
+  sortDirection = "desc"
+) => {
+  try {
+    return await queryDocuments(
+      "testimonySubmissions",
+      [],
+      [[sortBy, sortDirection]]
+    );
+  } catch (error) {
+    console.error("Error getting testimony submissions:", error);
+    return [];
+  }
+};
+
+/**
+ * Get user's testimony submissions
  * @param {string} userId - User ID
  * @param {string} sortBy - Field to sort by
  * @param {string} sortDirection - Sort direction ('asc' or 'desc')
- * @returns {Promise<Array>} - Array of testimonies for the user
+ * @returns {Promise<Array>} - Array of testimony submissions for the user
  */
 export const getUserTestimonies = async (
   userId,
@@ -177,33 +214,36 @@ export const getUserTestimonies = async (
 ) => {
   try {
     return await queryDocuments(
-      "testimonies",
+      "testimonySubmissions",
       [["userId", "==", userId]],
       [[sortBy, sortDirection]]
     );
   } catch (error) {
-    console.error(`Error getting testimonies for user ${userId}:`, error);
+    console.error(
+      `Error getting testimony submissions for user ${userId}:`,
+      error
+    );
     return [];
   }
 };
 
 /**
- * Get a testimony by ID
+ * Get a testimony submission by ID
  * @param {string} testimonyId - Testimony ID
  * @returns {Promise<Object|null>} - Testimony object or null if not found
  */
 export const getTestimonyById = async (testimonyId) => {
   try {
     // Use getDocumentById instead of queryDocuments for direct document lookup
-    return await getDocumentById("testimonies", testimonyId);
+    return await getDocumentById("testimonySubmissions", testimonyId);
   } catch (error) {
-    console.error(`Error getting testimony ${testimonyId}:`, error);
+    console.error(`Error getting testimony submission ${testimonyId}:`, error);
     return null;
   }
 };
 
 /**
- * Get a specific testimony by user ID and testimony ID
+ * Get a specific testimony submission by user ID and testimony ID
  * @param {string} userId - User ID
  * @param {string} testimonyId - Testimony ID (optional)
  * @returns {Promise<Object|null>} - Testimony object or null if not found
@@ -227,7 +267,7 @@ export const getUserTestimonyById = async (userId, testimonyId = null) => {
 };
 
 /**
- * Count user's testimonies
+ * Count user's testimony submissions
  * @param {string} userId - User ID
  * @returns {Promise<number>} - Number of testimonies for the user
  */
@@ -242,7 +282,7 @@ export const countUserTestimonies = async (userId) => {
 };
 
 /**
- * Update a testimony
+ * Update a testimony submission
  * @param {string} testimonyId - Testimony ID
  * @param {Object} testimonyData - Updated testimony data
  * @returns {Promise<boolean>} - Success status
@@ -255,7 +295,11 @@ export const updateTestimony = async (testimonyId, testimonyData) => {
       updatedAt: new Date().toISOString(),
     };
 
-    return await updateDocument("testimonies", testimonyId, updatedData);
+    return await updateDocument(
+      "testimonySubmissions",
+      testimonyId,
+      updatedData
+    );
   } catch (error) {
     console.error(`Error updating testimony ${testimonyId}:`, error);
     throw error;
@@ -263,15 +307,48 @@ export const updateTestimony = async (testimonyId, testimonyData) => {
 };
 
 /**
- * Delete a testimony
+ * Delete a testimony submission
  * @param {string} testimonyId - Testimony ID
  * @returns {Promise<boolean>} - Success status
  */
 export const deleteTestimony = async (testimonyId) => {
   try {
-    return await deleteDocument("testimonies", testimonyId);
+    return await deleteDocument("testimonySubmissions", testimonyId);
   } catch (error) {
     console.error(`Error deleting testimony ${testimonyId}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * After admin review, approve a testimony submission by copying it to the public testimonies collection
+ * and deleting it from testimonySubmissions
+ * @param {string} submissionId - Testimony submission ID
+ * @returns {Promise<string>} - New published testimony ID
+ */
+export const approveAndPublishTestimony = async (submissionId) => {
+  try {
+    // Get the submission
+    const submission = await getDocumentById(
+      "testimonySubmissions",
+      submissionId
+    );
+    if (!submission) {
+      throw new Error(`Testimony submission ${submissionId} not found`);
+    }
+
+    // Add it to the public testimonies collection
+    const publicTestimonyId = await addDocument("testimonies", {
+      ...submission,
+      approvedAt: new Date().toISOString(),
+    });
+
+    // Delete it from the submissions collection
+    await deleteDocument("testimonySubmissions", submissionId);
+
+    return publicTestimonyId;
+  } catch (error) {
+    console.error(`Error publishing testimony ${submissionId}:`, error);
     throw error;
   }
 };

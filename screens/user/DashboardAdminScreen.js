@@ -43,6 +43,8 @@ export const DashboardAdminScreen = ({ navigation }) => {
   const [totalSoulsCount, setTotalSoulsCount] = useState(0);
   const [pendingTestimoniesCount, setPendingTestimoniesCount] = useState(0);
   const [approvedTestimoniesCount, setApprovedTestimoniesCount] = useState(0);
+  const [testimonySubmissionsCount, setTestimonySubmissionsCount] = useState(0);
+  const [testimoniesCount, setTestimoniesCount] = useState(0);
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -65,7 +67,20 @@ export const DashboardAdminScreen = ({ navigation }) => {
           const allSouls = await queryDocuments("souls", [], [], 0);
           setTotalSoulsCount(allSouls.length);
 
-          // Get pending testimonies count
+          // Get all documents from testimonySubmissions collection
+          const submissions = await queryDocuments(
+            "testimonySubmissions",
+            [],
+            [],
+            0
+          );
+          setTestimonySubmissionsCount(submissions.length);
+
+          // Get all documents from testimonies collection
+          const testimonies = await queryDocuments("testimonies", [], [], 0);
+          setTestimoniesCount(testimonies.length);
+
+          // Get pending testimonies count (previously using "testimonies" collection only)
           const pendingTestimonies = await queryDocuments(
             "testimonies",
             [["status", "==", "pending"]],
@@ -73,7 +88,8 @@ export const DashboardAdminScreen = ({ navigation }) => {
             0
           );
           setPendingTestimoniesCount(pendingTestimonies.length);
-          // Get approved testimonies count
+
+          // Get approved testimonies count (previously using "testimonies" collection only)
           const approvedTestimonies = await queryDocuments(
             "testimonies",
             [["status", "==", "approved"]],
@@ -176,8 +192,8 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("Profile");
   };
 
-  const handleTestimonyAdminPress = () => {
-    navigation.navigate("TestimonyAdmin");
+  const handleTestimonyReviewPress = () => {
+    navigation.navigate("TestimonyReview");
   };
 
   const styles = StyleSheet.create({
@@ -407,25 +423,25 @@ export const DashboardAdminScreen = ({ navigation }) => {
             <Surface
               style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
-              <Ionicons name="hourglass-outline" size={24} color="#FF9800" />
+              <Ionicons
+                name="document-text-outline"
+                size={24}
+                color="#FF9800"
+              />
               <BodyText style={styles.statValue}>
-                {pendingTestimoniesCount}
+                {testimonySubmissionsCount}
               </BodyText>
-              <BodyText style={styles.statLabel}>Pending Testimonies</BodyText>
+              <BodyText style={styles.statLabel}>
+                Testimony Submissions
+              </BodyText>
             </Surface>
 
             <Surface
               style={[styles.statCard, { backgroundColor: colors.surface }]}
             >
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={24}
-                color="#4CAF50"
-              />
-              <BodyText style={styles.statValue}>
-                {approvedTestimoniesCount}
-              </BodyText>
-              <BodyText style={styles.statLabel}>Approved Testimonies</BodyText>
+              <Ionicons name="documents-outline" size={24} color="#4CAF50" />
+              <BodyText style={styles.statValue}>{testimoniesCount}</BodyText>
+              <BodyText style={styles.statLabel}>Testimonies</BodyText>
             </Surface>
           </View>
         </View>
@@ -440,7 +456,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
           >
             <TouchableOpacity
               style={styles.adminButton}
-              onPress={handleTestimonyAdminPress}
+              onPress={handleTestimonyReviewPress}
             >
               <View style={styles.adminIconContainer}>
                 <Ionicons

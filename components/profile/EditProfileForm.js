@@ -9,7 +9,12 @@ import { View } from "components";
 import { CustomButton } from "components/CustomButton";
 
 // Rename prop to profile instead of user to match what we're actually using
-export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
+export const EditProfileForm = ({
+  profile,
+  onSuccess,
+  onCancel,
+  isAdminSubmission,
+}) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -59,6 +64,10 @@ export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
   };
 
   const handleSubmit = async () => {
+    if (isAdminSubmission) {
+      onSuccess(formData);
+      return;
+    }
     // Basic validation
     if (
       !formData.displayName ||
@@ -109,7 +118,8 @@ export const EditProfileForm = ({ profile, onSuccess, onCancel }) => {
       <TextInput
         label="Email"
         value={formData.email}
-        disabled={true}
+        onChangeText={(text) => handleInputChange("email", text)}
+        disabled={!isAdminSubmission}
         mode="outlined"
         left={<TextInput.Icon icon="email" />}
         style={{ marginBottom: 16 }}

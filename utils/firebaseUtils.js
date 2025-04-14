@@ -11,6 +11,7 @@ import {
   orderBy,
   limit,
   serverTimestamp,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "config"; // Updated import path
 
@@ -101,6 +102,35 @@ export const addDocument = async (collectionName, data) => {
     return docRef.id;
   } catch (error) {
     console.error(`Error adding document to ${collectionName}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Add a document to a collection with a specific ID
+ * @param {string} collectionName - Name of the collection
+ * @param {string} docId - Custom document ID to use
+ * @param {Object} data - Document data
+ * @returns {Promise<string>} - Document ID (same as input docId)
+ */
+export const setDocumentWithId = async (collectionName, docId, data) => {
+  try {
+    // Check if Firestore is initialized
+    if (!isFirestoreInitialized()) {
+      throw new Error("Firebase is not initialized. Check your configuration.");
+    }
+
+    const docRef = doc(db, collectionName, docId);
+    await setDoc(docRef, {
+      ...data,
+      createdAt: serverTimestamp(),
+    });
+    return docId;
+  } catch (error) {
+    console.error(
+      `Error setting document ${docId} in ${collectionName}:`,
+      error
+    );
     throw error;
   }
 };

@@ -4,11 +4,12 @@ import {
   ProfileScreen,
   DashboardScreen,
   MyWallScreen,
-  MyTestimonyScreen,
+  TestimonySubmissionScreen,
   EmailVerificationScreen,
 } from "screens";
-import { TestimonyAdminScreen } from "screens/user/TestimonyAdminScreen";
+import { TestimonyReviewScreen } from "@screens/user/TestimonyReviewScreen";
 import { DashboardAdminScreen } from "screens/user/DashboardAdminScreen";
+import { TestimonySubmissionSuccessScreen } from "screens/user/TestimonySubmissionSuccessScreen";
 import { AuthenticatedUserContext } from "../providers";
 
 const Stack = createStackNavigator();
@@ -33,8 +34,12 @@ export const UserStack = () => {
       <Stack.Screen name="DashboardAdmin" component={DashboardAdminScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="MyWall" component={MyWallScreen} />
-      <Stack.Screen name="MyTestimony" component={MyTestimonyScreen} />
-      <Stack.Screen name="TestimonyAdmin" component={TestimonyAdminScreen} />
+      <Stack.Screen name="Testimony" component={TestimonySubmissionScreen} />
+      <Stack.Screen name="TestimonyReview" component={TestimonyReviewScreen} />
+      <Stack.Screen
+        name="TestimonySubmissionSuccess"
+        component={TestimonySubmissionSuccessScreen}
+      />
     </Stack.Navigator>
   );
 };

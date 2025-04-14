@@ -38,8 +38,6 @@ export const DashboardScreen = ({ navigation }) => {
   const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);
   const theme = useTheme();
   const [greeting, setGreeting] = useState("Welcome");
-  const [lovedOnesCount, setLovedOnesCount] = useState(0); // State for loved ones count
-  const [testimoniesCount, setTestimoniesCount] = useState(0); // State for testimonies count
 
   // Check if user is admin to redirect to admin dashboard
   const isAdmin = profile?.isAdmin || user?.isAdmin || false;
@@ -62,22 +60,6 @@ export const DashboardScreen = ({ navigation }) => {
       setGreeting("Good evening");
     }
   }, []);
-
-  // Fetch souls count for the user
-  useEffect(() => {
-    const fetchSoulsCount = async () => {
-      if (user) {
-        try {
-          const userSouls = await getUserSouls(user.uid);
-          setLovedOnesCount(userSouls.length);
-        } catch (error) {
-          console.error("Error fetching souls count:", error);
-        }
-      }
-    };
-
-    fetchSoulsCount();
-  }, [user]);
 
   // Get initials for avatar
   const getInitials = () => {
@@ -173,7 +155,7 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   const handleTestimonyPress = () => {
-    navigation.navigate("MyTestimony");
+    navigation.navigate("Testimony");
   };
 
   return (
@@ -233,44 +215,6 @@ export const DashboardScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
         </Surface>
-
-        {/* Dashboard stats section */}
-        <View style={styles.statsContainer}>
-          <HeaderText style={styles.sectionTitle}>Overview</HeaderText>
-          <View style={styles.statsGrid}>
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons
-                name="people-outline"
-                size={24}
-                color={colors.primary}
-              />
-              <BodyText style={styles.statValue}>{lovedOnesCount}</BodyText>
-              <BodyText style={styles.statLabel}>Loved Ones</BodyText>
-            </Surface>
-
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons
-                name="document-text-outline"
-                size={24}
-                color={colors.primary}
-              />
-              <BodyText style={styles.statValue}>{testimoniesCount}</BodyText>
-              <BodyText style={styles.statLabel}>Testimonies</BodyText>
-            </Surface>
-
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons name="heart-outline" size={24} color={colors.primary} />
-              <BodyText style={styles.statValue}>0</BodyText>
-              <BodyText style={styles.statLabel}>Prayers</BodyText>
-            </Surface>
-          </View>
-        </View>
 
         {/* Quick actions section */}
         <View style={styles.quickActionsSection}>
@@ -389,28 +333,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     flexDirection: "row",
     alignItems: "center",
-  },
-  statsContainer: {
-    marginBottom: spacing.lg,
-  },
-  statsGrid: {
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  statCard: {
-    flex: 1,
-    padding: spacing.md,
-    alignItems: "center",
-    ...shadows.small,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginVertical: spacing.xs,
-  },
-  statLabel: {
-    fontSize: 12,
-    opacity: 0.7,
   },
   quickActionsSection: {
     marginBottom: spacing.lg,

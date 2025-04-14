@@ -24,34 +24,39 @@ import {
 } from "components";
 import { AuthenticatedUserContext } from "providers";
 import { getThemeColors, spacing, shadows } from "styles/theme";
-import { queryDocuments, updateDocument } from "utils/firebaseUtils";
+import {
+  queryDocuments,
+  updateDocument,
+  addDocument,
+  deleteDocument,
+} from "utils/firebaseUtils";
 
-export const TestimonyAdminScreen = ({ navigation }) => {
+export const TestimonyReviewScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors(isDark);
 
-  const [testimonies, setTestimonies] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMorePages, setHasMorePages] = useState(true);
   const [processing, setProcessing] = useState({});
-  const [reviewingTestimony, setReviewingTestimony] = useState(null);
+  const [reviewingSubmission, setReviewingSubmission] = useState(null);
 
   const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
-    fetchTestimonies();
+    fetchSubmissions();
   }, []);
 
   // Handle Android back button when reviewing a testimony
   useFocusEffect(
     useCallback(() => {
       const onBackPress = () => {
-        if (reviewingTestimony) {
-          // Revert to pending status and return to list
+        if (reviewingSubmission) {
+          // Return to list view
           handleCancelReview();
           return true; // Prevent default behavior
         }
@@ -65,32 +70,17 @@ export const TestimonyAdminScreen = ({ navigation }) => {
         // Clean up event listener
         BackHandler.removeEventListener("hardwareBackPress", onBackPress);
       };
-    }, [reviewingTestimony])
+    }, [reviewingSubmission])
   );
 
-  // Cleanup function - ensure we reset any testimony in review state when navigating away
+  // Cleanup function when navigating away
   useEffect(() => {
-    // This will run when the component unmounts
     return () => {
-      if (reviewingTestimony) {
-        // Reset testimony status to pending if it's in review state
-        resetTestimonyToPending(reviewingTestimony.id);
-      }
+      setReviewingSubmission(null);
     };
-  }, [reviewingTestimony]);
+  }, []);
 
-  const resetTestimonyToPending = async (testimonyId) => {
-    try {
-      await updateDocument("testimonies", testimonyId, {
-        status: "pending",
-      });
-      console.log(`Testimony ${testimonyId} reset to pending status`);
-    } catch (err) {
-      console.error(`Error resetting testimony ${testimonyId}:`, err);
-    }
-  };
-
-  const fetchTestimonies = async (page = 1) => {
+  const fetchSubmissions = async (page = 1) => {
     if (page === 1) {
       setLoading(true);
     }
@@ -98,130 +88,102 @@ export const TestimonyAdminScreen = ({ navigation }) => {
     try {
       setError(null);
 
-      // Query testimonies with status "pending"
+      // Query testimonySubmissions collection
       const queryResults = await queryDocuments(
-        "testimonies",
-        [["status", "==", "pending"]],
+        "testimonySubmissions",
+        [], // No status filter needed as we're using a separate collection
         [["submittedAt", "asc"]], // Oldest first
         ITEMS_PER_PAGE
       );
 
       if (page === 1) {
-        setTestimonies(queryResults);
+        setSubmissions(queryResults);
       } else {
-        setTestimonies((prev) => [...prev, ...queryResults]);
+        setSubmissions((prev) => [...prev, ...queryResults]);
       }
 
       // Check if there are more pages
       setHasMorePages(queryResults.length === ITEMS_PER_PAGE);
       setCurrentPage(page);
     } catch (err) {
-      console.error("Error fetching testimonies:", err);
-      setError("Failed to load testimonies. Please try again.");
+      console.error("Error fetching testimony submissions:", err);
+      setError("Failed to load testimony submissions. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const loadMoreTestimonies = () => {
+  const loadMoreSubmissions = () => {
     if (!loading && hasMorePages) {
-      fetchTestimonies(currentPage + 1);
+      fetchSubmissions(currentPage + 1);
     }
   };
 
   const handleBackPress = () => {
-    if (reviewingTestimony) {
-      // Return to the testimony list view and reset status to pending
+    if (reviewingSubmission) {
+      // Return to the testimony list view
       handleCancelReview();
     } else {
       navigation.goBack();
     }
   };
 
-  // New function to handle canceling review
-  const handleCancelReview = async () => {
-    if (!reviewingTestimony) return;
+  const handleCancelReview = () => {
+    setReviewingSubmission(null);
+  };
 
-    setProcessing((prev) => ({ ...prev, [reviewingTestimony.id]: true }));
+  const handleReview = (submission) => {
+    setReviewingSubmission(submission);
+  };
+
+  const handleApprove = async (submission) => {
+    setProcessing((prev) => ({ ...prev, [submission.id]: true }));
 
     try {
-      // Reset testimony status back to pending
-      await updateDocument("testimonies", reviewingTestimony.id, {
-        status: "pending",
-      });
-
-      // Update local state to reflect this change
-      setTestimonies((prev) =>
-        prev.map((t) =>
-          t.id === reviewingTestimony.id ? { ...t, status: "pending" } : t
-        )
-      );
-
-      // Exit review mode
-      setReviewingTestimony(null);
-    } catch (err) {
-      console.error(`Error resetting testimony ${reviewingTestimony.id}:`, err);
-      setError(`Failed to reset testimony status. Please try again.`);
-    } finally {
-      setProcessing((prev) => ({ ...prev, [reviewingTestimony.id]: false }));
-    }
-  };
-
-  const handleReview = async (testimony) => {
-    setProcessing((prev) => ({ ...prev, [testimony.id]: true }));
-
-    try {
-      // Update status to "review"
-      await updateDocument("testimonies", testimony.id, {
-        status: "review",
-      });
-
-      // Set the current testimony being reviewed with updated status
-      setReviewingTestimony({
-        ...testimony,
-        status: "review",
-      });
-    } catch (err) {
-      console.error(`Error updating testimony ${testimony.id}:`, err);
-      setError(`Failed to update testimony status. Please try again.`);
-    } finally {
-      setProcessing((prev) => ({ ...prev, [testimony.id]: false }));
-    }
-  };
-
-  const handleApprove = async (testimony) => {
-    await updateTestimonyStatus(testimony.id, "approved");
-    // Return to list view after approval
-    setReviewingTestimony(null);
-  };
-
-  const handleReject = async (testimony) => {
-    await updateTestimonyStatus(testimony.id, "rejected");
-    // Return to list view after rejection
-    setReviewingTestimony(null);
-  };
-
-  const updateTestimonyStatus = async (testimonyId, status) => {
-    setProcessing((prev) => ({ ...prev, [testimonyId]: true }));
-
-    try {
-      await updateDocument("testimonies", testimonyId, {
-        status,
+      // Add to testimonies collection
+      await addDocument("testimonies", {
+        ...submission,
         reviewedAt: new Date().toISOString(),
         reviewedBy: user.uid,
       });
 
-      // Remove the testimony from the list
-      setTestimonies((prev) => prev.filter((t) => t.id !== testimonyId));
+      // Remove from testimonySubmissions collection
+      await deleteDocument("testimonySubmissions", submission.id);
+
+      // Update local state
+      setSubmissions((prev) => prev.filter((s) => s.id !== submission.id));
+      setReviewingSubmission(null);
     } catch (err) {
-      console.error(`Error updating testimony ${testimonyId}:`, err);
-      setError(`Failed to update testimony. Please try again.`);
+      console.error(`Error approving submission ${submission.id}:`, err);
+      setError("Failed to approve submission. Please try again.");
     } finally {
-      setProcessing((prev) => ({ ...prev, [testimonyId]: false }));
+      setProcessing((prev) => ({ ...prev, [submission.id]: false }));
     }
   };
 
-  const renderTestimonyCard = ({ item }) => {
+  const handleReject = async (submission) => {
+    setProcessing((prev) => ({ ...prev, [submission.id]: true }));
+
+    try {
+      // Remove from testimonySubmissions collection
+      await deleteDocument("testimonySubmissions", submission.id);
+
+      // Update local state
+      setSubmissions((prev) => prev.filter((s) => s.id !== submission.id));
+      setReviewingSubmission(null);
+    } catch (err) {
+      console.error(`Error rejecting submission ${submission.id}:`, err);
+      setError("Failed to reject submission. Please try again.");
+    } finally {
+      setProcessing((prev) => ({ ...prev, [submission.id]: false }));
+    }
+  };
+
+  const handleCreateTestimony = () => {
+    navigation.navigate("Testimony");
+  };
+
+  const renderSubmissionCard = ({ item }) => {
     const isProcessing = processing[item.id];
 
     return (
@@ -297,12 +259,12 @@ export const TestimonyAdminScreen = ({ navigation }) => {
       </TouchableOpacity>
       <View style={styles.titleContainer}>
         <HeaderText style={styles.title}>
-          {reviewingTestimony ? "Review Testimony" : "Testimony Admin"}
+          {reviewingSubmission ? "Review Submission" : "Testimony Review"}
         </HeaderText>
         <SubtitleText style={styles.subtitle}>
-          {reviewingTestimony
+          {reviewingSubmission
             ? "Review and make a decision"
-            : "Manage pending testimonies"}
+            : "Manage pending submissions"}
         </SubtitleText>
       </View>
     </View>
@@ -463,104 +425,134 @@ export const TestimonyAdminScreen = ({ navigation }) => {
       color: "#666666",
       fontWeight: "500",
     },
+    headerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    createButton: {
+      width: 40,
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: 20,
+      marginRight: spacing.md,
+    },
   });
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
-      {renderHeader()}
+      <View style={styles.content}>
+        {/* Header with back button */}
+        <View style={styles.headerRow}>
+          {renderHeader()}
 
-      {error && <ErrorText style={styles.errorText}>{error}</ErrorText>}
+          {/* New button for creating a testimony */}
+          {!reviewingSubmission && (
+            <TouchableOpacity
+              style={[styles.createButton, { backgroundColor: colors.primary }]}
+              onPress={handleCreateTestimony}
+            >
+              <Ionicons name="add" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          )}
+        </View>
 
-      {reviewingTestimony ? (
-        // Show ReadTestimony component with approval/reject buttons
-        <View style={styles.reviewContainer}>
-          <ReadTestimony
-            testimony={reviewingTestimony}
-            colors={colors}
-            status={reviewingTestimony.status}
-          />
+        {error && <ErrorText style={styles.errorText}>{error}</ErrorText>}
 
-          <View style={styles.actionButtonsContainer}>
-            {processing[reviewingTestimony.id] ? (
-              <ActivityIndicator color={colors.primary} size="large" />
-            ) : (
-              <View style={styles.buttonsRow}>
-                <CustomButton
-                  title="Cancel"
-                  variant="outline"
-                  leftIcon={
-                    <Ionicons name="arrow-back" size={20} color="#666666" />
-                  }
-                  onPress={handleCancelReview}
-                  style={styles.actionButton}
-                  textStyle={styles.cancelButtonText}
-                />
+        {reviewingSubmission ? (
+          // Show ReadTestimony component with approval/reject buttons
+          <View style={styles.reviewContainer}>
+            <ReadTestimony
+              testimony={reviewingSubmission}
+              colors={colors}
+              status="review"
+            />
 
-                <CustomButton
-                  title="Reject"
-                  variant="outline"
-                  leftIcon={
-                    <Ionicons name="close-circle" size={20} color="#D32F2F" />
-                  }
-                  textStyle={styles.rejectButtonText}
-                  onPress={() => handleReject(reviewingTestimony)}
-                  style={[styles.actionButton, styles.rejectButton]}
-                />
+            <View style={styles.actionButtonsContainer}>
+              {processing[reviewingSubmission.id] ? (
+                <ActivityIndicator color={colors.primary} size="large" />
+              ) : (
+                <View style={styles.buttonsRow}>
+                  <CustomButton
+                    title="Cancel"
+                    variant="outline"
+                    leftIcon={
+                      <Ionicons name="arrow-back" size={20} color="#666666" />
+                    }
+                    onPress={handleCancelReview}
+                    style={styles.actionButton}
+                    textStyle={styles.cancelButtonText}
+                  />
 
-                <CustomButton
-                  title="Approve"
-                  variant="primary"
-                  leftIcon={
-                    <Ionicons
-                      name="checkmark-circle"
-                      size={20}
-                      color="#FFFFFF"
-                    />
-                  }
-                  onPress={() => handleApprove(reviewingTestimony)}
-                  style={[styles.actionButton, styles.approveButton]}
-                  textStyle={styles.approveButtonText}
-                />
-              </View>
-            )}
+                  <CustomButton
+                    title="Reject"
+                    variant="outline"
+                    leftIcon={
+                      <Ionicons name="close-circle" size={20} color="#D32F2F" />
+                    }
+                    textStyle={styles.rejectButtonText}
+                    onPress={() => handleReject(reviewingSubmission)}
+                    style={[styles.actionButton, styles.rejectButton]}
+                  />
+
+                  <CustomButton
+                    title="Approve"
+                    variant="primary"
+                    leftIcon={
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color="#FFFFFF"
+                      />
+                    }
+                    onPress={() => handleApprove(reviewingSubmission)}
+                    style={[styles.actionButton, styles.approveButton]}
+                    textStyle={styles.approveButtonText}
+                  />
+                </View>
+              )}
+            </View>
           </View>
-        </View>
-      ) : loading && testimonies.length === 0 ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <BodyText style={styles.loadingText}>Loading testimonies...</BodyText>
-        </View>
-      ) : testimonies.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons
-            name="checkmark-circle-outline"
-            size={48}
-            color={colors.primary}
+        ) : loading && submissions.length === 0 ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <BodyText style={styles.loadingText}>
+              Loading submissions...
+            </BodyText>
+          </View>
+        ) : submissions.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={48}
+              color={colors.primary}
+            />
+            <BodyText style={styles.emptyText}>
+              There are no pending submissions to review
+            </BodyText>
+          </View>
+        ) : (
+          <FlatList
+            data={submissions}
+            renderItem={renderSubmissionCard}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.listContainer}
+            onEndReached={loadMoreSubmissions}
+            onEndReachedThreshold={0.2}
+            ListFooterComponent={
+              hasMorePages && (
+                <View style={styles.loadingMoreContainer}>
+                  <ActivityIndicator color={colors.primary} />
+                  <BodyText style={styles.loadingMoreText}>
+                    Loading more...
+                  </BodyText>
+                </View>
+              )
+            }
           />
-          <BodyText style={styles.emptyText}>
-            There are no pending testimonies to review
-          </BodyText>
-        </View>
-      ) : (
-        <FlatList
-          data={testimonies}
-          renderItem={renderTestimonyCard}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContainer}
-          onEndReached={loadMoreTestimonies}
-          onEndReachedThreshold={0.2}
-          ListFooterComponent={
-            hasMorePages && (
-              <View style={styles.loadingMoreContainer}>
-                <ActivityIndicator color={colors.primary} />
-                <BodyText style={styles.loadingMoreText}>
-                  Loading more...
-                </BodyText>
-              </View>
-            )
-          }
-        />
-      )}
+        )}
+      </View>
     </FormContainer>
   );
 };

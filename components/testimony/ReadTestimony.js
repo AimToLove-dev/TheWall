@@ -5,52 +5,7 @@ import { HeaderText, SubtitleText, BodyText } from "components/Typography";
 import { CustomButton } from "components";
 import { spacing } from "styles/theme";
 
-export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
-  const renderStatusBadge = () => {
-    let color;
-    let text;
-    let icon;
-
-    switch (status) {
-      case "approved":
-        color = colors.success;
-        text = "Published";
-        icon = "checkmark-circle-outline";
-        break;
-      case "review":
-        color = colors.warning;
-        text = "In Review";
-        icon = "time-outline";
-        break;
-      case "pending":
-        color = colors.warning;
-        text = "Pending Review";
-        icon = "time-outline";
-        break;
-      case "rejected":
-        color = colors.error;
-        text = "Needs Updates";
-        icon = "alert-circle-outline";
-        break;
-      case "unlinked":
-        color = colors.primary;
-        text = "Incomplete";
-        icon = "link-outline";
-        break;
-      default:
-        color = colors.text;
-        text = "Draft";
-        icon = "document-outline";
-    }
-
-    return (
-      <View style={[styles.statusBadge, { backgroundColor: color }]}>
-        <Ionicons name={icon} size={16} color="#FFFFFF" />
-        <BodyText style={styles.statusText}>{text}</BodyText>
-      </View>
-    );
-  };
-
+export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
   // Helper function to render a checkbox item
   const renderCheckboxItem = (question, answer) => {
     // Three possible states: "Yes", "No", or undefined/null (not set)
@@ -122,7 +77,18 @@ export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <HeaderText>My Testimony</HeaderText>
-        <View style={styles.statusContainer}>{renderStatusBadge()}</View>
+        {isPublished && (
+          <View
+            style={[styles.publishedBadge, { backgroundColor: colors.success }]}
+          >
+            <Ionicons
+              name="checkmark-circle-outline"
+              size={16}
+              color="#FFFFFF"
+            />
+            <BodyText style={styles.publishedText}>Published</BodyText>
+          </View>
+        )}
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card }]}>
@@ -252,8 +218,8 @@ export const ReadTestimony = ({ testimony, colors, onEdit, status }) => {
         </View>
       )}
 
-      {/* Only show edit button if onEdit function is provided and status is appropriate */}
-      {onEdit && status !== "pending" && (
+      {/* Only show edit button if onEdit function is provided */}
+      {onEdit && (
         <CustomButton
           title="Edit Testimony"
           variant="primary"
@@ -276,17 +242,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: spacing.lg,
   },
-  statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  statusBadge: {
+  publishedBadge: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs / 2,
   },
-  statusText: {
+  publishedText: {
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "600",

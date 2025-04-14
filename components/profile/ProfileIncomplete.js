@@ -11,6 +11,60 @@ export const ProfileIncomplete = ({
   onCompleteProfile,
   onBack,
 }) => {
+  const styles = StyleSheet.create({
+    content: {
+      flex: 1,
+      padding: spacing.lg,
+    },
+    backButton: {
+      marginTop: spacing.sm,
+      marginBottom: spacing.lg,
+      width: 40,
+      height: 40,
+      color: colors.text,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    incompleteProfileContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: spacing.xl,
+    },
+    incompleteTitle: {
+      marginTop: spacing.lg,
+      marginBottom: spacing.sm,
+      textAlign: "center",
+    },
+    incompleteSubtitle: {
+      textAlign: "center",
+      marginBottom: spacing.xl,
+    },
+    missingFieldsContainer: {
+      width: "100%",
+      maxWidth: 400,
+      backgroundColor: "rgba(0,0,0,0.03)",
+      padding: spacing.md,
+      marginBottom: spacing.xl,
+    },
+    missingFieldsTitle: {
+      fontWeight: "bold",
+      marginBottom: spacing.sm,
+    },
+    missingFieldRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: spacing.xs,
+    },
+    missingFieldText: {
+      marginLeft: spacing.xs,
+    },
+    completeProfileButton: {
+      width: "100%",
+      maxWidth: 400,
+    },
+  });
+
   return (
     <View style={styles.content}>
       <TouchableOpacity
@@ -73,57 +127,3 @@ export const ProfileIncomplete = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  backButton: {
-    marginTop: spacing.sm,
-    marginBottom: spacing.lg,
-    width: 40,
-    height: 40,
-    color: colors.text,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  incompleteProfileContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: spacing.xl,
-  },
-  incompleteTitle: {
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-    textAlign: "center",
-  },
-  incompleteSubtitle: {
-    textAlign: "center",
-    marginBottom: spacing.xl,
-  },
-  missingFieldsContainer: {
-    width: "100%",
-    maxWidth: 400,
-    backgroundColor: "rgba(0,0,0,0.03)",
-    padding: spacing.md,
-    marginBottom: spacing.xl,
-  },
-  missingFieldsTitle: {
-    fontWeight: "bold",
-    marginBottom: spacing.sm,
-  },
-  missingFieldRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.xs,
-  },
-  missingFieldText: {
-    marginLeft: spacing.xs,
-  },
-  completeProfileButton: {
-    width: "100%",
-    maxWidth: 400,
-  },
-});

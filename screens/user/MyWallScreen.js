@@ -94,7 +94,7 @@ export const MyWallScreen = ({ navigation }) => {
   const viewLinkedTestimony = async (testimonyId) => {
     try {
       // Navigate to the testimony view screen
-      navigation.navigate("MyTestimony", {
+      navigation.navigate("Testimony", {
         testimonyId: testimonyId,
         viewOnly: true,
       });
@@ -470,7 +470,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     padding: spacing.md,
     backgroundColor: "#f5f5f5",
-
   },
   badgesContainer: {
     flexDirection: "row",
