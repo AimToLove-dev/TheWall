@@ -31,6 +31,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
 
+  // Check if user is authenticated and email is verified
+  const isAuthenticated = user && isEmailVerified;
+
   const colors = getThemeColors();
 
   // Clear messages after a timeout
@@ -65,10 +68,15 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   const validateForm = () => {
     const errors = {};
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.submitterEmail || !emailRegex.test(formData.submitterEmail)) {
-      errors.submitterEmail = true;
+    // Email validation - only if user is not authenticated
+    if (!isAuthenticated) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (
+        !formData.submitterEmail ||
+        !emailRegex.test(formData.submitterEmail)
+      ) {
+        errors.submitterEmail = true;
+      }
     }
 
     // Required fields validation
@@ -101,12 +109,12 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       let soulId;
 
       // Path 1: User is logged in and email is verified
-      if (user && isEmailVerified) {
+      if (isAuthenticated) {
         // Call the soulUtils/addSoul function with proper data
         const soulData = {
           name: fullName,
           userId: user.uid,
-          email: user.email,
+          email: user.email, // Using the logged-in user's email
           city: formData.city || "",
           state: formData.state || "",
           createdAt: new Date().toISOString(),
@@ -186,39 +194,45 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     <View style={{ width: "100%" }}>
       {!error?.toLowerCase().includes("login") && (
         <>
-          <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-            Submitter Information
-          </Text>
-          <TextInput
-            label="Your Email*"
-            value={formData.submitterEmail}
-            onChangeText={(text) => handleInputChange("submitterEmail", text)}
-            mode="outlined"
-            left={<TextInput.Icon icon="email" />}
-            style={{ marginBottom: 16 }}
-            keyboardType="email-address"
-            outlineColor={getOutlineColor("submitterEmail")}
-            outlineStyle={
-              formSubmitted && validationErrors.submitterEmail
-                ? { borderWidth: 2 }
-                : undefined
-            }
-            error={formSubmitted && validationErrors.submitterEmail}
-          />
-          {formSubmitted && validationErrors.submitterEmail && (
-            <Text
-              style={{
-                color: colors.error,
-                fontSize: 12,
-                marginTop: -14,
-                marginBottom: 12,
-              }}
-            >
-              Please enter a valid email address
-            </Text>
-          )}
+          {!isAuthenticated && (
+            <>
+              <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+                Submitter Information
+              </Text>
+              <TextInput
+                label="Your Email*"
+                value={formData.submitterEmail}
+                onChangeText={(text) =>
+                  handleInputChange("submitterEmail", text)
+                }
+                mode="outlined"
+                left={<TextInput.Icon icon="email" />}
+                style={{ marginBottom: 16 }}
+                keyboardType="email-address"
+                outlineColor={getOutlineColor("submitterEmail")}
+                outlineStyle={
+                  formSubmitted && validationErrors.submitterEmail
+                    ? { borderWidth: 2 }
+                    : undefined
+                }
+                error={formSubmitted && validationErrors.submitterEmail}
+              />
+              {formSubmitted && validationErrors.submitterEmail && (
+                <Text
+                  style={{
+                    color: colors.error,
+                    fontSize: 12,
+                    marginTop: -14,
+                    marginBottom: 12,
+                  }}
+                >
+                  Please enter a valid email address
+                </Text>
+              )}
 
-          <Divider style={{ width: "100%", marginBottom: "2em" }} />
+              <Divider style={{ width: "100%", marginBottom: "2em" }} />
+            </>
+          )}
 
           <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
             Loved One's Information
