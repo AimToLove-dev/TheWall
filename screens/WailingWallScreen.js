@@ -11,11 +11,10 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-import { BottomSheet, VerticalMarquee } from "components";
-import { AddSoulForm, BackButton } from "components";
+import { BottomSheet, VerticalMarquee, WallButtons } from "components";
+import { AddSoulForm } from "components";
 import { getAllSouls } from "../utils/soulsUtils";
 
 // Names component to display in a newspaper-like format
@@ -185,16 +184,12 @@ export const WailingWallScreen = () => {
           )}
         </View>
       </ImageBackground>
-      {/* Back Button */}
-      <BackButton customOnPress={() => navigation.navigate("Home")} />
-      {/* Plus Button */}
-      <TouchableOpacity
-        style={styles.plusButton}
-        onPress={toggleBottomSheet}
-        activeOpacity={0.7}
-      >
-        <Ionicons name="add" size={32} color="white" />
-      </TouchableOpacity>
+      {/* Wall Buttons - Both Back and Plus buttons */}
+      <WallButtons
+        onPlusPress={toggleBottomSheet}
+        backNavigateTo="Home"
+        fadeAnimation={true}
+      />
       {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
       <BottomSheet isVisible={isBottomSheetVisible} onClose={toggleBottomSheet}>
         <View style={styles.bottomSheetContent}>

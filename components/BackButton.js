@@ -33,7 +33,7 @@ export const BackButton = ({
 
 const styles = StyleSheet.create({
   backButton: {
-    position: "absolute",
+    position: "fixed",
     top: 30,
     left: 30,
     width: 60,

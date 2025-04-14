@@ -6,13 +6,11 @@ import {
   SafeAreaView,
   Text,
   ImageBackground,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import { TestimonyWall } from "components/testimony";
-import { BackButton, BottomSheet, CustomButton } from "components";
-import { Ionicons } from "@expo/vector-icons";
+import { BottomSheet, CustomButton, WallButtons } from "components";
 import { getAllTestimonies } from "utils/testimoniesUtils";
 import { AddSoulInput as AddSoulForm } from "components/souls";
 import { useNavigation } from "@react-navigation/native";
@@ -74,18 +72,15 @@ export const TestimonyWallScreen = () => {
       resizeMode="repeat"
     >
       <SafeAreaView style={styles.container}>
-        <BackButton customOnPress={() => navigation.navigate("Home")} />
-
         <TestimonyWall testimonies={testimonies} />
 
-        {/* Plus Button */}
-        <TouchableOpacity
-          style={styles.plusButton}
-          onPress={toggleBottomSheet}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="add" size={32} color="white" />
-        </TouchableOpacity>
+        {/* Wall Buttons - Both Back and Plus buttons */}
+        <WallButtons
+          onPlusPress={toggleBottomSheet}
+          backNavigateTo="Home"
+          fadeAnimation={true}
+        />
+
         {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
         <BottomSheet
           style={{

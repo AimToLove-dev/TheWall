@@ -8,6 +8,7 @@ import { FormContainer } from "./FormContainer";
 import { CustomDialog } from "./CustomDialog";
 import { Header } from "./Header";
 import { CardGrid } from "./CardGrid";
+import { WallButtons } from "./WallButtons";
 import {
   SubtitleText,
   BodyText,
@@ -71,4 +72,5 @@ export {
   ReadTestimony,
   EditTestimony,
   MainContent,
+  WallButtons,
 };
