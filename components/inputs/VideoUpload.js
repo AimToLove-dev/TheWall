@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import { Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
+import { uploadVideo } from "../../config";
+import { auth } from "../../config";
 
 export const VideoUpload = ({
   onVideoSelect,
@@ -14,6 +16,7 @@ export const VideoUpload = ({
   maxDuration = 60,
 }) => {
   const [video, setVideo] = useState(initialVideo);
+  const [uploading, setUploading] = useState(false);
   const theme = useTheme();
 
   const pickVideo = async () => {
@@ -28,12 +31,26 @@ export const VideoUpload = ({
       mediaTypes: ImagePicker.MediaTypeOptions.Videos,
       allowsEditing: true,
       videoMaxDuration: maxDuration,
-      quality: 1,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
-      setVideo(result.assets[0].uri);
-      onVideoSelect && onVideoSelect(result.assets[0].uri);
+      setUploading(true);
+      try {
+        const localUri = result.assets[0].uri;
+        // Upload to Firebase Storage
+        const userId = auth.currentUser ? auth.currentUser.uid : "anonymous";
+        const downloadURL = await uploadVideo(localUri, userId);
+
+        // Update state with the download URL from Firebase
+        setVideo(downloadURL);
+        onVideoSelect && onVideoSelect(downloadURL);
+      } catch (error) {
+        console.error("Error uploading video:", error);
+        alert("Failed to upload video. Please try again.");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -52,7 +69,19 @@ export const VideoUpload = ({
         {label}
       </Text>
 
-      {video ? (
+      {uploading ? (
+        <View
+          style={{
+            width: 200,
+            height: 150,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={{ marginTop: 10 }}>Uploading video...</Text>
+        </View>
+      ) : video ? (
         <View>
           <Video
             source={{ uri: video }}

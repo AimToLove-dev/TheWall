@@ -535,9 +535,6 @@ export const TestimonyReviewScreen = ({ navigation }) => {
             <View style={styles.reviewContainer}>
               <EditTestimony
                 initialTestimony={reviewingSubmission}
-                initialBeforeImage={reviewingSubmission.beforeImage}
-                initialAfterImage={reviewingSubmission.afterImage}
-                initialVideo={reviewingSubmission.video}
                 onSubmit={handleSaveEdits}
                 onCancel={handleCancelEdit}
                 isEdit={true}

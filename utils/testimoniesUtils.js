@@ -112,7 +112,7 @@ export const submitTestimony = async (
 
     // Check if user is admin
     const isAdmin = testimonyData.isAdmin === true;
-    debugger;
+
     if (isAdmin) {
       // For admins, continue to use auto-generated IDs
       return await addDocument("testimonySubmissions", completeTestimonyData);

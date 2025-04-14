@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { View, Image, TouchableOpacity } from "react-native";
+import { View, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
+import { uploadImage } from "../../config";
+import { auth } from "../../config";
 
 export const MediaUpload = ({
   onImageSelect,
@@ -12,6 +14,7 @@ export const MediaUpload = ({
   label = "Upload Image",
 }) => {
   const [image, setImage] = useState(initialImage);
+  const [uploading, setUploading] = useState(false);
   const theme = useTheme();
 
   const pickImage = async () => {
@@ -26,12 +29,26 @@ export const MediaUpload = ({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.8,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      onImageSelect && onImageSelect(result.assets[0].uri);
+      setUploading(true);
+      try {
+        const localUri = result.assets[0].uri;
+        // Upload to Firebase Storage
+        const userId = auth.currentUser ? auth.currentUser.uid : "anonymous";
+        const downloadURL = await uploadImage(localUri, userId);
+
+        // Update state with the download URL from Firebase
+        setImage(downloadURL);
+        onImageSelect && onImageSelect(downloadURL);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        alert("Failed to upload image. Please try again.");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -50,12 +67,21 @@ export const MediaUpload = ({
         {label}
       </Text>
 
-      {image ? (
+      {uploading ? (
+        <View
+          style={{
+            width: 200,
+            height: 150,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={{ marginTop: 10 }}>Uploading...</Text>
+        </View>
+      ) : image ? (
         <View>
-          <Image
-            source={{ uri: image }}
-            style={{ width: 200, height: 150}}
-          />
+          <Image source={{ uri: image }} style={{ width: 200, height: 150 }} />
           <View
             style={{
               flexDirection: "row",

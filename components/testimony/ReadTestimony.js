@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { HeaderText, SubtitleText, BodyText } from "components/Typography";
 import { CustomButton } from "components";
 import { spacing } from "styles/theme";
+import { Video } from "expo-av"; // Import Video component for playing videos
 
 export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
   // Helper function to render a checkbox item
@@ -181,9 +182,10 @@ export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
         )}
       </View>
 
+      {/* Images section - Check for both URL formats to ensure backwards compatibility */}
       {(testimony.beforeImage || testimony.afterImage) && (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
-          <BodyText style={styles.testimonySectionTitle}>Media</BodyText>
+          <BodyText style={styles.testimonySectionTitle}>Images</BodyText>
           <View style={styles.imagesRow}>
             {testimony.beforeImage && (
               <View style={styles.imageContainer}>
@@ -209,12 +211,29 @@ export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
         </View>
       )}
 
-      {testimony.videoUrl && (
+      {/* Video section - Check for both video and videoUrl to ensure backwards compatibility */}
+      {(testimony.video || testimony.videoUrl) && (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
           <BodyText style={styles.testimonySectionTitle}>Video</BodyText>
           <View style={styles.videoContainer}>
-            <Ionicons name="videocam" size={24} color={colors.primary} />
-            <BodyText style={styles.videoText}>Video Uploaded</BodyText>
+            {testimony.video || testimony.videoUrl ? (
+              <Video
+                source={{ uri: testimony.video || testimony.videoUrl }}
+                rate={1.0}
+                volume={1.0}
+                isMuted={false}
+                resizeMode="cover"
+                shouldPlay={false}
+                isLooping={false}
+                useNativeControls
+                style={styles.video}
+              />
+            ) : (
+              <View style={styles.videoPlaceholder}>
+                <Ionicons name="videocam" size={24} color={colors.primary} />
+                <BodyText style={styles.videoText}>Video Uploaded</BodyText>
+              </View>
+            )}
           </View>
         </View>
       )}
@@ -282,8 +301,18 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 180,
+    borderRadius: 8,
   },
   videoContainer: {
+    width: "100%",
+    overflow: "hidden",
+    borderRadius: 8,
+  },
+  video: {
+    width: "100%",
+    height: 200,
+  },
+  videoPlaceholder: {
     flexDirection: "row",
     alignItems: "center",
     padding: spacing.md,

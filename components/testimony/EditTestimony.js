@@ -25,9 +25,6 @@ const testimonyValidationSchema = Yup.object().shape({
 
 export const EditTestimony = ({
   initialTestimony,
-  initialBeforeImage,
-  initialAfterImage,
-  initialVideo,
   onSubmit,
   onCancel,
   loading,
@@ -37,9 +34,18 @@ export const EditTestimony = ({
   profileData, // Profile data to display
   isAdmin = false, // Whether the current user is an admin
 }) => {
-  const [beforeImage, setBeforeImage] = useState(initialBeforeImage || null);
-  const [afterImage, setAfterImage] = useState(initialAfterImage || null);
-  const [video, setVideo] = useState(initialVideo || null);
+  const [beforeImage, setBeforeImage] = useState(
+    initialTestimony?.beforeImage || null
+  );
+  const [afterImage, setAfterImage] = useState(
+    initialTestimony?.afterImage || null
+  );
+  const [video, setVideo] = useState(
+    initialTestimony?.video ||
+      initialTestimony?.videoUrl ||
+      initialTestimony?.videoUri ||
+      null
+  );
 
   // Faith-related questions states with "NotSet" as default if no value provided
   const [believeJesusSonOfGod, setBelieveJesusSonOfGod] = useState(
@@ -94,6 +100,8 @@ export const EditTestimony = ({
       beforeImage,
       afterImage,
       video,
+      videoUrl: video, // Adding videoUrl for consistency
+      videoUri: video, // Adding videoUri for consistency
       // Include faith-related questions
       believeJesusSonOfGod,
       believeJesusResurrection,
@@ -247,6 +255,13 @@ export const EditTestimony = ({
         initialValues={{
           testimony: initialTestimony?.testimony || "",
           title: initialTestimony?.title || "",
+          beforeImage: initialTestimony?.beforeImage || null,
+          afterImage: initialTestimony?.afterImage || null,
+          video:
+            initialTestimony?.video ||
+            initialTestimony?.videoUrl ||
+            initialTestimony?.videoUri ||
+            null,
         }}
         validationSchema={testimonyValidationSchema}
         onSubmit={handleSubmit}
@@ -397,25 +412,23 @@ export const EditTestimony = ({
               <View style={styles.imageRow}>
                 <MediaUpload
                   label="Before Image"
-                  imageUri={beforeImage}
-                  onImageSelected={setBeforeImage}
+                  initialImage={beforeImage}
+                  onImageSelect={setBeforeImage}
                   style={styles.imageUpload}
-                  placeholder="Before"
                 />
 
                 <MediaUpload
                   label="After Image"
-                  imageUri={afterImage}
-                  onImageSelected={setAfterImage}
+                  initialImage={afterImage}
+                  onImageSelect={setAfterImage}
                   style={styles.imageUpload}
-                  placeholder="After"
                 />
               </View>
 
               <VideoUpload
                 label="Your Story Video"
-                videoUri={video}
-                onVideoSelected={setVideo}
+                initialVideo={video}
+                onVideoSelect={setVideo}
                 placeholder="Share a short video of your story"
                 maxDuration={120} // 2 minutes
               />

@@ -14,6 +14,13 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import Constants from "expo-constants";
 
 let auth;
@@ -50,6 +57,9 @@ if (typeof window !== "undefined") {
 
 // Initialize Firestore
 const db = getFirestore(app);
+
+// Initialize Firebase Storage
+const storage = getStorage(app);
 
 // Authentication functions
 const login = async (email, password) => {
@@ -127,9 +137,57 @@ const deleteDocument = async (collectionName, docId) => {
   }
 };
 
+// Storage functions for handling media uploads
+const uploadMedia = async (uri, path, metadata = {}) => {
+  try {
+    // Convert uri to blob
+    const response = await fetch(uri);
+    const blob = await response.blob();
+
+    // Create storage reference
+    const storageRef = ref(storage, path);
+
+    // Upload blob to Firebase Storage
+    const snapshot = await uploadBytes(storageRef, blob, metadata);
+
+    // Get download URL
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    return downloadURL;
+  } catch (error) {
+    console.error("Error uploading media:", error);
+    throw error;
+  }
+};
+
+const uploadImage = async (uri, userId) => {
+  // Generate a unique filename using timestamp
+  const filename = `images/${userId}/${Date.now().toString()}`;
+  return uploadMedia(uri, filename, { contentType: "image/jpeg" });
+};
+
+const uploadVideo = async (uri, userId) => {
+  // Generate a unique filename using timestamp
+  const filename = `videos/${userId}/${Date.now().toString()}`;
+  return uploadMedia(uri, filename, { contentType: "video/mp4" });
+};
+
+const deleteMedia = async (url) => {
+  try {
+    // Extract the path from the download URL
+    const storageRef = ref(storage, url);
+    await deleteObject(storageRef);
+    return true;
+  } catch (error) {
+    console.error("Error deleting media:", error);
+    throw error;
+  }
+};
+
 export {
   auth,
   db,
+  storage,
   login,
   signup,
   logout,
@@ -137,4 +195,8 @@ export {
   addDocument,
   updateDocument,
   deleteDocument,
+  uploadMedia,
+  uploadImage,
+  uploadVideo,
+  deleteMedia,
 };
