@@ -3,6 +3,7 @@
     "rules": "database.rules.json"
   },
   "hosting": {
+    "site": "thewall-3de3b", 
     "public": "dist",
     "ignore": [
       "firebase.json",
@@ -32,7 +33,6 @@
   },
   "functions": [
     {
-
       "codebase": "default",
       "ignore": [
         "node_modules",
