@@ -6,17 +6,16 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-// Vertical Marquee Implementation - Modified for twice screen height
+// Vertical Marquee Implementation - Modified for dynamic content height
 const TranslatedElement = ({
   index,
   children,
   offset,
-  screenHeight,
+  contentHeight,
   cycleCount,
 }) => {
   // Log when this specific element cycles
   const prevIndexRef = useRef(index);
-  const contentHeight = screenHeight * 2; // Using double height for content
 
   useEffect(() => {
     if (cycleCount > 0 && prevIndexRef.current !== index) {
@@ -47,8 +46,7 @@ const TranslatedElement = ({
   );
 };
 
-const ChildrenScroller = ({ duration, screenHeight, children, isPaused }) => {
-  const contentHeight = screenHeight * 2; // Using double height for content
+const ChildrenScroller = ({ duration, contentHeight, children, isPaused }) => {
   const offset = useSharedValue(0);
   const [cycleCount, setCycleCount] = useState(0);
   const lastCycleRef = useRef(-1);
@@ -61,7 +59,7 @@ const ChildrenScroller = ({ duration, screenHeight, children, isPaused }) => {
       // Previous offset value
       const prevOffset = offset.value;
 
-      // Move the content upward (negative value) - adjust for double height
+      // Move the content upward (negative value)
       offset.value += (timeSincePreviousFrame * contentHeight) / duration;
 
       // Check if we've completed a cycle (when offset jumps from near contentHeight back to 0)
@@ -90,7 +88,7 @@ const ChildrenScroller = ({ duration, screenHeight, children, isPaused }) => {
       key={`clone-${index}`}
       index={index}
       offset={offset}
-      screenHeight={screenHeight}
+      contentHeight={contentHeight}
       cycleCount={cycleCount}
     >
       {children}
@@ -105,10 +103,14 @@ export const VerticalMarquee = ({
   children,
   style,
   isPaused,
+  contentHeightMultiplier = 2, // Default multiplier for backward compatibility
 }) => {
   const [screenHeight, setScreenHeight] = useState(
     Dimensions.get("window").height
   );
+
+  // Calculate content height based on screen height and multiplier
+  const contentHeight = screenHeight * contentHeightMultiplier;
 
   // Update screen height when dimensions change
   useEffect(() => {
@@ -129,7 +131,7 @@ export const VerticalMarquee = ({
     >
       <ChildrenScroller
         duration={duration}
-        screenHeight={screenHeight}
+        contentHeight={contentHeight}
         isPaused={isPaused}
       >
         {children}

@@ -20,6 +20,7 @@ import { getAllSouls } from "../utils/soulsUtils";
 
 // Names component to display in a newspaper-like format
 const NewspaperColumn = ({ souls }) => {
+  console.log("Rendering NewspaperColumn with souls:", souls);
   const { width } = useWindowDimensions();
 
   // Calculate column width based on screen size
@@ -38,22 +39,15 @@ const NewspaperColumn = ({ souls }) => {
 
   // Lorem ipsum paragraphs
   const loremIpsum = [
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
-    "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.",
-    "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
-    "Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.",
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-    "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-    "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-    "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
-    "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur.",
-    "Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.",
-    ,
+    "The Spirit of the Sovereign Lord is on me, because the Lord has anointed me to proclaim good news to the poor. He has sent me to bind up the brokenhearted, to proclaim freedom for the captives and release from darkness for the prisoners, to proclaim the year of the Lord's favor and the day of vengeance of our God, to comfort all who mourn, and provide for those who grieve in Zion— to bestow on them a crown of beauty instead of ashes, the oil of joy instead of mourning, and a garment of praise instead of a spirit of despair. They will be called oaks of righteousness, a planting of the Lord for the display of his splendor.",
+
+    "They will rebuild the ancient ruins and restore the places long devastated; they will renew the ruined cities that have been devastated for generations. Strangers will shepherd your flocks; foreigners will work your fields and vineyards. And you will be called priests of the Lord, you will be named ministers of our God. You will feed on the wealth of nations, and in their riches you will boast.",
+
+    "Instead of your shame you will receive a double portion, and instead of disgrace you will rejoice in your inheritance. And so you will inherit a double portion in your land, and everlasting joy will be yours. For I, the Lord, love justice; I hate robbery and wrongdoing. In my faithfulness I will reward my people and make an everlasting covenant with them.",
+
+    "Their descendants will be known among the nations and their offspring among the peoples. All who see them will acknowledge that they are a people the Lord has blessed. I delight greatly in the Lord; my soul rejoices in my God. For he has clothed me with garments of salvation and arrayed me in a robe of his righteousness, as a bridegroom adorns his head like a priest, and as a bride adorns herself with her jewels.",
+
+    "For as the soil makes the sprout come up and a garden causes seeds to grow, so the Sovereign Lord will make righteousness and praise spring up before all nations.",
   ];
 
   // Create paragraphs with soul names injected
@@ -122,11 +116,7 @@ export const WailingWallScreen = () => {
         // Get all souls
         const loadedSouls = await getAllSouls();
 
-        // Filter only public souls
-        const publicSouls = loadedSouls.filter(
-          (soul) => soul.isPublic !== false
-        );
-        setSouls(publicSouls);
+        setSouls(loadedSouls);
       } catch (err) {
         console.error("Error loading souls:", err);
         setError("Failed to load souls. Please try again.");
@@ -158,6 +148,10 @@ export const WailingWallScreen = () => {
     setBottomSheetVisible((prev) => !prev);
   }, []);
 
+  const calculateContentHeightMultiplier = (soulCount) => {
+    return Math.max(1, soulCount / 10);
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -179,6 +173,9 @@ export const WailingWallScreen = () => {
                 style={styles.marqueeContainer}
                 duration={50000}
                 isPaused={isPaused}
+                contentHeightMultiplier={calculateContentHeightMultiplier(
+                  souls.length
+                )}
               >
                 <View style={styles.columnContainer}>
                   <NewspaperColumn souls={souls} />
