@@ -83,7 +83,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
           // Get pending testimonies count (previously using "testimonies" collection only)
           const pendingTestimonies = await queryDocuments(
             "testimonies",
-            [["status", "==", "pending"]],
+            [["email", "!=", null]],
             [],
             0
           );
@@ -92,7 +92,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
           // Get approved testimonies count (previously using "testimonies" collection only)
           const approvedTestimonies = await queryDocuments(
             "testimonies",
-            [["status", "==", "approved"]],
+            [["email", "!=", null]],
             [],
             0
           );

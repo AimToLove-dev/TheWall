@@ -113,7 +113,6 @@ export const MediaUpload = ({
             borderStyle: "dashed",
             padding: 16,
             alignItems: "center",
-            width: 200,
             height: 150,
             justifyContent: "center",
           }}
