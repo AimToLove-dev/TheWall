@@ -481,27 +481,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
             </TouchableOpacity>
           </Surface>
         </View>
-
-        {/* Recent activity section */}
-        <View style={styles.recentActivitySection}>
-          <HeaderText style={styles.sectionTitle}>Recent Activity</HeaderText>
-          <Surface
-            mode="elevated"
-            elevation={1}
-            style={[styles.activityCard, { backgroundColor: colors.surface }]}
-          >
-            <View style={styles.emptyState}>
-              <Ionicons
-                name="information-circle-outline"
-                size={32}
-                color={colors.textSecondary}
-              />
-              <BodyText style={styles.emptyStateText}>
-                No recent activity
-              </BodyText>
-            </View>
-          </Surface>
-        </View>
       </View>
 
       <CustomDialog
