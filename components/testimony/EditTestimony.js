@@ -26,7 +26,7 @@ const testimonyValidationSchema = Yup.object().shape({
   city: Yup.string().required("City is required"),
   state: Yup.string()
     .required("State code is required")
-    .matches(/^[A-Z]{2}$/, "State code must be exactly 2 uppercase letters"),
+    .matches(/^[A-Za-z]{2}$/, "State code is 2 letters"),
   salvationYear: Yup.number()
     .typeError("Year must be a number")
     .min(1900, "Year must be after 1900")
@@ -364,7 +364,10 @@ export const EditTestimony = ({
                   <CustomInput
                     label="State Code"
                     value={values.state}
-                    onChangeText={handleChange("state")}
+                    onChangeText={(text) => {
+                      // Convert to uppercase immediately
+                      handleChange("state")(text.toUpperCase());
+                    }}
                     onBlur={handleBlur("state")}
                     placeholder="CA"
                     error={touched.state && errors.state}
