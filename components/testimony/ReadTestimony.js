@@ -80,6 +80,18 @@ export const ReadTestimony = ({
     );
   };
 
+  // Helper function to render a profile item
+  const renderProfileItem = (label, value) => {
+    return (
+      <View style={styles.profileItem}>
+        <BodyText style={styles.profileLabel}>{label}:</BodyText>
+        <BodyText style={value ? styles.profileValue : styles.notAnsweredValue}>
+          {value || "Not Answered"}
+        </BodyText>
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -97,6 +109,34 @@ export const ReadTestimony = ({
             <BodyText style={styles.publishedText}>Published</BodyText>
           </View>
         )}
+      </View>
+
+      {/* Profile section - Always displayed */}
+      <View style={[styles.card, { backgroundColor: colors.card }]}>
+        <BodyText style={styles.testimonySectionTitle}>
+          Personal Information
+        </BodyText>
+
+        <View style={styles.profileContainer}>
+          {/* Name */}
+          <View style={styles.profileRow}>
+            {renderProfileItem("First Name", testimony.firstName)}
+            {renderProfileItem("Last Name", testimony.lastName)}
+          </View>
+
+          {/* Location and salvation year */}
+          <View style={styles.profileRow}>
+            {renderProfileItem("City", testimony.city)}
+            {renderProfileItem("State", testimony.state)}
+            {renderProfileItem("Salvation Year", testimony.salvationYear)}
+          </View>
+
+          {/* Contact information */}
+          <View style={styles.profileRow}>
+            {renderProfileItem("Email", testimony.email)}
+            {renderProfileItem("Phone Number", testimony.phoneNumber)}
+          </View>
+        </View>
       </View>
 
       <View style={[styles.card, { backgroundColor: colors.card }]}>
@@ -290,6 +330,37 @@ const styles = StyleSheet.create({
   },
   testimonyContent: {
     lineHeight: 22,
+  },
+  profileContainer: {
+    marginBottom: spacing.sm,
+  },
+  profileRow: {
+    marginBottom: spacing.md,
+  },
+  profileItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.xs,
+  },
+  profileLabel: {
+    fontWeight: "500",
+    marginRight: spacing.xs,
+    width: 120, // Fixed width for alignment
+  },
+  profileValue: {
+    flex: 1,
+  },
+  notAnsweredValue: {
+    flex: 1,
+    fontStyle: "italic",
+    color: "#888888",
+  },
+  salvationYear: {
+    fontStyle: "italic",
+    color: "#4CAF50",
+  },
+  contactInfo: {
+    marginLeft: spacing.xs,
   },
   imagesRow: {
     flexDirection: "row",

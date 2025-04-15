@@ -74,6 +74,7 @@ export const getThemeColors = () => {
     onSurfaceDisabled: "#cccccc",
     error: "#b00020",
     outline: "#cccccc",
+    placeholderText: "rgb(73 69 79 / 40%)", // Custom placeholder color
   };
 
   return {

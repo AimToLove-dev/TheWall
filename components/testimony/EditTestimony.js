@@ -20,6 +20,24 @@ const testimonyValidationSchema = Yup.object().shape({
     .required("Testimony is required")
     .min(50, "Testimony must be at least 50 characters")
     .max(2000, "Testimony must be less than 2000 characters"),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  city: Yup.string().required("City is required"),
+  state: Yup.string()
+    .required("State code is required")
+    .matches(/^[A-Z]{2}$/, "State code must be exactly 2 uppercase letters"),
+  salvationYear: Yup.number()
+    .typeError("Year must be a number")
+    .min(1900, "Year must be after 1900")
+    .max(new Date().getFullYear(), "Year cannot be in the future")
+    .nullable(),
+  email: Yup.string().email("Invalid email format"),
+  phoneNumber: Yup.string()
+    .matches(
+      /^(\+\d{1,3})?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+      "Invalid phone number format"
+    )
+    .nullable(),
 });
 
 export const EditTestimony = ({
@@ -250,6 +268,13 @@ export const EditTestimony = ({
         initialValues={{
           testimony: initialTestimony?.testimony || "",
           title: initialTestimony?.title || "",
+          firstName: initialTestimony?.firstName || "",
+          lastName: initialTestimony?.lastName || "",
+          city: initialTestimony?.city || "",
+          state: initialTestimony?.state || "",
+          salvationYear: initialTestimony?.salvationYear || "",
+          email: initialTestimony?.email || "",
+          phoneNumber: initialTestimony?.phoneNumber || "",
           beforeImage: initialTestimony?.beforeImage || null,
           afterImage: initialTestimony?.afterImage || null,
           video:
@@ -280,6 +305,109 @@ export const EditTestimony = ({
                 style={{ marginBottom: spacing.md }}
               />
             )}
+
+            {/* Profile section */}
+            <View style={styles.profileSection}>
+              <BodyText style={styles.mediaSectionTitle}>
+                Profile Information
+              </BodyText>
+              <BodyText style={styles.faithInstructions}>
+                Please provide your personal information. This helps us verify
+                and connect with you.
+              </BodyText>
+
+              {/* Name fields */}
+              <View style={styles.fieldRow}>
+                <View style={styles.fieldRowItem}>
+                  <CustomInput
+                    label="First Name"
+                    value={values.firstName}
+                    onChangeText={handleChange("firstName")}
+                    onBlur={handleBlur("firstName")}
+                    placeholder="Your first name"
+                    error={touched.firstName && errors.firstName}
+                    style={styles.inputField}
+                  />
+                </View>
+                <View style={styles.fieldRowItem}>
+                  <CustomInput
+                    label="Last Name"
+                    value={values.lastName}
+                    onChangeText={handleChange("lastName")}
+                    onBlur={handleBlur("lastName")}
+                    placeholder="Your last name"
+                    error={touched.lastName && errors.lastName}
+                    style={styles.inputField}
+                  />
+                </View>
+              </View>
+
+              {/* Location and salvation year fields */}
+              <View style={styles.fieldRow}>
+                <View style={styles.fieldRowItemLarge}>
+                  <CustomInput
+                    label="City"
+                    value={values.city}
+                    onChangeText={handleChange("city")}
+                    onBlur={handleBlur("city")}
+                    placeholder="Your city"
+                    error={touched.city && errors.city}
+                    style={styles.inputField}
+                  />
+                </View>
+                <View style={styles.fieldRowItemSmall}>
+                  <CustomInput
+                    label="State Code"
+                    value={values.state}
+                    onChangeText={handleChange("state")}
+                    onBlur={handleBlur("state")}
+                    placeholder="CA"
+                    error={touched.state && errors.state}
+                    style={styles.inputField}
+                  />
+                </View>
+                <View style={styles.fieldRowItemSmall}>
+                  <CustomInput
+                    label="Salvation Year"
+                    value={values.salvationYear}
+                    onChangeText={handleChange("salvationYear")}
+                    onBlur={handleBlur("salvationYear")}
+                    placeholder="YYYY"
+                    keyboardType="numeric"
+                    error={touched.salvationYear && errors.salvationYear}
+                    style={styles.inputField}
+                  />
+                </View>
+              </View>
+
+              {/* Contact information fields */}
+              <View style={styles.fieldRow}>
+                <View style={styles.fieldRowItem}>
+                  <CustomInput
+                    label="Email"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                    placeholder="Your email address"
+                    keyboardType="email-address"
+                    error={touched.email && errors.email}
+                    style={styles.inputField}
+                  />
+                </View>
+                <View style={styles.fieldRowItem}>
+                  <CustomInput
+                    label="Phone Number (Optional)"
+                    value={values.phoneNumber}
+                    onChangeText={handleChange("phoneNumber")}
+                    onBlur={handleBlur("phoneNumber")}
+                    placeholder="Your phone number"
+                    keyboardType="phone-pad"
+                    error={touched.phoneNumber && errors.phoneNumber}
+                    style={styles.inputField}
+                  />
+                </View>
+              </View>
+            </View>
 
             {/* Faith questions section */}
             <View style={styles.faithSection}>
@@ -583,5 +711,36 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.05)",
+  },
+  profileSection: {
+    marginTop: spacing.lg,
+    marginBottom: spacing.lg,
+    padding: spacing.md,
+    backgroundColor: "rgba(0,0,0,0.02)",
+  },
+  fieldRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: spacing.md,
+    flexWrap: "wrap",
+  },
+  fieldRowItem: {
+    flex: 1,
+    marginRight: spacing.sm,
+    minWidth: 150,
+  },
+  fieldRowItemLarge: {
+    flex: 2,
+    marginRight: spacing.sm,
+    minWidth: 150,
+  },
+  fieldRowItemSmall: {
+    flex: 1,
+    marginRight: spacing.sm,
+    minWidth: 90,
+  },
+  inputField: {
+    height: 56, // Consistent height for all input fields
+    maxHeight: 56,
   },
 });
