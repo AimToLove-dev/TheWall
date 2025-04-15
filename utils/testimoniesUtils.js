@@ -49,65 +49,14 @@ export const uploadFile = async (uri, path) => {
  * @param {string} soulId - ID of the soul this testimony is connected to (optional)
  * @returns {Promise<string>} - New testimony submission ID
  */
-export const submitTestimony = async (
-  testimonyData,
-  beforeImageUri,
-  afterImageUri,
-  videoUri,
-  soulId = null
-) => {
+export const submitTestimony = async (testimonyData) => {
   try {
-    const userId = testimonyData.userId;
     const userEmail = testimonyData.userEmail;
-    const timestamp = new Date().getTime();
-
-    // Upload media files if provided
-    const uploadPromises = [];
-    let beforeImageUrl = null;
-    let afterImageUrl = null;
-    let videoUrl = null;
-
-    if (beforeImageUri) {
-      const beforePromise = uploadFile(
-        beforeImageUri,
-        `testimonies/${userId}/before_${timestamp}.jpg`
-      ).then((url) => {
-        beforeImageUrl = url;
-      });
-      uploadPromises.push(beforePromise);
-    }
-
-    if (afterImageUri) {
-      const afterPromise = uploadFile(
-        afterImageUri,
-        `testimonies/${userId}/after_${timestamp}.jpg`
-      ).then((url) => {
-        afterImageUrl = url;
-      });
-      uploadPromises.push(afterPromise);
-    }
-
-    if (videoUri) {
-      const videoPromise = uploadFile(
-        videoUri,
-        `testimonies/${userId}/video_${timestamp}.mp4`
-      ).then((url) => {
-        videoUrl = url;
-      });
-      uploadPromises.push(videoPromise);
-    }
-
-    // Wait for all uploads to complete
-    await Promise.all(uploadPromises);
 
     // Add testimony document with media URLs and soul ID to testimonySubmissions collection
     const completeTestimonyData = {
       ...testimonyData,
-      beforeImage: beforeImageUrl,
-      afterImage: afterImageUrl,
-      video: videoUrl,
       submittedAt: new Date().toISOString(),
-      soulId: soulId || null, // Add the soul ID connection
     };
 
     // Check if user is admin

@@ -26,15 +26,13 @@ import {
   getUserTestimonyById,
   updateTestimony,
 } from "utils/testimoniesUtils";
+import { createDisplayName } from "@utils/index";
 
 export const TestimonySubmissionScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [loadingTestimonies, setLoadingTestimonies] = useState(true);
   const [errorState, setErrorState] = useState("");
-  const [beforeImage, setBeforeImage] = useState(null);
-  const [afterImage, setAfterImage] = useState(null);
-  const [video, setVideo] = useState(null);
   const [canSubmit, setCanSubmit] = useState(true);
 
   // States for existing testimonies
@@ -100,13 +98,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
   // Function to handle editing an existing testimony
   const handleEdit = () => {
     setIsEditing(true);
-
-    // Set initial form values from current testimony
-    if (currentTestimony) {
-      setBeforeImage(currentTestimony.beforeImage || null);
-      setAfterImage(currentTestimony.afterImage || null);
-      setVideo(currentTestimony.video || null);
-    }
   };
 
   // Function to cancel editing and return to view mode
@@ -128,30 +119,63 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
 
     setLoading(true);
     setErrorState("");
-
     try {
+      // Generate display name using the utility function
+      const displayName =
+        createDisplayName(values.firstName, values.lastName) ||
+        user.displayName ||
+        "Anonymous";
+
       // Prepare testimony data
       let data = {
+        // Basic testimony data
         testimony: values.testimony,
         title: values.title || "",
         userId: user.uid,
         userEmail: user.email,
-        displayName: user.displayName || "Anonymous",
+        displayName: displayName,
         submittedByAdmin: isAdmin || false,
+
+        // Profile information
+        firstName: values.firstName || "",
+        lastName: values.lastName || "",
+        city: values.city || "",
+        state: values.state || "",
+        salvationYear: values.salvationYear || null,
+        email: values.email || user.email,
+        phoneNumber: values.phoneNumber || "",
+
+        // Faith-related questions
+        believeJesusSonOfGod: values.believeJesusSonOfGod || "NotSet",
+        believeJesusResurrection: values.believeJesusResurrection || "NotSet",
+        repentedFromSins: values.repentedFromSins || "NotSet",
+        confessJesusLord: values.confessJesusLord || "NotSet",
+        bornAgain: values.bornAgain || "NotSet",
+        baptizedHolySpirit: values.baptizedHolySpirit || "NotSet",
+
+        // Sexuality-related questions
+        struggleSameSexAttraction: values.struggleSameSexAttraction || "NotSet",
+        identifyAsLGBTQ: values.identifyAsLGBTQ || "NotSet",
+        vowPurity: values.vowPurity || "NotSet",
+        emotionallyDependentSameSex:
+          values.emotionallyDependentSameSex || "NotSet",
+        healedFromHomosexuality: values.healedFromHomosexuality || "NotSet",
+        repentedHomosexuality: values.repentedHomosexuality || "NotSet",
+
+        //Media
+        beforeImage: values.beforeImage || null,
+        afterImage: values.afterImage || null,
+        video: values.video || null,
       };
 
       if (currentTestimony && currentTestimony.id) {
         // Update existing testimony
         await updateTestimony(currentTestimony.id, {
           ...data,
-          // Only update media if it has changed
-          ...(beforeImage !== currentTestimony.beforeImage && { beforeImage }),
-          ...(afterImage !== currentTestimony.afterImage && { afterImage }),
-          ...(video !== currentTestimony.video && { video }),
         });
       } else {
         // Submit new testimony
-        await submitTestimony(data, beforeImage, afterImage, video);
+        await submitTestimony(data);
       }
 
       // Navigate to success screen
@@ -167,9 +191,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
   // Function to start a new testimony
   const handleNewTestimony = () => {
     setCurrentTestimony(null);
-    setBeforeImage(null);
-    setAfterImage(null);
-    setVideo(null);
     setIsEditing(true);
   };
 
@@ -189,9 +210,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
       return (
         <EditTestimony
           initialTestimony={currentTestimony}
-          initialBeforeImage={beforeImage}
-          initialAfterImage={afterImage}
-          initialVideo={video}
           onSubmit={handleSubmitTestimony}
           onCancel={handleCancelEdit}
           loading={loading}

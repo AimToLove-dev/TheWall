@@ -17,7 +17,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH; // Full width for vertical scrolling
 
 export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
-  debugger;
   const colors = getThemeColors();
 
   const [testimonies, setTestimonies] = useState(initialTestimonies);
