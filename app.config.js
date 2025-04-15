@@ -24,7 +24,7 @@ export default {
     // Deep linking configuration
     scheme: "thewall",
     web: {
-      favicon: "./assets/heart.png",
+      favicon: "./assets/favicon.png",
       assetBundlePatterns: ["**/*"],
     },
     extra: {
