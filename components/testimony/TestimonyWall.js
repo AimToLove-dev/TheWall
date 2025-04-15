@@ -1,69 +1,62 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   View,
   StyleSheet,
   Text,
-  Image,
-  TouchableOpacity,
   Dimensions,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
-import Animated, {
-  useAnimatedScrollHandler,
-  useSharedValue,
-} from "react-native-reanimated";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { SubtitleText, BodyText } from "components/Typography";
 import { spacing, getThemeColors } from "styles/theme";
+import TestimonyCard from "./TestimonyCard";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH * 0.9;
-const CARD_SPACING = SCREEN_WIDTH * 0.05;
+const CARD_WIDTH = SCREEN_WIDTH; // Full width for vertical scrolling
 
 export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
+  debugger;
   const colors = getThemeColors();
+
   const [testimonies, setTestimonies] = useState(initialTestimonies);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [canLoadMore, setCanLoadMore] = useState(true);
   const navigation = useNavigation();
-
-  const scrollX = useSharedValue(0);
+  const flatListRef = useRef(null);
 
   // Reset when screen comes back into focus
   useFocusEffect(
     useCallback(() => {
       return () => {
         // Clean up when screen is unfocused
-        scrollX.value = 0;
       };
     }, [])
   );
 
-  // Handle reaching end of carousel
-  const handleEndReached = useCallback(() => {
+  // Load more testimonies
+  const _loadMoreContentAsync = async () => {
     if (!loading && testimonies.length >= 10) {
       setLoading(true);
 
       // Simulate loading more testimonies
       // In a real app, you would fetch the next page of testimonies here
       setTimeout(() => {
-        // Wrap around to the beginning if there are no more testimonies
         // In a real app, you would append the next page of testimonies
         setPage((prevPage) => prevPage + 1);
+
+        // Check if we can load more after this
+        if (page >= 5) {
+          // Example limit
+          setCanLoadMore(false);
+        }
+
         setLoading(false);
       }, 1000);
     }
-  }, [testimonies, loading]);
-
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollX.value = event.contentOffset.x;
-    },
-    onEndReached: () => {
-      handleEndReached();
-    },
-  });
+  };
 
   const navigateToReadTestimony = (testimony) => {
     // Navigate to the ReadTestimony screen with the testimony data
@@ -74,67 +67,18 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
     container: {
       flex: 1,
       justifyContent: "center",
-      height: "100vh",
+      width: SCREEN_WIDTH,
     },
     listContent: {
-      paddingRight: CARD_SPACING,
+      paddingHorizontal: spacing.md,
       paddingVertical: spacing.lg,
-      alignItems: "center",
-    },
-    card: {
-      width: CARD_WIDTH,
-      marginRight: CARD_SPACING,
-      backgroundColor: "#FFFFFF",
-      borderRadius: 15,
-      overflow: "hidden",
-      elevation: 5,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 4,
-    },
-    cardContent: {
-      flex: 1,
-    },
-    image: {
-      width: "100%",
-      height: 200,
-    },
-    imagePlaceholder: {
-      width: "100%",
-      height: 200,
-      backgroundColor: "#e1e1e1",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    imagePlaceholderText: {
-      color: "#888",
-      fontSize: 16,
-      fontWeight: "500",
-    },
-    textContainer: {
-      padding: spacing.md,
-    },
-    nameText: {
-      marginBottom: spacing.sm,
-      fontSize: 18,
-      fontWeight: "bold",
-    },
-    testimonyPreview: {
-      fontSize: 14,
-      lineHeight: 20,
-      color: "#333",
-    },
-    readMore: {
-      color: "#0066cc",
-      marginTop: spacing.sm,
-      fontWeight: "bold",
     },
     loaderContainer: {
-      width: CARD_WIDTH * 0.5,
-      height: "80%",
+      width: "100%",
+      height: 80,
       justifyContent: "center",
       alignItems: "center",
+      padding: spacing.md,
     },
     emptyContainer: {
       flex: 1,
@@ -154,50 +98,31 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
       color: colors.primary,
       textAlign: "center",
     },
+    cardContainer: {
+      width: "100%",
+      marginBottom: spacing.lg,
+    },
   });
 
-  const renderCard = ({ item, index }) => {
-    if (!item) return null;
+  const renderItem = ({ item, index }) => {
+    return (
+      <View style={styles.cardContainer}>
+        <TestimonyCard
+          item={item}
+          index={index}
+          onPress={navigateToReadTestimony}
+        />
+      </View>
+    );
+  };
 
-    // Get the first part of testimony text (truncated for preview)
-    const previewText = item.testimony
-      ? item.testimony.substring(0, 150) +
-        (item.testimony.length > 150 ? "..." : "")
-      : "";
-
-    // Determine which image to show (prefer afterImage, fall back to beforeImage)
-    const imageUri = item.afterImage || item.beforeImage || null;
+  const renderFooter = () => {
+    if (!loading) return null;
 
     return (
-      <TouchableOpacity
-        style={[styles.card, { marginLeft: index === 0 ? CARD_SPACING : 0 }]}
-        onPress={() => navigateToReadTestimony(item)}
-        activeOpacity={0.9}
-      >
-        <View style={styles.cardContent}>
-          {imageUri ? (
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <Text style={styles.imagePlaceholderText}>No Image</Text>
-            </View>
-          )}
-
-          <View style={styles.textContainer}>
-            <SubtitleText style={styles.nameText}>
-              {item.displayName || "Anonymous"}
-            </SubtitleText>
-
-            <BodyText style={styles.testimonyPreview}>{previewText}</BodyText>
-
-            <Text style={styles.readMore}>Read more</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     );
   };
 
@@ -215,26 +140,16 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.FlatList
+      <FlatList
+        ref={flatListRef}
         data={testimonies}
+        renderItem={renderItem}
         keyExtractor={(item, index) => `testimony-${item.id || index}`}
-        renderItem={renderCard}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={CARD_WIDTH + CARD_SPACING}
-        decelerationRate="fast"
-        scrollEventThrottle={16}
-        onScroll={scrollHandler}
         contentContainerStyle={styles.listContent}
+        onEndReached={_loadMoreContentAsync}
         onEndReachedThreshold={0.5}
-        onEndReached={handleEndReached}
-        ListFooterComponent={
-          loading ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="large" color="#FFFFFF" />
-            </View>
-          ) : null
-        }
+        ListFooterComponent={renderFooter}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
