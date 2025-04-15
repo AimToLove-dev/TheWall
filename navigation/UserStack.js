@@ -1,7 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { useContext } from "react";
 import {
-  ProfileScreen,
   DashboardScreen,
   MyWallScreen,
   TestimonySubmissionScreen,
@@ -32,7 +31,6 @@ export const UserStack = () => {
     >
       <Stack.Screen name="Dashboard" component={DashboardScreen} />
       <Stack.Screen name="DashboardAdmin" component={DashboardAdminScreen} />
-      <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="MyWall" component={MyWallScreen} />
       <Stack.Screen name="Testimony" component={TestimonySubmissionScreen} />
       <Stack.Screen name="TestimonyReview" component={TestimonyReviewScreen} />

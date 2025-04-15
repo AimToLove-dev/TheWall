@@ -14,12 +14,9 @@ import { AuthenticatedUserContext } from "providers";
 import {
   CustomButton,
   FormContainer,
-  ProfileIncomplete,
   ReadTestimony,
   EditTestimony,
-  EditProfileForm,
 } from "components";
-import { ProfileInfoCard } from "components/profile/ProfileInfoCard";
 import { HeaderText, SubtitleText, BodyText } from "components/Typography";
 import { getThemeColors, spacing } from "styles/theme";
 import {
@@ -29,10 +26,9 @@ import {
   getUserTestimonyById,
   updateTestimony,
 } from "utils/testimoniesUtils";
-import { checkProfileCompleteness, getFullName } from "@utils/profileUtils";
 
 export const TestimonySubmissionScreen = ({ navigation }) => {
-  const { user, profile } = useContext(AuthenticatedUserContext);
+  const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [loadingTestimonies, setLoadingTestimonies] = useState(true);
   const [errorState, setErrorState] = useState("");
@@ -40,38 +36,20 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
   const [afterImage, setAfterImage] = useState(null);
   const [video, setVideo] = useState(null);
   const [canSubmit, setCanSubmit] = useState(true);
-  const [profileComplete, setProfileComplete] = useState(true);
-  const [missingFields, setMissingFields] = useState([]);
 
   // States for existing testimonies
   const [userTestimonies, setUserTestimonies] = useState([]);
   const [currentTestimony, setCurrentTestimony] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [isAdminSubmission, setIsAdminSubmission] = useState(false);
-  const [adminSubmissionProfile, setAdminSubmissionProfile] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-    dob: "",
-    uid: user?.uid, // Admin's UID as the submitter
-  });
-
   // Check if the current user is an admin
-  const isAdmin = profile?.isAdmin || user?.isAdmin;
+  const isAdmin = user?.isAdmin;
 
   const colors = getThemeColors();
 
-  // Load user testimonies and check profile completeness
+  // Load user testimonies
   useEffect(() => {
     if (user) {
-      // Check profile completeness
-      const { isComplete, missingFields } = checkProfileCompleteness(profile);
-      setProfileComplete(isComplete);
-      setMissingFields(missingFields);
-
       // Load user's testimonies
       const loadTestimonies = async () => {
         setLoadingTestimonies(true);
@@ -115,10 +93,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
     }
   }, [user]);
 
-  const handleCompleteProfile = () => {
-    navigation.navigate("Profile", { startEditing: true });
-  };
-
   const handleBackPress = () => {
     navigation.goBack();
   };
@@ -157,44 +131,14 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
 
     try {
       // Prepare testimony data
-      let data;
-
-      if (isAdminSubmission && isAdmin) {
-        // Admin is submitting on behalf of someone else
-        data = {
-          testimony: values.testimony,
-          title: values.title || "",
-          userId: user.uid, // Admin's UID as the submitter
-          submittedByAdmin: true,
-          adminEmail: user.email,
-          // Use the profile data that was entered for the person
-          userEmail: adminSubmissionProfile.email || "",
-          displayName: `${adminSubmissionProfile?.firstName?.trim() || ""} ${
-            (adminSubmissionProfile?.lastName?.trim() || "")
-              ?.charAt(0)
-              ?.toUpperCase() || ""
-          }.`,
-          // Add null checks for all fields to prevent undefined values
-          phoneNumber: adminSubmissionProfile.phoneNumber || null,
-          address: adminSubmissionProfile.address || null,
-          dob: adminSubmissionProfile.dob || null,
-        };
-      } else {
-        // Regular user submission with their own profile
-        data = {
-          testimony: values.testimony,
-          title: values.title || "",
-          userId: profile.uid || user.uid,
-          userEmail: profile.email,
-          displayName: `${profile?.firstName?.trim() || ""} ${
-            (profile?.lastName?.trim() || "")?.charAt(0)?.toUpperCase() || ""
-          }.`,
-          // Add null checks for all fields to prevent undefined values
-          phoneNumber: profile?.phoneNumber || null,
-          address: profile?.address || null,
-          dob: profile?.dob || null,
-        };
-      }
+      let data = {
+        testimony: values.testimony,
+        title: values.title || "",
+        userId: user.uid,
+        userEmail: user.email,
+        displayName: user.displayName || "Anonymous",
+        submittedByAdmin: isAdmin || false,
+      };
 
       if (currentTestimony && currentTestimony.id) {
         // Update existing testimony
@@ -229,18 +173,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
     setIsEditing(true);
   };
 
-  // Function to handle editing profile (for admin or user)
-  const handleEditProfile = () => {
-    if (isAdmin && isAdminSubmission) {
-      // For admins, we'll show the EditProfileForm for the person they're submitting for
-      setIsEditing(false); // Exit testimony editing mode if active
-      setProfileComplete(false); // This will trigger showing the admin profile form
-    } else {
-      // For regular users, navigate to the profile screen
-      navigation.navigate("Profile", { startEditing: true });
-    }
-  };
-
   const renderContent = () => {
     // Show loading indicator while fetching testimonies
     if (loadingTestimonies) {
@@ -265,8 +197,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           loading={loading}
           errorState={errorState}
           isEdit={!!currentTestimony}
-          onEditProfile={handleEditProfile}
-          profileData={isAdminSubmission ? adminSubmissionProfile : profile}
           isAdmin={isAdmin}
         />
       );
@@ -278,6 +208,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           colors={colors}
           onEdit={handleEdit}
           status={currentTestimony.status}
+          isAdmin={isAdmin}
         />
       );
     } else if (userTestimonies.length === 0 && canSubmit) {
@@ -289,9 +220,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           loading={loading}
           errorState={errorState}
           isEdit={false}
-          onEditProfile={handleEditProfile}
-          profileData={isAdminSubmission ? adminSubmissionProfile : profile}
-          isAdmin={isAdmin && isAdminSubmission}
+          isAdmin={isAdmin}
         />
       );
     } else {
@@ -316,20 +245,6 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
       );
     }
   };
-
-  // If profile is incomplete, show the ProfileIncomplete component for regular users
-  if (!isAdmin && !profileComplete) {
-    return (
-      <FormContainer style={{ backgroundColor: colors.background }}>
-        <ProfileIncomplete
-          missingFields={missingFields}
-          colors={colors}
-          onCompleteProfile={handleCompleteProfile}
-          onBack={handleBackPress}
-        />
-      </FormContainer>
-    );
-  }
 
   return (
     <FormContainer
@@ -421,20 +336,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  adminProfileContainer: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  adminProfileTitle: {
-    textAlign: "center",
-    marginBottom: spacing.md,
-  },
-  adminProfileSubtitle: {
-    textAlign: "center",
-    marginBottom: spacing.lg,
-  },
-  adminFormContainer: {
-    flex: 1,
   },
 });

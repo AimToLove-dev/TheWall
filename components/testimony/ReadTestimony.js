@@ -6,7 +6,13 @@ import { CustomButton } from "components";
 import { spacing } from "styles/theme";
 import { Video } from "expo-av"; // Import Video component for playing videos
 
-export const ReadTestimony = ({ testimony, colors, onEdit, isPublished }) => {
+export const ReadTestimony = ({
+  testimony,
+  colors,
+  onEdit,
+  isPublished,
+  isAdmin,
+}) => {
   // Helper function to render a checkbox item
   const renderCheckboxItem = (question, answer) => {
     // Three possible states: "Yes", "No", or undefined/null (not set)

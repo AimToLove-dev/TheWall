@@ -36,8 +36,6 @@ import { ConfirmationPage } from "./testimony/ConfirmationPage";
 import { ReadTestimony } from "./testimony/ReadTestimony";
 import { EditTestimony } from "./testimony/EditTestimony";
 import { MainContent } from "./MainContent";
-import { ProfileIncomplete } from "./profile/ProfileIncomplete";
-import { EditProfileForm } from "./profile/EditProfileForm";
 
 export {
   View,
@@ -73,6 +71,4 @@ export {
   EditTestimony,
   MainContent,
   WallButtons,
-  ProfileIncomplete,
-  EditProfileForm,
 };

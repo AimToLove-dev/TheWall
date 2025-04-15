@@ -26,10 +26,10 @@ import {
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Surface, Avatar, useTheme } from "react-native-paper";
+import { Surface, useTheme } from "react-native-paper";
 
 export const DashboardAdminScreen = ({ navigation }) => {
-  const { user, profile, setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthenticatedUserContext);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const colors = getThemeColors();
@@ -106,16 +106,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
     fetchAdminStats();
   }, [user]);
 
-  // Get initials for avatar
-  const getInitials = () => {
-    if (!user?.displayName) return "U";
-    return user.displayName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
-
   const handleSignOut = () => {
     setSignOutDialogVisible(true);
   };
@@ -188,10 +178,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
     });
   };
 
-  const handleProfilePress = () => {
-    navigation.navigate("Profile");
-  };
-
   const handleTestimonyReviewPress = () => {
     navigation.navigate("TestimonyReview");
   };
@@ -215,36 +201,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
       alignItems: "center",
       marginBottom: spacing.sm,
       ...shadows.small,
-    },
-    profileCard: {
-      padding: spacing.md,
-      marginBottom: spacing.lg,
-      ...shadows.small,
-    },
-    avatarContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    profileInfo: {
-      marginLeft: spacing.md,
-      flex: 1,
-    },
-    welcomeText: {
-      marginBottom: spacing.xs / 2,
-      fontSize: 20,
-    },
-    emailText: {
-      marginBottom: spacing.xs,
-      opacity: 0.7,
-    },
-    adminBadgeContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    profileEditBadge: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginLeft: spacing.sm,
     },
     sectionTitle: {
       marginBottom: spacing.sm,
@@ -352,57 +308,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
             <Ionicons name="log-out-outline" size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
-
-        {/* Profile section with avatar */}
-        <Surface
-          mode="elevated"
-          elevation={2}
-          style={[styles.profileCard, { backgroundColor: colors.surface }]}
-        >
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={handleProfilePress}
-          >
-            {user?.photoURL ? (
-              <Avatar.Image size={80} source={{ uri: user.photoURL }} />
-            ) : (
-              <Avatar.Text size={80} label={getInitials()} />
-            )}
-            <View style={styles.profileInfo}>
-              <HeaderText style={styles.welcomeText}>
-                {greeting}, {user?.displayName || "User"}
-              </HeaderText>
-              <SubtitleText style={styles.emailText}>
-                {user?.email || "No email provided"}
-              </SubtitleText>
-
-              <View style={styles.adminBadgeContainer}>
-                <View style={styles.adminBadge}>
-                  <BodyText style={styles.adminBadgeText}>Admin</BodyText>
-                </View>
-                <TouchableOpacity
-                  style={styles.profileEditBadge}
-                  onPress={handleProfilePress}
-                >
-                  <Ionicons
-                    name="pencil-outline"
-                    size={12}
-                    color={colors.primary}
-                  />
-                  <BodyText
-                    style={{
-                      color: colors.primary,
-                      fontSize: 12,
-                      marginLeft: 4,
-                    }}
-                  >
-                    Edit profile
-                  </BodyText>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Surface>
 
         {/* Admin Dashboard stats section */}
         <View style={styles.statsContainer}>

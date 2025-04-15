@@ -2,7 +2,6 @@ import * as Yup from "yup";
 export * from "./firebaseUtils";
 export * from "./soulsUtils";
 export * from "./testimoniesUtils";
-export * from "./profileUtils";
 
 export const loginValidationSchema = Yup.object().shape({
   email: Yup.string().required().email().label("Email"),

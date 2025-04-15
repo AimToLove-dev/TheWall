@@ -548,7 +548,7 @@ export const TestimonyReviewScreen = ({ navigation }) => {
                 testimony={reviewingSubmission}
                 colors={colors}
                 status="review"
-                onEdit={handleEditTestimony}
+                isAdmin={true}
               />
 
               <View style={styles.actionButtonsContainer}>

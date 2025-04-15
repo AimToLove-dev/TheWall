@@ -28,10 +28,10 @@ import {
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
-import { Surface, Card, Avatar, Divider, useTheme } from "react-native-paper";
+import { Surface, Card, Divider, useTheme } from "react-native-paper";
 
 export const DashboardScreen = ({ navigation }) => {
-  const { user, profile, setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthenticatedUserContext);
   const colors = getThemeColors();
   const { width } = useWindowDimensions();
   const isLargeScreen = width > 768;
@@ -40,7 +40,7 @@ export const DashboardScreen = ({ navigation }) => {
   const [greeting, setGreeting] = useState("Welcome");
 
   // Check if user is admin to redirect to admin dashboard
-  const isAdmin = profile?.isAdmin || user?.isAdmin || false;
+  const isAdmin = user?.isAdmin || false;
 
   useEffect(() => {
     // Redirect to admin dashboard if user is an admin
@@ -60,16 +60,6 @@ export const DashboardScreen = ({ navigation }) => {
       setGreeting("Good evening");
     }
   }, []);
-
-  // Get initials for avatar
-  const getInitials = () => {
-    if (!user?.displayName) return "U";
-    return user.displayName
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
-  };
 
   const handleSignOut = () => {
     setSignOutDialogVisible(true);
@@ -146,10 +136,6 @@ export const DashboardScreen = ({ navigation }) => {
     });
   };
 
-  const handleProfilePress = () => {
-    navigation.navigate("Profile");
-  };
-
   const handleMyWallPress = () => {
     navigation.navigate("MyWall");
   };
@@ -178,44 +164,6 @@ export const DashboardScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Profile section with avatar */}
-        <Surface
-          mode="elevated"
-          elevation={2}
-          style={[styles.profileCard, { backgroundColor: colors.surface }]}
-        >
-          <TouchableOpacity
-            style={styles.avatarContainer}
-            onPress={handleProfilePress}
-          >
-            {user?.photoURL ? (
-              <Avatar.Image size={80} source={{ uri: user.photoURL }} />
-            ) : (
-              <Avatar.Text size={80} label={getInitials()} />
-            )}
-            <View style={styles.profileInfo}>
-              <HeaderText style={styles.welcomeText}>
-                {greeting}, {user?.displayName || profile?.displayName || ""}
-              </HeaderText>
-              <SubtitleText style={styles.emailText}>
-                {user?.email || "No email provided"}
-              </SubtitleText>
-              <View style={styles.profileEditBadge}>
-                <Ionicons
-                  name="pencil-outline"
-                  size={12}
-                  color={colors.primary}
-                />
-                <BodyText
-                  style={{ color: colors.primary, fontSize: 12, marginLeft: 4 }}
-                >
-                  Edit profile
-                </BodyText>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </Surface>
-
         {/* Quick actions section */}
         <View style={styles.quickActionsSection}>
           <HeaderText style={styles.sectionTitle}>Quick Actions</HeaderText>
@@ -236,11 +184,6 @@ export const DashboardScreen = ({ navigation }) => {
                   image: require("assets/bird_wall.png"),
                   text: "My\nTestimony",
                   onPress: handleTestimonyPress,
-                },
-                {
-                  image: require("assets/whale.png"),
-                  text: "My\nProfile",
-                  onPress: handleProfilePress,
                 },
               ]}
               gap={spacing.md}
@@ -281,31 +224,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: spacing.sm,
     ...shadows.small,
-  },
-  profileCard: {
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    ...shadows.small,
-  },
-  avatarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profileInfo: {
-    marginLeft: spacing.md,
-    flex: 1,
-  },
-  welcomeText: {
-    marginBottom: spacing.xs / 2,
-    fontSize: 20,
-  },
-  emailText: {
-    marginBottom: spacing.xs,
-    opacity: 0.7,
-  },
-  profileEditBadge: {
-    flexDirection: "row",
-    alignItems: "center",
   },
   sectionTitle: {
     marginBottom: spacing.sm,

@@ -4,7 +4,6 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { CustomButton, CustomInput } from "components";
 import { TextAreaInput, MediaUpload, VideoUpload } from "components/inputs";
-import { ProfileInfoCard } from "components/profile/ProfileInfoCard";
 import { AuthenticatedUserContext } from "providers";
 import {
   HeaderText,
@@ -30,8 +29,6 @@ export const EditTestimony = ({
   loading,
   errorState,
   isEdit = true, // Set to false for creating a new testimony
-  onEditProfile, // Function to handle editing profile
-  profileData, // Profile data to display
   isAdmin = false, // Whether the current user is an admin
 }) => {
   const [beforeImage, setBeforeImage] = useState(
@@ -100,8 +97,6 @@ export const EditTestimony = ({
       beforeImage,
       afterImage,
       video,
-      videoUrl: video, // Adding videoUrl for consistency
-      videoUri: video, // Adding videoUri for consistency
       // Include faith-related questions
       believeJesusSonOfGod,
       believeJesusResurrection,
@@ -284,17 +279,6 @@ export const EditTestimony = ({
                 placeholder="Enter a title for this testimony"
                 style={{ marginBottom: spacing.md }}
               />
-            )}
-
-            {/* Profile Information Card */}
-            {profileData && (
-              <View style={styles.profileInfoSection}>
-                <ProfileInfoCard
-                  profileData={profileData}
-                  isAdmin={isAdmin}
-                  onEditProfile={onEditProfile}
-                />
-              </View>
             )}
 
             {/* Faith questions section */}
@@ -599,8 +583,5 @@ const styles = StyleSheet.create({
     paddingTop: spacing.xs,
     borderTopWidth: 1,
     borderTopColor: "rgba(0,0,0,0.05)",
-  },
-  profileInfoSection: {
-    marginBottom: spacing.lg,
   },
 });
