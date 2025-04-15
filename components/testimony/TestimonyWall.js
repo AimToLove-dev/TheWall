@@ -58,8 +58,8 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
   };
 
   const navigateToReadTestimony = (testimony) => {
-    // Navigate to the ReadTestimony screen with the testimony data
-    navigation.navigate("ReadTestimony", { testimony });
+    // TODO: Implement navigation to read testimony details
+    //navigation.navigate("ReadTestimony", { testimony });
   };
 
   const styles = StyleSheet.create({

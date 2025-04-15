@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { SubtitleText, BodyText, HeaderText } from "components/Typography";
 import { spacing } from "styles/theme";
+import { Video } from "expo-av"; // Import Video component for video playback
+import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for play button
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = SCREEN_WIDTH - spacing.md * 2; // Full width with padding
@@ -19,6 +21,8 @@ export const TestimonyCard = ({ item, index, onPress }) => {
   if (!item) return null;
 
   const [expanded, setExpanded] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef(null);
 
   // Get the testimony text
   const fullText = item.testimony || "";
@@ -29,6 +33,22 @@ export const TestimonyCard = ({ item, index, onPress }) => {
   // Function to toggle expanded state
   const toggleExpanded = () => {
     setExpanded(!expanded);
+  };
+
+  // Function to handle video playback state
+  const handleVideoPlaybackStatusUpdate = (status) => {
+    setIsVideoPlaying(status.isPlaying);
+  };
+
+  // Function to toggle video play/pause
+  const toggleVideoPlayback = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pauseAsync();
+      } else {
+        videoRef.current.playAsync();
+      }
+    }
   };
 
   return (
@@ -64,14 +84,14 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                     style={styles.image}
                     resizeMode="cover"
                   />
-                  <View style={styles.imageLabel}>
-                    <Text style={styles.imageLabelText}>Before</Text>
-                  </View>
                 </View>
               ) : (
                 <View style={[styles.image, styles.placeholderContainer]}>
                   <Text style={styles.placeholderText}>Before</Text>
                 </View>
+              )}
+              {item.beforeImage && (
+                <Text style={styles.imageCaptionText}>Before</Text>
               )}
             </View>
 
@@ -84,14 +104,14 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                     style={styles.image}
                     resizeMode="cover"
                   />
-                  <View style={styles.imageLabel}>
-                    <Text style={styles.imageLabelText}>After</Text>
-                  </View>
                 </View>
               ) : (
                 <View style={[styles.image, styles.placeholderContainer]}>
                   <Text style={styles.placeholderText}>After</Text>
                 </View>
+              )}
+              {item.afterImage && (
+                <Text style={styles.imageCaptionText}>After</Text>
               )}
             </View>
 
@@ -99,23 +119,39 @@ export const TestimonyCard = ({ item, index, onPress }) => {
             <View style={styles.columnContainer}>
               {item.video || item.videoUrl || item.videoUri ? (
                 <View style={styles.imageContainer}>
-                  <Image
+                  <Video
+                    ref={videoRef}
                     source={{
                       uri: item.video || item.videoUrl || item.videoUri,
                     }}
-                    style={styles.image}
+                    rate={1.0}
+                    volume={1.0}
+                    isMuted={false}
                     resizeMode="cover"
+                    shouldPlay={false}
+                    isLooping={false}
+                    useNativeControls
+                    style={styles.image}
+                    onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
                   />
-                  <View style={styles.playButtonContainer}>
-                    <View style={styles.playButton}>
-                      <Text style={styles.playIcon}>▶</Text>
-                    </View>
-                  </View>
+                  {!isVideoPlaying && (
+                    <TouchableOpacity
+                      style={styles.playButtonContainer}
+                      onPress={toggleVideoPlayback}
+                    >
+                      <View style={styles.playButton}>
+                        <Ionicons name="play" size={24} color="white" />
+                      </View>
+                    </TouchableOpacity>
+                  )}
                 </View>
               ) : (
-                <View
-                  style={[styles.image, styles.placeholderContainer]}
-                ></View>
+                <View style={[styles.image, styles.placeholderContainer]}>
+                  <Text style={styles.placeholderText}>No Video</Text>
+                </View>
+              )}
+              {(item.video || item.videoUrl || item.videoUri) && (
+                <Text style={styles.imageCaptionText}>Video</Text>
               )}
             </View>
           </View>
@@ -136,8 +172,6 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                   {expanded ? fullText.substring(1) : previewText.substring(1)}
                 </BodyText>
               </View>
-
-              {!expanded && <View style={styles.textGradient}></View>}
             </View>
 
             {/* Read more button */}
@@ -214,17 +248,12 @@ const styles = StyleSheet.create({
     color: "#777",
     fontSize: 14,
   },
-  imageLabel: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  imageLabelText: {
-    color: "white",
+  imageCaptionText: {
+    textAlign: "center",
+    fontStyle: "italic",
     fontSize: 12,
+    color: "#555",
+    marginTop: 4,
   },
   playButtonContainer: {
     position: "absolute",
@@ -242,10 +271,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
-  },
-  playIcon: {
-    color: "white",
-    fontSize: 20,
   },
   textContainer: {
     marginTop: spacing.xs,
@@ -275,7 +300,6 @@ const styles = StyleSheet.create({
   expandedText: {
     maxHeight: undefined,
   },
-
   readMoreButton: {
     alignSelf: "flex-end",
     marginTop: spacing.xs,
