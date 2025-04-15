@@ -13,6 +13,7 @@ import {
 } from "components/Typography";
 import { spacing } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { createDisplayName } from "@utils/index";
 
 // Validation schema for the testimony form
 const testimonyValidationSchema = Yup.object().shape({
@@ -110,8 +111,12 @@ export const EditTestimony = ({
   ];
 
   const handleSubmit = (values) => {
+    // Generate display name using the utility function
+    const displayName = createDisplayName(values.firstName, values.lastName);
+
     onSubmit({
       ...values,
+      displayName, // Add the generated display name
       beforeImage,
       afterImage,
       video,

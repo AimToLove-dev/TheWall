@@ -5,6 +5,7 @@ import { HeaderText, SubtitleText, BodyText } from "components/Typography";
 import { CustomButton } from "components";
 import { spacing } from "styles/theme";
 import { Video } from "expo-av"; // Import Video component for playing videos
+import { createDisplayName } from "@utils/index";
 
 export const ReadTestimony = ({
   testimony,
@@ -13,6 +14,12 @@ export const ReadTestimony = ({
   isPublished,
   isAdmin,
 }) => {
+  // Generate display name using utility function if not already present
+  const displayName =
+    testimony.displayName ||
+    createDisplayName(testimony.firstName, testimony.lastName) ||
+    "Anonymous";
+
   // Helper function to render a checkbox item
   const renderCheckboxItem = (question, answer) => {
     // Three possible states: "Yes", "No", or undefined/null (not set)
@@ -95,7 +102,10 @@ export const ReadTestimony = ({
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <HeaderText>{testimony.title || "My Testimony"}</HeaderText>
+        <View>
+          <HeaderText>{testimony.title || "My Testimony"}</HeaderText>
+          <BodyText style={styles.authorText}>By {displayName}</BodyText>
+        </View>
 
         {isPublished && (
           <View
@@ -442,6 +452,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   radioOptions: {
+    marginTop: spacing.xs,
+  },
+  authorText: {
+    fontSize: 14,
+    color: "#888888",
     marginTop: spacing.xs,
   },
 });

@@ -111,14 +111,11 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                       <Text style={styles.playIcon}>▶</Text>
                     </View>
                   </View>
-                  <View style={styles.imageLabel}>
-                    <Text style={styles.imageLabelText}>Video</Text>
-                  </View>
                 </View>
               ) : (
-                <View style={[styles.image, styles.placeholderContainer]}>
-                  <Text style={styles.placeholderText}>Video</Text>
-                </View>
+                <View
+                  style={[styles.image, styles.placeholderContainer]}
+                ></View>
               )}
             </View>
           </View>

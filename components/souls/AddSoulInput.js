@@ -9,6 +9,7 @@ import { addSoul } from "@utils/soulsUtils";
 import { AuthenticatedUserContext } from "providers";
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "config";
+import { createDisplayName } from "@utils/index";
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
   const { user, isEmailVerified } = useContext(AuthenticatedUserContext);
@@ -105,10 +106,10 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setSuccessMessage("");
 
     try {
-      const displayName = `${formData.firstName.trim()} ${formData.lastName
-        .trim()
-        .charAt(0)
-        .toUpperCase()}.`;
+      const displayName = createDisplayName(
+        formData.firstName,
+        formData.lastName
+      );
       let soulId;
 
       // Path 1: User is logged in and email is verified

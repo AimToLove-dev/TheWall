@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { View } from "react-native";
 import {
   Surface,
@@ -11,9 +12,11 @@ import {
 } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { createDisplayName } from "@utils/index";
 
 const editSoulValidationSchema = Yup.object().shape({
-  name: Yup.string().required("Name is required"),
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
 });
 
 export const EditSoul = ({ soul, onSave, onCancel, style }) => {
@@ -24,7 +27,16 @@ export const EditSoul = ({ soul, onSave, onCancel, style }) => {
 
   const handleSubmit = (values) => {
     if (hasLinkedTestimony) return;
-    onSave && onSave({ ...soul, ...values });
+
+    // Generate the display name using the utility function
+    const displayName = createDisplayName(values.firstName, values.lastName);
+
+    onSave &&
+      onSave({
+        ...soul,
+        ...values,
+        name: displayName,
+      });
   };
 
   return (
@@ -55,7 +67,12 @@ export const EditSoul = ({ soul, onSave, onCancel, style }) => {
       )}
 
       <Formik
-        initialValues={{ name: soul?.name || "" }}
+        initialValues={{
+          firstName: soul?.firstName || "",
+          lastName: soul?.lastName || "",
+          city: soul?.city || "",
+          state: soul?.state || "",
+        }}
         validationSchema={editSoulValidationSchema}
         onSubmit={handleSubmit}
       >
@@ -68,24 +85,69 @@ export const EditSoul = ({ soul, onSave, onCancel, style }) => {
           touched,
         }) => (
           <View>
-            <TextInput
-              label="Name"
-              value={values.name}
-              onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
-              error={touched.name && errors.name}
-              mode="outlined"
-              style={{ marginBottom: 8 }}
-              disabled={hasLinkedTestimony}
-            />
-            {touched.name && errors.name && (
-              <Text
-                variant="bodySmall"
-                style={{ color: theme.colors.error, marginBottom: 16 }}
-              >
-                {errors.name}
-              </Text>
-            )}
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="First Name"
+                  value={values.firstName}
+                  onChangeText={handleChange("firstName")}
+                  onBlur={handleBlur("firstName")}
+                  error={touched.firstName && errors.firstName}
+                  mode="outlined"
+                  disabled={hasLinkedTestimony}
+                />
+                {touched.firstName && errors.firstName && (
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.error }}
+                  >
+                    {errors.firstName}
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="Last Name"
+                  value={values.lastName}
+                  onChangeText={handleChange("lastName")}
+                  onBlur={handleBlur("lastName")}
+                  error={touched.lastName && errors.lastName}
+                  mode="outlined"
+                  disabled={hasLinkedTestimony}
+                />
+                {touched.lastName && errors.lastName && (
+                  <Text
+                    variant="bodySmall"
+                    style={{ color: theme.colors.error }}
+                  >
+                    {errors.lastName}
+                  </Text>
+                )}
+              </View>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 16 }}>
+              <TextInput
+                label="City"
+                value={values.city}
+                onChangeText={handleChange("city")}
+                onBlur={handleBlur("city")}
+                mode="outlined"
+                disabled={hasLinkedTestimony}
+                style={{ flex: 1 }}
+              />
+
+              <TextInput
+                label="State Code"
+                value={values.state}
+                onChangeText={handleChange("state")}
+                onBlur={handleBlur("state")}
+                mode="outlined"
+                disabled={hasLinkedTestimony}
+                style={{ flex: 1 }}
+              />
+            </View>
 
             <View
               style={{
