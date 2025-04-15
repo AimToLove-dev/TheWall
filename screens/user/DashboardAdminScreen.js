@@ -182,6 +182,33 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("TestimonyReview");
   };
 
+  const handleTestimonyManagePress = () => {
+    navigation.navigate("Testimony", { reviewMode: true });
+  };
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={handleBackPress}
+      >
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <HeaderText style={styles.title}>Admin Dashboard</HeaderText>
+        <SubtitleText style={styles.subtitle}>
+          {greeting}, {user?.displayName || "Admin"}
+        </SubtitleText>
+      </View>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={handleSignOut}
+      >
+        <Ionicons name="log-out-outline" size={24} color={colors.text} />
+      </TouchableOpacity>
+    </View>
+  );
+
   const styles = StyleSheet.create({
     content: {
       flex: 1,
@@ -189,18 +216,35 @@ export const DashboardAdminScreen = ({ navigation }) => {
       paddingBottom: spacing.lg,
       paddingTop: spacing.sm,
     },
-    headerRow: {
+    header: {
       flexDirection: "row",
+      alignItems: "center",
       justifyContent: "space-between",
       marginBottom: spacing.md,
     },
-    iconButton: {
+    backButton: {
       width: 40,
       height: 40,
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: spacing.sm,
-      ...shadows.small,
+      borderRadius: 20,
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 1,
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+    subtitle: {
+      fontSize: 14,
+      opacity: 0.7,
     },
     sectionTitle: {
       marginBottom: spacing.sm,
@@ -292,22 +336,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {/* Header with back button */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={[styles.iconButton, { backgroundColor: colors.card }]}
-            onPress={handleBackPress}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.iconButton, { backgroundColor: colors.card }]}
-            onPress={handleSignOut}
-          >
-            <Ionicons name="log-out-outline" size={24} color={colors.text} />
-          </TouchableOpacity>
-        </View>
+        {renderHeader()}
 
         {/* Admin Dashboard stats section */}
         <View style={styles.statsContainer}>

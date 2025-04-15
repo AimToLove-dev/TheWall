@@ -27,7 +27,7 @@ import {
 } from "components";
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Surface, Card, Divider, useTheme } from "react-native-paper";
 
 export const DashboardScreen = ({ navigation }) => {
@@ -144,25 +144,33 @@ export const DashboardScreen = ({ navigation }) => {
     navigation.navigate("Testimony");
   };
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={handleBackPress}
+      >
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <HeaderText style={styles.title}>Dashboard</HeaderText>
+        <SubtitleText style={styles.subtitle}>
+          {greeting}, {user?.displayName || "User"}
+        </SubtitleText>
+      </View>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={handleSignOut}
+      >
+        <Ionicons name="log-out-outline" size={24} color={colors.text} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {/* Header with back button */}
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={[styles.iconButton, { backgroundColor: colors.card }]}
-            onPress={handleBackPress}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.iconButton, { backgroundColor: colors.card }]}
-            onPress={handleSignOut}
-          >
-            <Ionicons name="log-out-outline" size={24} color={colors.text} />
-          </TouchableOpacity>
-        </View>
+        {renderHeader()}
 
         {/* Quick actions section */}
         <View style={styles.quickActionsSection}>
@@ -177,13 +185,23 @@ export const DashboardScreen = ({ navigation }) => {
               cards={[
                 {
                   image: require("assets/whale_wall.png"),
-                  text: "My\nLoved Ones",
+                  text: "Loved Ones",
                   onPress: handleMyWallPress,
+                  icon: (
+                    <Ionicons name="people" size={28} color={colors.primary} />
+                  ),
                 },
                 {
                   image: require("assets/bird_wall.png"),
-                  text: "My\nTestimony",
+                  text: "Testimony",
                   onPress: handleTestimonyPress,
+                  icon: (
+                    <MaterialCommunityIcons
+                      name="message-text"
+                      size={28}
+                      color={colors.primary}
+                    />
+                  ),
                 },
               ]}
               gap={spacing.md}
@@ -212,18 +230,35 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
     paddingTop: spacing.sm,
   },
-  headerRow: {
+  header: {
     flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     marginBottom: spacing.md,
   },
-  iconButton: {
+  backButton: {
     width: 40,
     height: 40,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: spacing.sm,
-    ...shadows.small,
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#666",
   },
   sectionTitle: {
     marginBottom: spacing.sm,

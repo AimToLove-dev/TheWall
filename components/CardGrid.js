@@ -32,24 +32,17 @@ export const CardGrid = ({
             width: 150,
             height: 150,
             borderRadius: 0,
+            justifyContent: "center",
           }}
           contentStyle={{
             padding: 16,
-            justifyContent: "space-between",
+            justifyContent: "space-evenly",
             alignItems: "center",
             height: "100%",
           }}
         >
-          <Card.Cover
-            source={card.image}
-            style={{
-              width: 120,
-              height: 70,
+          {card.icon && <View>{card.icon}</View>}
 
-              backgroundColor: "transparent",
-            }}
-            resizeMode="contain"
-          />
           <Text
             style={{
               color: colors.text,

@@ -103,7 +103,7 @@ export const TestimonyWallScreen = () => {
               style={{ flex: 1, marginRight: 8 }}
             />
             <CustomButton
-              title="Login"
+              title="Add Testimony"
               variant="primary"
               onPress={() => navigation.navigate("Auth")}
               style={{ flex: 1 }}

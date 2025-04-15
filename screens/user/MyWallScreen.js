@@ -27,6 +27,7 @@ import {
   SubtitleText,
   BodyText,
   CustomButton,
+  HeaderText,
 } from "components";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -162,28 +163,6 @@ export const MyWallScreen = ({ navigation }) => {
     }
   };
 
-  const handleSingleSoulVisibility = async (soul) => {
-    try {
-      const newVisibility = !soul.isPublic;
-      await updateSoul(soul.id, { isPublic: newVisibility });
-
-      // Update local state
-      setSouls(
-        souls.map((s) => {
-          if (s.id === soul.id) {
-            return { ...s, isPublic: newVisibility };
-          }
-          return s;
-        })
-      );
-
-      // Deselect the soul after action
-      setSelectedSouls(selectedSouls.filter((s) => s.id !== soul.id));
-    } catch (error) {
-      console.error("Error updating soul visibility:", error);
-    }
-  };
-
   const handleSingleSoulDelete = async (soul) => {
     // Don't allow deletion of souls with linked testimonies
     if (soul.testimonyId) return;
@@ -252,20 +231,6 @@ export const MyWallScreen = ({ navigation }) => {
                 }
               >
                 <Ionicons name="close" size={18} color={colors.surface} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.actionIconButton,
-                  { backgroundColor: colors.card },
-                ]}
-                onPress={() => handleSingleSoulVisibility(soul)}
-              >
-                <Ionicons
-                  name={soul.isPublic ? "eye-off-outline" : "eye-outline"}
-                  size={18}
-                  color={colors.primary}
-                />
               </TouchableOpacity>
 
               {/* Only show delete option for souls without linked testimonies */}
@@ -425,20 +390,29 @@ export const MyWallScreen = ({ navigation }) => {
     );
   }
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: colors.card }]}
+        onPress={() => navigation.navigate("Dashboard")}
+      >
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
+      </TouchableOpacity>
+      <View style={styles.titleContainer}>
+        <HeaderText style={styles.title}>My Wall</HeaderText>
+        <SubtitleText style={styles.subtitle}>
+          Manage your loved ones
+        </SubtitleText>
+      </View>
+    </View>
+  );
+
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
+        {renderHeader()}
+
         <View style={styles.infoContainer}>
-          <SubtitleText>
-            {user?.isAdmin
-              ? "Admin: Unlimited submissions"
-              : `${unlinkedSoulCount}/7 submissions used `}
-            <small style={{ opacity: 0.5 }}>
-              Testimonies{" "}
-              <Ionicons name="heart" size={14} color={colors.error} /> don't
-              count.
-            </small>
-          </SubtitleText>
           <BodyText style={[styles.infoText, { color: colors.textSecondary }]}>
             Tap on a soul to see options.
           </BodyText>
@@ -618,5 +592,50 @@ const styles = StyleSheet.create({
   },
   testimonyIcon: {
     marginLeft: spacing.xs,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+  },
+  titleContainer: {
+    marginLeft: spacing.md,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "gray",
   },
 });

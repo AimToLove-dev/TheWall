@@ -201,33 +201,6 @@ export const MainContent = ({
             </View> */}
           </View>
         </View>
-
-        {/* Weather and Index - Two Columns */}
-        <View style={styles.footerSection}>
-          <View style={styles.footerColumn}>
-            <HeaderText style={styles.footerTitle}>Weather</HeaderText>
-            <View style={styles.weatherContent}>
-              <CaptionText>
-                Partly cloudy with a chance of afternoon showers.
-              </CaptionText>
-              <CaptionText>High: 72°F Low: 58°F</CaptionText>
-              <CaptionText style={styles.marginTop}>
-                Full forecast on Page D8
-              </CaptionText>
-            </View>
-          </View>
-          <View style={styles.footerColumn}>
-            <HeaderText style={styles.footerTitle}>Index</HeaderText>
-            <View style={styles.indexContent}>
-              <CaptionText>Business...............B1</CaptionText>
-              <CaptionText>Classifieds............D5</CaptionText>
-              <CaptionText>Crossword.............E7</CaptionText>
-              <CaptionText>Obituaries.............D4</CaptionText>
-              <CaptionText>Opinion................A8</CaptionText>
-              <CaptionText>Sports.................C1</CaptionText>
-            </View>
-          </View>
-        </View>
       </View>
     </View>
   );
