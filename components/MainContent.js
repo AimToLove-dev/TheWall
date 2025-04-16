@@ -20,12 +20,21 @@ export const MainContent = ({
   return (
     <View
       style={{
-        padding: 20,
-        maxWidth: Math.min(screenWidth, 1000),
+        paddingHorizontal: 20,
+        maxWidth: Math.min(screenWidth, 800),
         marginHorizontal: "auto",
         width: "100%",
       }}
     >
+      {/* Header Image */}
+      <View style={styles.headerImageContainer}>
+        <Image
+          source={require("../assets/header.png")}
+          style={styles.headerImage}
+          resizeMode="contain"
+        />
+      </View>
+
       {/* Two Column Layout */}
       <View style={styles.twoColumnContainer}>
         {/* Column 1 - 2/3 width */}
@@ -33,12 +42,12 @@ export const MainContent = ({
           {/* 2 images side by side */}
           <View style={styles.imagesContainer}>
             <Image
-              source={require("../assets/wall.png")}
+              source={require("../assets/before.png")}
               style={styles.columnImage}
               resizeMode="cover"
             />
             <Image
-              source={require("../assets/brick.png")}
+              source={require("../assets/after.png")}
               style={styles.columnImage}
               resizeMode="cover"
             />
@@ -72,7 +81,10 @@ export const MainContent = ({
           {/* 4 social links in a square (2x2) */}
           <View>
             <View style={styles.socialLinksGrid}>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={navigateToWailingWall}
+              >
                 <Image
                   source={require("../assets/megaphone.png")}
                   style={styles.socialIcon}
@@ -84,7 +96,10 @@ export const MainContent = ({
                   style={styles.socialIcon}
                 />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={navigateToTestimonyWall}
+              >
                 <Image
                   source={require("../assets/bell.png")}
                   style={styles.socialIcon}
@@ -126,14 +141,17 @@ export const MainContent = ({
       {/* Logo section with megaphone and bell on sides */}
       <View style={styles.logoWithIconsContainer}>
         {/* Megaphone - Left side */}
-        <View style={styles.sideIconContainer}>
+        <TouchableOpacity
+          style={styles.sideIconContainer}
+          onPress={navigateToWailingWall}
+        >
           <Image
             source={require("../assets/megaphone.png")}
             style={styles.sideIcon}
             resizeMode="contain"
           />
           <Text style={styles.iconSubtitle}>Wailing Wall</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.verticalDivider} />
         <View style={styles.sideIconContainer}>
           <Image
@@ -145,14 +163,17 @@ export const MainContent = ({
         </View>
         <View style={styles.verticalDivider} />
         {/* Bell - Right side */}
-        <View style={styles.sideIconContainer}>
+        <TouchableOpacity
+          style={styles.sideIconContainer}
+          onPress={navigateToTestimonyWall}
+        >
           <Image
             source={require("../assets/bell.png")}
             style={styles.sideIcon}
             resizeMode="contain"
           />
           <Text style={styles.iconSubtitle}>Testimony Wall</Text>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -186,7 +207,6 @@ const styles = StyleSheet.create({
   columnImage: {
     width: "48%",
     height: 120,
-    borderRadius: 8,
   },
   columnTitle: {
     fontWeight: "bold",
@@ -281,5 +301,13 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.xsmall || 12,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  headerImageContainer: {
+    width: "100%",
+  },
+  headerImage: {
+    width: "100%",
+    height: "100%",
+    aspectRatio: 16 / 9,
   },
 });

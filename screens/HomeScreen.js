@@ -21,6 +21,7 @@ import {
   SubtitleText,
   CaptionText,
   FormContainer,
+  WobblingBell,
 } from "components";
 import { getThemeColors } from "../styles/theme";
 import { AuthenticatedUserContext } from "providers";
@@ -95,14 +96,19 @@ export const HomeScreen = ({ navigation }) => {
                   {/* Logo section with megaphone and bell on sides */}
                   <View style={styles.logoWithIconsContainer}>
                     {/* Megaphone - Left side */}
-                    <View style={styles.sideIconContainer}>
-                      <Image
-                        source={require("../assets/megaphone.png")}
+                    <TouchableOpacity
+                      style={styles.sideIconContainer}
+                      onPress={navigateToWailingWall}
+                    >
+                      <WobblingBell
+                        imageSrc={require("../assets/megaphone.png")}
                         style={styles.sideIcon}
-                        resizeMode="contain"
+                        size={40}
+                        wobbleDelay={3000}
+                        startingDelay={0}
                       />
                       <Text style={styles.iconSubtitle}>Wailing Wall</Text>
-                    </View>
+                    </TouchableOpacity>
 
                     {/* 'The Wall' Logo - Center */}
                     <Image
@@ -112,14 +118,19 @@ export const HomeScreen = ({ navigation }) => {
                     />
 
                     {/* Bell - Right side */}
-                    <View style={styles.sideIconContainer}>
-                      <Image
-                        source={require("../assets/bell.png")}
+                    <TouchableOpacity
+                      style={styles.sideIconContainer}
+                      onPress={navigateToTestimonyWall}
+                    >
+                      <WobblingBell
+                        imageSrc={require("../assets/bell.png")}
                         style={styles.sideIcon}
-                        resizeMode="contain"
+                        size={40}
+                        wobbleDelay={3000}
+                        startingDelay={1500}
                       />
                       <Text style={styles.iconSubtitle}>Testimony Wall</Text>
-                    </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
 

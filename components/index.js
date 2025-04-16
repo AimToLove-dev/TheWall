@@ -21,6 +21,9 @@ import BottomSheet from "./BottomSheet";
 import { ScrollableScreenView } from "./ScrollableScreenView";
 import { VerticalMarquee } from "./VerticalMarquee";
 
+// Import animation components
+import { WobblingBell } from "./animations/WobblingBell";
+
 // Import from feature folders directly to avoid cycles
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
 import { ErrorBoundary } from "./error/ErrorBoundary";
@@ -71,4 +74,5 @@ export {
   EditTestimony,
   MainContent,
   WallButtons,
+  WobblingBell,
 };
