@@ -24,3 +24,7 @@ input:autofill, input:-webkit-autofill,input:-internal-autofill-selected {
   -webkit-text-fill-color: #000 !important;  /* Set text color */
   transition: background-color 5000s ease-in-out 0s; /* Prevent autofill background from reverting */
 }
+
+[style*="background-repeat: repeat-x"] > * {
+  background-repeat: repeat-x;
+}

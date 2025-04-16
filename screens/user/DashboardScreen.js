@@ -184,7 +184,6 @@ export const DashboardScreen = ({ navigation }) => {
             <CardGrid
               cards={[
                 {
-                  image: require("assets/whale_wall.png"),
                   text: "Loved Ones",
                   onPress: handleMyWallPress,
                   icon: (
@@ -192,7 +191,6 @@ export const DashboardScreen = ({ navigation }) => {
                   ),
                 },
                 {
-                  image: require("assets/bird_wall.png"),
                   text: "Testimony",
                   onPress: handleTestimonyPress,
                   icon: (

@@ -68,26 +68,103 @@ export const HomeScreen = ({ navigation }) => {
         resizeMode="repeat"
       >
         <ScrollableScreenView>
+          {/* Brick Header Background */}
           <ImageBackground
-            source={require("../assets/wall.png")}
+            source={require("../assets/brick.png")}
             style={styles.wallBackground}
-            resizeMode="repeat-x"
+            imageStyle={{ backgroundRepeat: "repeat-x" }}
+            resizeMode="contain"
           >
             <View style={{ padding: 20, paddingBottom: 0 }}>
               {/* Masthead */}
-              <View style={styles.masthead}>
+              <View>
                 <View style={styles.mastheadContainer}>
-                  <Image
-                    source={require("../assets/TheWall.png")}
-                    style={styles.mastheadImage}
-                    resizeMode="contain"
-                  />
+                  {/* Three lines with text breaking the center line */}
+                  <View style={styles.mastheadLines}>
+                    <View style={styles.fullWidthLine}></View>
+                    <View style={styles.centerLineWithText}>
+                      <View style={styles.halfLine}></View>
+                      <Text style={styles.prideToPomiseText}>
+                        From Pride to Promise
+                      </Text>
+                      <View style={styles.halfLine}></View>
+                    </View>
+                    <View style={styles.fullWidthLine}></View>
+                  </View>
+
+                  {/* Logo section with megaphone and bell on sides */}
+                  <View style={styles.logoWithIconsContainer}>
+                    {/* Megaphone - Left side */}
+                    <View style={styles.sideIconContainer}>
+                      <Image
+                        source={require("../assets/megaphone.png")}
+                        style={styles.sideIcon}
+                        resizeMode="contain"
+                      />
+                      <Text style={styles.iconSubtitle}>Wailing Wall</Text>
+                    </View>
+
+                    {/* 'The Wall' Logo - Center */}
+                    <Image
+                      source={require("../assets/TheWall.png")}
+                      style={styles.mastheadImage}
+                      resizeMode="contain"
+                    />
+
+                    {/* Bell - Right side */}
+                    <View style={styles.sideIconContainer}>
+                      <Image
+                        source={require("../assets/bell.png")}
+                        style={styles.sideIcon}
+                        resizeMode="contain"
+                      />
+                      <Text style={styles.iconSubtitle}>Testimony Wall</Text>
+                    </View>
+                  </View>
                 </View>
 
-                <View style={styles.dateStrip}>
-                  <CaptionText>Est. 2025</CaptionText>
-                  <CaptionText>{currentDate}</CaptionText>
-                  <CaptionText>Price: FREE</CaptionText>
+                {/* New flame strip replacing date strip */}
+                <View style={styles.flameStrip}>
+                  <View style={styles.fullWidthLine}></View>
+                  <View style={styles.flameContainer}>
+                    {/* Left side flames */}
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+
+                    {/* Center text */}
+                    <Text style={styles.theWallLoveText}>THEWALL.LOVE</Text>
+
+                    {/* Right side flames */}
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+                    <Image
+                      source={require("../assets/flame.png")}
+                      style={styles.flameIcon}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View style={styles.fullWidthLine}></View>
                 </View>
               </View>
             </View>
@@ -129,14 +206,7 @@ export const HomeScreen = ({ navigation }) => {
             <CaptionText>
               © {new Date().getFullYear()} The Wall. All rights reserved.
             </CaptionText>
-            <CaptionText>
-              For subscription information, call 1-800-THE-WALL
-            </CaptionText>
-            <TouchableOpacity>
-              <CaptionText style={styles.link}>
-                <Link to={"/login"}>www.thewall.love/login</Link>
-              </CaptionText>
-            </TouchableOpacity>
+            <TouchableOpacity></TouchableOpacity>
           </View>
 
           {/* Page Number */}
@@ -149,29 +219,91 @@ export const HomeScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   // Masthead styles
-  masthead: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#000",
-    paddingBottom: 1,
-    marginBottom: 2,
-  },
   mastheadContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   mastheadImage: {
     height: 80,
+    flexGrow: 1,
+    flex: 0.6, // Give more space to the center logo
+    minWidth: 0,
+    maxWidth: 300,
+    marginHorizontal: 10, // Reduced from 20 to give more space on small screens
+  },
+  mastheadLines: {
     width: "100%",
     marginBottom: 10,
   },
-  dateStrip: {
+  fullWidthLine: {
+    height: 2,
+    backgroundColor: "#000",
+    width: "100%",
+    marginVertical: 5,
+  },
+  centerLineWithText: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#000",
-    paddingVertical: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 5,
+  },
+  halfLine: {
+    height: 2,
+    backgroundColor: "#000",
+    flex: 1,
+  },
+  prideToPomiseText: {
+    marginHorizontal: 10,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  flameStrip: {
     marginTop: 10,
+    alignItems: "center",
+  },
+  flameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    width: "100%",
+  },
+  flameIcon: {
+    height: 12,
+    width: 12,
+  },
+  theWallLoveText: {
+    marginHorizontal: 10,
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  logoWithIconsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    width: "100%",
+    marginBottom: 10,
+  },
+  sideIconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 0.2, // Changed from fixed width to flex
+    minWidth: 40, // Add minimum width
+    maxWidth: 80, // Add maximum width
+  },
+  sideIcon: {
+    height: 40,
+    width: 40,
+    marginBottom: 5,
+    // Make the icon responsive
+    maxWidth: "100%",
+    maxHeight: "100%",
+    aspectRatio: 1,
+  },
+  iconSubtitle: {
+    fontSize: 12,
+    textAlign: "center",
+    maxWidth: "100%",
+    overflowWrap: "normal",
   },
   // Page footer styles
   pageFooter: {
@@ -194,8 +326,6 @@ const styles = StyleSheet.create({
   },
   // Original styles
   authContainer: {
-    marginTop: "auto",
-    marginBottom: 20,
     gap: 10,
     paddingHorizontal: 20,
   },
@@ -217,5 +347,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
+    backgroundRepeat: "repeat-x",
   },
 });
