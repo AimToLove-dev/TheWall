@@ -10,7 +10,12 @@ import {
 } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import { TestimonyWall } from "components/testimony";
-import { BottomSheet, CustomButton, WallButtons } from "components";
+import {
+  BottomSheet,
+  CustomButton,
+  ScrollableScreenView,
+  WallButtons,
+} from "components";
 import { getAllTestimonies } from "utils/testimoniesUtils";
 import { AddSoulInput as AddSoulForm } from "components/souls";
 import { useNavigation } from "@react-navigation/native";
@@ -23,11 +28,6 @@ export const TestimonyWallScreen = () => {
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
 
   const toggleBottomSheet = () => setIsBottomSheetVisible((prev) => !prev);
-
-  const handleSoulAdded = () => {
-    toggleBottomSheet();
-    // You might want to refresh data after adding a soul
-  };
 
   useEffect(() => {
     const fetchTestimonies = async () => {
@@ -72,9 +72,9 @@ export const TestimonyWallScreen = () => {
         style={styles.backgroundImage}
         resizeMode="repeat"
       >
-        <View style={styles.contentContainer}>
+        <ScrollableScreenView style={styles.contentContainer}>
           <TestimonyWall testimonies={testimonies} />
-        </View>
+        </ScrollableScreenView>
       </ImageBackground>
       {/* Wall Buttons - Both Back and Plus buttons */}
       <WallButtons

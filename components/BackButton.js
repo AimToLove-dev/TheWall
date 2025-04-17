@@ -34,7 +34,7 @@ export const BackButton = ({
 const styles = StyleSheet.create({
   backButton: {
     position: "fixed",
-    top: 30,
+    bottom: 30,
     left: 30,
     width: 60,
     height: 60,

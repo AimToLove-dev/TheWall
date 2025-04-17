@@ -12,6 +12,7 @@ import {
   Platform,
   ScrollView,
   ImageBackground,
+  Dimensions,
 } from "react-native";
 import {
   HeaderText,
@@ -76,7 +77,12 @@ export const HomeScreen = ({ navigation }) => {
             imageStyle={{ backgroundRepeat: "repeat-x" }}
             resizeMode="contain"
           >
-            <View style={{ padding: 20, paddingBottom: 20 }}>
+            <View
+              style={{
+                padding: 20,
+                paddingBottom: 20,
+              }}
+            >
               {/* Masthead */}
               <View>
                 <View style={styles.mastheadContainer}>
@@ -182,7 +188,12 @@ export const HomeScreen = ({ navigation }) => {
           </ImageBackground>
 
           {/* Main Content Component */}
-          <View style={styles.mainContentContainer}>
+          <View
+            style={[
+              styles.mainContentContainer,
+              { maxWidth: "min(100vw,800px)", alignSelf: "center" },
+            ]}
+          >
             <ImageBackground
               source={require("../assets/paper.jpg")}
               style={styles.paperBackground}
@@ -198,15 +209,18 @@ export const HomeScreen = ({ navigation }) => {
           </View>
 
           {/* Authentication buttons */}
-
-          <View style={styles.authContainer}>
+          <View
+            style={[
+              styles.authContainer,
+              { maxWidth: "min(100vw,800px)", alignSelf: "center" },
+            ]}
+          >
             {user ? (
               <CustomButton
                 title="Go to Dashboard"
                 onPress={handleDashboardPress}
                 mode="primary"
-                backgroundImage={require("../assets/paper.jpg")}
-                imageStyle={{ opacity: 0.6, tintColor: "#333" }} // Darkened for better text visibility
+                backgroundImage={require("../assets/paper.jpg")} // Darkened for better text visibility
               />
             ) : (
               <>
@@ -227,7 +241,12 @@ export const HomeScreen = ({ navigation }) => {
           </View>
 
           {/* Footer */}
-          <View style={styles.pageFooter}>
+          <View
+            style={[
+              styles.pageFooter,
+              { maxWidth: "min(100vw,800px)", alignSelf: "center" },
+            ]}
+          >
             <CaptionText>
               © {new Date().getFullYear()} The Wall. All rights reserved.
             </CaptionText>
@@ -359,7 +378,8 @@ const styles = StyleSheet.create({
   // Original styles
   authContainer: {
     gap: 10,
-    paddingHorizontal: 20,
+    width: "-webkit-fill-available",
+    marginHorizontal: 20,
   },
   backgroundImage: {
     flex: 1,
@@ -394,5 +414,6 @@ const styles = StyleSheet.create({
   },
   paperContentWrapper: {
     padding: 20,
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px 0px 2px 0px inset",
   },
 });

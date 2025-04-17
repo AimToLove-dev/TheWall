@@ -55,7 +55,7 @@ export const LoginScreen = ({ navigation }) => {
       .then((result) => {
         console.log(result);
         // Only navigate to Dashboard after successful login
-        navigation.navigate("Home");
+        navigation.navigate("User");
       })
       .catch((error) => {
         let errorMessage = "An error occurred during login";

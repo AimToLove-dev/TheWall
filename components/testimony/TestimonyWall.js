@@ -7,15 +7,13 @@ import {
   ActivityIndicator,
   FlatList,
   ImageBackground,
+  Image,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { SubtitleText, BodyText } from "components/Typography";
 import { spacing, getThemeColors } from "styles/theme";
 import TestimonyCard from "./TestimonyCard";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH; // Full width for vertical scrolling
 
 export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
   const colors = getThemeColors();
@@ -64,10 +62,17 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
   };
 
   const styles = StyleSheet.create({
+    mastheadImage: {
+      height: 80,
+      width: "100%",
+      alignSelf: "center",
+      maxWidth: 800,
+      marginVertical: spacing.md,
+      marginHorizontal: "auto",
+    },
     container: {
       flex: 1,
       justifyContent: "center",
-      width: SCREEN_WIDTH,
     },
     listContent: {
       paddingHorizontal: spacing.md,
@@ -145,6 +150,11 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("assets/TheWall.png")}
+        style={styles.mastheadImage}
+        resizeMode="contain"
+      />
       <FlatList
         ref={flatListRef}
         data={testimonies}
@@ -155,6 +165,7 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
         onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
         showsVerticalScrollIndicator={false}
+        style={{ maxWidth: 800, alignSelf: "center", width: "100%" }}
       />
     </View>
   );

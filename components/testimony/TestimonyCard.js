@@ -14,9 +14,6 @@ import { spacing } from "styles/theme";
 import { Video } from "expo-av"; // Import Video component for video playback
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for play button
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const CARD_WIDTH = SCREEN_WIDTH - spacing.md * 2; // Full width with padding
-
 export const TestimonyCard = ({ item, index, onPress }) => {
   if (!item) return null;
 
@@ -192,7 +189,6 @@ export const TestimonyCard = ({ item, index, onPress }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: CARD_WIDTH,
     overflow: "hidden",
     marginBottom: spacing.md,
 

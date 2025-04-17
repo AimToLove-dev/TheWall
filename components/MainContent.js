@@ -21,7 +21,6 @@ export const MainContent = ({
     <View
       style={{
         paddingHorizontal: 20,
-        maxWidth: Math.min(screenWidth, 800),
         marginHorizontal: "auto",
         width: "100%",
       }}
