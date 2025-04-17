@@ -28,7 +28,7 @@ import { AuthenticatedUserContext } from "providers";
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainContent, ScrollableScreenView } from "components";
-import { Link } from "@react-navigation/native";
+import { Linking } from "react-native";
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -76,7 +76,7 @@ export const HomeScreen = ({ navigation }) => {
             imageStyle={{ backgroundRepeat: "repeat-x" }}
             resizeMode="contain"
           >
-            <View style={{ padding: 20, paddingBottom: 0 }}>
+            <View style={{ padding: 20, paddingBottom: 20 }}>
               {/* Masthead */}
               <View>
                 <View style={styles.mastheadContainer}>
@@ -205,6 +205,8 @@ export const HomeScreen = ({ navigation }) => {
                 title="Go to Dashboard"
                 onPress={handleDashboardPress}
                 mode="primary"
+                backgroundImage={require("../assets/paper.jpg")}
+                imageStyle={{ opacity: 0.6, tintColor: "#333" }} // Darkened for better text visibility
               />
             ) : (
               <>
@@ -212,11 +214,13 @@ export const HomeScreen = ({ navigation }) => {
                   title="Login"
                   onPress={handleLoginPress}
                   variant="outline"
+                  backgroundImage={require("../assets/paper.jpg")}
                 />
                 <CustomButton
                   title="Sign Up"
                   onPress={handleSignupPress}
                   variant="primary"
+                  backgroundImage={require("../assets/paper.jpg")}
                 />
               </>
             )}
@@ -230,8 +234,15 @@ export const HomeScreen = ({ navigation }) => {
             <TouchableOpacity></TouchableOpacity>
           </View>
 
-          {/* Page Number */}
-          <CaptionText style={styles.pageNumber}>Page 1 of 24</CaptionText>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL("https://www.linkedin.com/in/auerjj/")
+            }
+          >
+            <CaptionText style={styles.pageNumber}>
+              <Text style={styles.link}>created by JJ Auer</Text>
+            </CaptionText>
+          </TouchableOpacity>
         </ScrollableScreenView>
       </ImageBackground>
     </SafeAreaView>

@@ -1,6 +1,6 @@
 "use client";
 
-import { View } from "react-native";
+import { View, ImageBackground } from "react-native";
 import { Button } from "react-native-paper";
 import { getThemeColors } from "styles/theme";
 
@@ -15,6 +15,8 @@ export const CustomButton = ({
   textStyle,
   leftIcon,
   rightIcon,
+  backgroundImage,
+  imageStyle,
 }) => {
   const colors = getThemeColors();
 
@@ -22,15 +24,23 @@ export const CustomButton = ({
   const getButtonColors = () => {
     switch (variant) {
       case "primary":
-        return { backgroundColor: colors.primary };
+        return {
+          backgroundColor: backgroundImage ? "transparent" : colors.primary,
+        };
       case "secondary":
-        return { backgroundColor: colors.secondary };
+        return {
+          backgroundColor: backgroundImage ? "transparent" : colors.secondary,
+        };
       case "outline":
-        return { borderColor: colors.primary };
+        return {
+          backgroundColor: backgroundImage ? "transparent" : undefined,
+        };
       case "text":
         return {};
       default:
-        return { backgroundColor: colors.primary };
+        return {
+          backgroundColor: backgroundImage ? "transparent" : colors.primary,
+        };
     }
   };
 
@@ -38,7 +48,7 @@ export const CustomButton = ({
   const getTextColor = () => {
     switch (variant) {
       case "primary":
-        return "white";
+        return backgroundImage ? "black" : "white";
       case "secondary":
         return "white";
       case "outline":
@@ -83,6 +93,49 @@ export const CustomButton = ({
   // Create a render function for the left icon to avoid button nesting issues
   const renderLeftIcon = leftIcon ? () => leftIcon : undefined;
 
+  // If we have a background image, wrap the button in an ImageBackground
+  if (backgroundImage) {
+    return (
+      <ImageBackground
+        source={backgroundImage}
+        style={[
+          {
+            borderRadius: 0,
+            overflow: "hidden",
+            boxShadow: "rgba(6, 24, 44, 0.8) 0px 0 6px -1px",
+            filter: getMode() == "contained" ? "invert(1)" : "",
+          },
+          style,
+        ]}
+        imageStyle={imageStyle}
+        resizeMode="cover"
+      >
+        <Button
+          mode={getMode()}
+          onPress={onPress}
+          loading={loading}
+          disabled={disabled}
+          style={[getButtonColors(), { borderRadius: 0 }]}
+          contentStyle={[
+            getContentStyle(),
+            {
+              flexDirection: "row",
+              alignItems: "center",
+              boxShadow: "rgba(6, 24, 44, 0.8) 0px 0px 2px 0px inset",
+            },
+          ]}
+          labelStyle={[{ color: getTextColor() }, textStyle]}
+          textColor={getTextColor()}
+          icon={renderLeftIcon}
+        >
+          {title}
+          {rightIcon && <View style={{ marginLeft: 8 }}>{rightIcon}</View>}
+        </Button>
+      </ImageBackground>
+    );
+  }
+
+  // Standard button without background image
   return (
     <Button
       mode={getMode()}
