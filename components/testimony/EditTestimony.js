@@ -182,26 +182,6 @@ export const EditTestimony = ({
             </View>
             <BodyText style={styles.optionLabel}>No</BodyText>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.optionContainer}
-            onPress={() => setValue("NotSet")}
-          >
-            <View
-              style={[
-                styles.clearOption,
-                value === "NotSet" && {
-                  borderColor: "#888888",
-                  borderWidth: 2,
-                },
-              ]}
-            >
-              {value === "NotSet" && (
-                <Ionicons name="remove" size={12} color="#888888" />
-              )}
-            </View>
-            <BodyText style={styles.clearLabel}>Clear</BodyText>
-          </TouchableOpacity>
         </View>
       </View>
     );
@@ -237,23 +217,6 @@ export const EditTestimony = ({
             </BodyText>
           </TouchableOpacity>
         ))}
-
-        <TouchableOpacity
-          style={styles.clearRadioOption}
-          onPress={() => setValue("NotSet")}
-        >
-          <View
-            style={[
-              styles.clearOption,
-              value === "NotSet" && { borderColor: "#888888", borderWidth: 2 },
-            ]}
-          >
-            {value === "NotSet" && (
-              <Ionicons name="remove" size={12} color="#888888" />
-            )}
-          </View>
-          <BodyText style={styles.clearLabel}>Clear selection</BodyText>
-        </TouchableOpacity>
       </View>
     );
   };
