@@ -6,6 +6,7 @@ import {
   Dimensions,
   ActivityIndicator,
   FlatList,
+  ImageBackground,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -100,6 +101,11 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
     cardContainer: {
       width: "100%",
       marginBottom: spacing.lg,
+    },
+    backgroundImage: {
+      flex: 1,
+      width: "100%",
+      height: "100%",
     },
   });
 

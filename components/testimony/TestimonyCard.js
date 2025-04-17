@@ -52,15 +52,15 @@ export const TestimonyCard = ({ item, index, onPress }) => {
   };
 
   return (
-    <ImageBackground
-      source={require("assets/paper.jpg")}
-      style={styles.backgroundImage}
-      resizeMode="repeat"
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => onPress(item)}
+      activeOpacity={0.9}
     >
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => onPress(item)}
-        activeOpacity={0.9}
+      <ImageBackground
+        source={require("assets/paper.jpg")}
+        style={styles.backgroundImage}
+        resizeMode="repeat"
       >
         <View style={[styles.cardContent]}>
           {/* Header with title and name */}
@@ -81,7 +81,7 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                 <View style={styles.imageContainer}>
                   <Image
                     source={{ uri: item.beforeImage }}
-                    style={styles.image}
+                    style={[styles.image, { filter: "grayscale(100%)" }]}
                     resizeMode="cover"
                   />
                 </View>
@@ -185,26 +185,24 @@ export const TestimonyCard = ({ item, index, onPress }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
-    </ImageBackground>
+      </ImageBackground>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
     overflow: "hidden",
     marginBottom: spacing.md,
 
-    boxShadow:
-      "rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgb(0 0 0 / 44%) 0px 30px 60px -30px, rgb(6 24 44 / 69%) 0px 0px 0px 1px, rgb(6 24 44 / 80%) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset",
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px 0 6px -1px",
 
     // add box shadow
   },
   cardContent: {
     padding: spacing.md,
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px 0px 4px 0px inset",
   },
   headerContainer: {
     marginBottom: spacing.sm,

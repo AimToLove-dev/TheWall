@@ -66,59 +66,68 @@ export const TestimonyWallScreen = () => {
   }
 
   return (
-    <ImageBackground
-      source={require("../assets/paper.jpg")}
-      style={[styles.backgroundImage, { height: "100vh" }]}
-      resizeMode="repeat"
-    >
-      <SafeAreaView style={styles.container}>
-        <TestimonyWall testimonies={testimonies} />
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/brickSeamless.png")}
+        style={styles.backgroundImage}
+        resizeMode="repeat"
+      >
+        <View style={styles.contentContainer}>
+          <TestimonyWall testimonies={testimonies} />
+        </View>
+      </ImageBackground>
+      {/* Wall Buttons - Both Back and Plus buttons */}
+      <WallButtons
+        onPlusPress={toggleBottomSheet}
+        backNavigateTo="Home"
+        fadeAnimation={true}
+      />
 
-        {/* Wall Buttons - Both Back and Plus buttons */}
-        <WallButtons
-          onPlusPress={toggleBottomSheet}
-          backNavigateTo="Home"
-          fadeAnimation={true}
-        />
-
-        {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
-        <BottomSheet
-          style={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-          isVisible={isBottomSheetVisible}
-          onClose={toggleBottomSheet}
-          duration={400}
-        >
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <CustomButton
-              title="Cancel"
-              variant="outline"
-              onPress={toggleBottomSheet}
-              style={{ flex: 1, marginRight: 8 }}
-            />
-            <CustomButton
-              title="Add Testimony"
-              variant="primary"
-              onPress={() => navigation.navigate("Auth")}
-              style={{ flex: 1 }}
-            />
-          </View>
-        </BottomSheet>
-      </SafeAreaView>
-    </ImageBackground>
+      {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
+      <BottomSheet
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+        isVisible={isBottomSheetVisible}
+        onClose={toggleBottomSheet}
+        duration={400}
+      >
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <CustomButton
+            title="Cancel"
+            variant="outline"
+            onPress={toggleBottomSheet}
+            style={{ flex: 1, marginRight: 8 }}
+          />
+          <CustomButton
+            title="Add Testimony"
+            variant="primary"
+            onPress={() => navigation.navigate("Auth")}
+            style={{ flex: 1 }}
+          />
+        </View>
+      </BottomSheet>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100vh",
+    position: "relative",
+    overflow: "hidden",
+  },
+  backgroundImage: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  contentContainer: {
+    flex: 1,
+    zIndex: 0,
   },
   header: {
     padding: 16,

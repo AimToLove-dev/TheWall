@@ -64,7 +64,7 @@ export const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../assets/paper.jpg")}
+        source={require("../assets/brickSeamless.png")}
         style={styles.backgroundImage}
         resizeMode="repeat"
       >
@@ -182,10 +182,20 @@ export const HomeScreen = ({ navigation }) => {
           </ImageBackground>
 
           {/* Main Content Component */}
-          <MainContent
-            navigateToWailingWall={navigateToWailingWall}
-            navigateToTestimonyWall={navigateToTestimonyWall}
-          />
+          <View style={styles.mainContentContainer}>
+            <ImageBackground
+              source={require("../assets/paper.jpg")}
+              style={styles.paperBackground}
+              resizeMode="repeat"
+            >
+              <View style={styles.paperContentWrapper}>
+                <MainContent
+                  navigateToWailingWall={navigateToWailingWall}
+                  navigateToTestimonyWall={navigateToTestimonyWall}
+                />
+              </View>
+            </ImageBackground>
+          </View>
 
           {/* Authentication buttons */}
 
@@ -359,5 +369,19 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundRepeat: "repeat-x",
+  },
+  mainContentContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+    overflow: "hidden",
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px 0 6px -1px",
+  },
+  paperBackground: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+  },
+  paperContentWrapper: {
+    padding: 20,
   },
 });

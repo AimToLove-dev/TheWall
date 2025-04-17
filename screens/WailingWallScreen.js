@@ -19,7 +19,6 @@ import { getAllSouls } from "../utils/soulsUtils";
 
 // Names component to display in a newspaper-like format
 const NewspaperColumn = ({ souls }) => {
-
   const { width } = useWindowDimensions();
 
   // Calculate column width based on screen size
@@ -90,7 +89,13 @@ const NewspaperColumn = ({ souls }) => {
 
   return (
     <View style={[styles.newspaperContainer, { width: getColumnWidth() }]}>
-      {createNewspaperContent()}
+      <ImageBackground
+        source={require("../assets/paper.jpg")}
+        style={styles.backgroundImage}
+        resizeMode="repeat"
+      >
+        {createNewspaperContent()}
+      </ImageBackground>
     </View>
   );
 };
@@ -154,7 +159,7 @@ export const WailingWallScreen = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/paper.jpg")}
+        source={require("../assets/brickSeamless.png")}
         style={styles.backgroundImage}
         resizeMode="repeat"
       >
@@ -279,6 +284,7 @@ const styles = StyleSheet.create({
     height: "100%",
     overflow: "hidden",
     alignSelf: "center", // Center the column horizontally
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px 0 6px -1px",
   },
   newspaperText: {
     fontSize: 16,
@@ -288,8 +294,9 @@ const styles = StyleSheet.create({
     textAlign: "justify",
   },
   paragraphContainer: {
-    marginBottom: 12,
+    padding: "1em",
     textAlign: "justify",
+    boxShadow: "rgba(6, 24, 44, 0.8) 0px -10px 4px 0px inset",
   },
   soulNameInText: {
     fontSize: 18,
