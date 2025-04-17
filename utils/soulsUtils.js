@@ -31,10 +31,6 @@ export const getAllSouls = async (
   sortDirection = "desc"
 ) => {
   try {
-    console.log(
-      `getAllSouls called with sortBy=${sortBy}, sortDirection=${sortDirection}`
-    );
-
     // Debug database connection
     if (!db) {
       console.error("Firestore db object is not initialized");
@@ -63,15 +59,6 @@ export const getAllSouls = async (
       100,
       safeFields
     );
-
-    console.log(`getAllSouls query returned ${result.length} souls`);
-
-    // Debug first few results if any exist
-    if (result.length > 0) {
-      console.log("First soul:", JSON.stringify(result[0], null, 2));
-    } else {
-      console.log("No souls found in the database");
-    }
 
     return result;
   } catch (error) {

@@ -26,7 +26,6 @@ import { getThemeColors, spacing } from "styles/theme";
 const signupValidationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Please enter a valid email")
-    .matches(/@aimtolove\.com$/, "Non Admin login coming soon!") //TODO: enable signup for non-admin users
     .required("Email is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")

@@ -19,9 +19,6 @@ const TranslatedElement = ({
 
   useEffect(() => {
     if (cycleCount > 0 && prevIndexRef.current !== index) {
-      console.log(
-        `TranslatedElement ${prevIndexRef.current} moved to position ${index}`
-      );
       prevIndexRef.current = index;
     }
   }, [cycleCount, index]);
@@ -69,9 +66,6 @@ const ChildrenScroller = ({ duration, contentHeight, children, isPaused }) => {
       ) {
         const currentCycle = Math.floor(offset.value / contentHeight);
         if (currentCycle !== lastCycleRef.current) {
-          console.log(
-            "Element completed a cycle! Moving from end to beginning."
-          );
           setCycleCount((prev) => prev + 1);
           lastCycleRef.current = currentCycle;
         }

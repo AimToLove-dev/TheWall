@@ -53,7 +53,6 @@ export const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        console.log(result);
         // Only navigate to Dashboard after successful login
         navigation.navigate("User");
       })
