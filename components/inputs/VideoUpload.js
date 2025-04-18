@@ -14,6 +14,8 @@ export const VideoUpload = ({
   style,
   label = "Upload Video",
   maxDuration = 60,
+  propertyName = "video", // Default property name
+  isAdmin = false, // Admin flag
 }) => {
   const [video, setVideo] = useState(initialVideo);
   const [uploading, setUploading] = useState(false);
@@ -40,7 +42,13 @@ export const VideoUpload = ({
         const localUri = result.assets[0].uri;
         // Upload to Firebase Storage
         const userId = auth.currentUser ? auth.currentUser.uid : "anonymous";
-        const downloadURL = await uploadVideo(localUri, userId);
+        // Pass propertyName and isAdmin flag
+        const downloadURL = await uploadVideo(
+          localUri,
+          userId,
+          propertyName,
+          isAdmin
+        );
 
         // Update state with the download URL from Firebase
         setVideo(downloadURL);

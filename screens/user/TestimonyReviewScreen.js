@@ -154,9 +154,27 @@ export const TestimonyReviewScreen = ({ navigation }) => {
         throw new Error("Custom Testimony title is required");
       }
 
-      // Add to testimonies collection
-      const testimonyId = await addDocument("testimonies", {
+      // PRIVATE: Add to testimoniesArchive collection (full data)
+      const testimonyArchiveId = await addDocument("testimonyArchive", {
         ...submission,
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: user.uid,
+      });
+
+      // PUBLIC: Add to testimonies collection with only the specified fields
+      const testimonyId = await addDocument("testimonies", {
+        id: submission.id,
+        title: submission.title,
+        testimony: submission.testimony,
+        beforeImage: submission.beforeImage || null,
+        afterImage: submission.afterImage || null,
+        video: submission.video || null,
+        createdAt: submission.createdAt,
+        updatedAt: submission.updatedAt,
+        approvedAt: new Date().toISOString(),
+        soulId: null, // Will be updated after soul creation
+        userId: submission.userId || null,
+        displayName: submission.displayName || "Anonymous",
         reviewedAt: new Date().toISOString(),
         reviewedBy: user.uid,
       });
@@ -165,11 +183,8 @@ export const TestimonyReviewScreen = ({ navigation }) => {
       const soulData = {
         name: submission.displayName || "Anonymous",
         userId: submission.userId || null,
-        email: submission.email || null,
-        submitterEmail: submission.email || null,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        isPublic: true,
         testimonyId: testimonyId,
       };
 

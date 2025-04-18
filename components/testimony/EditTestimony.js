@@ -498,6 +498,8 @@ export const EditTestimony = ({
                   initialImage={beforeImage}
                   onImageSelect={setBeforeImage}
                   style={styles.imageUpload}
+                  propertyName="before"
+                  isAdmin={isAdmin}
                 />
 
                 <MediaUpload
@@ -505,6 +507,8 @@ export const EditTestimony = ({
                   initialImage={afterImage}
                   onImageSelect={setAfterImage}
                   style={styles.imageUpload}
+                  propertyName="after"
+                  isAdmin={isAdmin}
                 />
               </View>
 
@@ -514,6 +518,8 @@ export const EditTestimony = ({
                 onVideoSelect={setVideo}
                 placeholder="Share a short video of your story"
                 maxDuration={120} // 2 minutes
+                propertyName="video"
+                isAdmin={isAdmin}
               />
             </View>
 

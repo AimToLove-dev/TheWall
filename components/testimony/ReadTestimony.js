@@ -20,6 +20,9 @@ export const ReadTestimony = ({
     createDisplayName(testimony.firstName, testimony.lastName) ||
     "Anonymous";
 
+  // Check if the testimony is archived (already approved)
+  const isArchived = testimony.isArchived === true;
+
   // Helper function to render a checkbox item
   const renderCheckboxItem = (question, answer) => {
     // Three possible states: "Yes", "No", or undefined/null (not set)
@@ -117,6 +120,15 @@ export const ReadTestimony = ({
               color="#FFFFFF"
             />
             <BodyText style={styles.publishedText}>Published</BodyText>
+          </View>
+        )}
+
+        {isArchived && (
+          <View
+            style={[styles.publishedBadge, { backgroundColor: colors.warning }]}
+          >
+            <Ionicons name="archive" size={16} color="#FFFFFF" />
+            <BodyText style={styles.publishedText}>Archived</BodyText>
           </View>
         )}
       </View>

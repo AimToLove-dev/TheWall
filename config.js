@@ -160,15 +160,19 @@ const uploadMedia = async (uri, path, metadata = {}) => {
   }
 };
 
-const uploadImage = async (uri, userId) => {
-  // Generate a unique filename using timestamp
-  const filename = `images/${userId}/${Date.now().toString()}`;
+const uploadImage = async (uri, userId, propertyName, isAdmin = false) => {
+  // For admin users, append datetime to allow multiple uploads
+  const filename = isAdmin
+    ? `images/${userId}/${propertyName}_${Date.now().toString()}`
+    : `images/${userId}/${propertyName}`;
   return uploadMedia(uri, filename, { contentType: "image/jpeg" });
 };
 
-const uploadVideo = async (uri, userId) => {
-  // Generate a unique filename using timestamp
-  const filename = `videos/${userId}/${Date.now().toString()}`;
+const uploadVideo = async (uri, userId, propertyName, isAdmin = false) => {
+  // For admin users, append datetime to allow multiple uploads
+  const filename = isAdmin
+    ? `videos/${userId}/${propertyName}_${Date.now().toString()}`
+    : `videos/${userId}/${propertyName}`;
   return uploadMedia(uri, filename, { contentType: "video/mp4" });
 };
 

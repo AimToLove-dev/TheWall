@@ -37,23 +37,11 @@ export const getAllSouls = async (
       return [];
     }
 
-    // Get only allowed fields, excluding firstName and lastName
-    const safeFields = [
-      "name",
-      "id",
-      "city",
-      "state",
-      "createdAt",
-      "updatedAt",
-      "testimonyId",
-    ];
-
     const result = await queryDocuments(
       "souls",
       [],
       [[sortBy, sortDirection]],
-      100,
-      safeFields
+      100
     );
 
     return result;
@@ -76,28 +64,11 @@ export const getUserSouls = async (
   sortDirection = "desc"
 ) => {
   try {
-    // Get only allowed fields, excluding firstName and lastName
-    const safeFields = [
-      "name",
-      "firstName",
-      "id",
-      "userId",
-      "email",
-      "submitterEmail",
-      "city",
-      "state",
-      "createdAt",
-      "updatedAt",
-      "isPublic",
-      "testimonyId",
-    ];
-
     return await queryDocuments(
       "souls",
       [["userId", "==", userId]],
       [[sortBy, sortDirection]],
-      0,
-      safeFields
+      0
     );
   } catch (error) {
     console.error(`Error getting souls for user ${userId}:`, error);

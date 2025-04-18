@@ -12,6 +12,8 @@ export const MediaUpload = ({
   initialImage,
   style,
   label = "Upload Image",
+  propertyName = "image", // Default property name
+  isAdmin = false, // Admin flag
 }) => {
   const [image, setImage] = useState(initialImage);
   const [uploading, setUploading] = useState(false);
@@ -38,7 +40,13 @@ export const MediaUpload = ({
         const localUri = result.assets[0].uri;
         // Upload to Firebase Storage
         const userId = auth.currentUser ? auth.currentUser.uid : "anonymous";
-        const downloadURL = await uploadImage(localUri, userId);
+        // Pass propertyName and isAdmin flag
+        const downloadURL = await uploadImage(
+          localUri,
+          userId,
+          propertyName,
+          isAdmin
+        );
 
         // Update state with the download URL from Firebase
         setImage(downloadURL);

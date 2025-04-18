@@ -120,7 +120,14 @@ export const getAllTestimonies = async (
   sortDirection = "desc"
 ) => {
   try {
-    return await queryDocuments("testimonies", [], [[sortBy, sortDirection]]);
+    const testimonies = await queryDocuments(
+      "testimonies",
+      [],
+      [[sortBy, sortDirection]],
+      100
+    );
+    console.log("Fetched testimonies:", testimonies);
+    return testimonies;
   } catch (error) {
     console.error("Error getting all testimonies:", error);
     return [];
@@ -156,7 +163,7 @@ export const getAllTestimonySubmissions = async (
  * @param {string} sortDirection - Sort direction ('asc' or 'desc')
  * @returns {Promise<Array>} - Array of testimony submissions for the user
  */
-export const getUserTestimonies = async (
+export const getUserTestimonySubmissions = async (
   userId,
   sortBy = "submittedAt",
   sortDirection = "desc"
@@ -167,6 +174,42 @@ export const getUserTestimonies = async (
       [["userId", "==", userId]],
       [[sortBy, sortDirection]]
     );
+  } catch (error) {
+    console.error(
+      `Error getting testimony submissions for user ${userId}:`,
+      error
+    );
+    return [];
+  }
+};
+
+/**
+ * Get user's public testimony from the testimonies collection
+ * @param {string} userId - User ID
+ * @returns {Promise<Object|null>} - First testimony found for the user or null if not found
+ */
+export const getUserTestimony = async (userId) => {
+  try {
+    const results = await queryDocuments("testimonies", [
+      ["userId", "==", userId],
+    ]);
+    return results.length > 0 ? results[0] : null;
+  } catch (error) {
+    console.error(`Error getting public testimony for user ${userId}:`, error);
+    return null;
+  }
+};
+
+/**
+ * Get user's testimony submissions
+ * @param {string} userId - User ID
+ * @param {string} sortBy - Field to sort by
+ * @param {string} sortDirection - Sort direction ('asc' or 'desc')
+ * @returns {Promise<Array>} - Array of testimony submissions for the user
+ */
+export const getUserTestimonyArchive = async (userId) => {
+  try {
+    return await queryDocuments("testimonyArchive", [["userId", "==", userId]]);
   } catch (error) {
     console.error(
       `Error getting testimony submissions for user ${userId}:`,
@@ -207,7 +250,11 @@ export const getUserTestimonyById = async (userId, testimonyId = null) => {
     }
 
     // If no testimonyId is provided, get the most recent testimony for this user
-    const testimonies = await getUserTestimonies(userId, "submittedAt", "desc");
+    const testimonies = await getUserTestimonySubmissions(
+      userId,
+      "submittedAt",
+      "desc"
+    );
     return testimonies.length > 0 ? testimonies[0] : null;
   } catch (error) {
     console.error(`Error getting testimony for user ${userId}:`, error);
@@ -222,7 +269,7 @@ export const getUserTestimonyById = async (userId, testimonyId = null) => {
  */
 export const countUserTestimonies = async (userId) => {
   try {
-    const testimonies = await getUserTestimonies(userId);
+    const testimonies = await getUserTestimonySubmissions(userId);
     return testimonies.length;
   } catch (error) {
     console.error(`Error counting testimonies for user ${userId}:`, error);

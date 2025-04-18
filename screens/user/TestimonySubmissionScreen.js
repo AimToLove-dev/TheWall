@@ -22,11 +22,11 @@ import { getThemeColors, spacing } from "styles/theme";
 import {
   submitTestimony,
   canAddMoreTestimonies,
-  getUserTestimonies,
-  getUserTestimonyById,
+  getUserTestimonySubmissions,
+  getUserTestimony,
   updateTestimony,
 } from "utils/testimoniesUtils";
-import { createDisplayName } from "@utils/index";
+import { createDisplayName, getDocumentById } from "@utils/index";
 
 export const TestimonySubmissionScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -36,7 +36,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
   const [canSubmit, setCanSubmit] = useState(true);
 
   // States for existing testimonies
-  const [userTestimonies, setUserTestimonies] = useState([]);
+  const [userTestimonies, setUserTestimonySubmission] = useState([]);
   const [currentTestimony, setCurrentTestimony] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -52,28 +52,50 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
       const loadTestimonies = async () => {
         setLoadingTestimonies(true);
         try {
-          const testimonies = await getUserTestimonies(user.uid);
-          setUserTestimonies(testimonies);
-
-          // Determine the initial state based on existing testimonies
-          if (testimonies.length > 0) {
-            // Get the most recent testimony
-            const latestTestimony = testimonies[0]; // Assuming sorted by date desc
-            setCurrentTestimony(latestTestimony);
-
-            // Show testimony in view mode
-            setIsEditing(false);
-          } else {
-            // No testimonies, start with edit mode
-            setIsEditing(true);
-            setCurrentTestimony(null);
-          }
-
           // Check submission limit
           const canAdd = await canAddMoreTestimonies(user.uid, user.isAdmin);
           setCanSubmit(canAdd);
 
-          if (!canAdd && testimonies.length === 0) {
+          // 1. First check testimonySubmissions (editable/not approved)
+          const testimonySubmissions = await getUserTestimonySubmissions(
+            user.uid
+          );
+          setUserTestimonySubmission(testimonySubmissions);
+
+          // Admin users can continue to use submissions as before
+          if (isAdmin && testimonySubmissions.length > 0) {
+            const latestTestimony = testimonySubmissions[0]; // Assuming sorted by date desc
+            setCurrentTestimony(latestTestimony);
+            setIsEditing(false);
+            setLoadingTestimonies(false);
+            return;
+          }
+
+          // For regular users or if no submissions are found:
+          if (testimonySubmissions.length > 0) {
+            // User has a testimony in submissions
+            const latestTestimony = testimonySubmissions[0]; // Assuming sorted by date desc
+            setCurrentTestimony(latestTestimony);
+            setIsEditing(false);
+          } else {
+            // No testimony in submissions, check the public testimonies collection
+            const publicTestimony = await getUserTestimony(user.uid);
+
+            if (publicTestimony) {
+              // Found in public testimonies - read-only mode
+              setCurrentTestimony({
+                ...publicTestimony,
+                isPublished: true, // Flag to indicate this is published
+              });
+              setIsEditing(false);
+            } else {
+              // No testimony in either collection
+              setCurrentTestimony(null);
+              setIsEditing(true);
+            }
+          }
+
+          if (!canAdd && testimonySubmissions.length === 0) {
             Alert.alert(
               "Submission Limit Reached",
               "You have reached the maximum number of testimony submissions. Please contact support for assistance."
@@ -89,7 +111,7 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
 
       loadTestimonies();
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   const handleBackPress = () => {
     navigation.goBack();
@@ -220,13 +242,20 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
       );
     } else if (currentTestimony) {
       // Read mode - show testimony in read-only view
+      const isArchived = currentTestimony.isArchived === true;
+      const isPublished = currentTestimony.isPublished === true;
+
+      // Don't allow editing if testimony is archived or published
+      const allowEdit = !(isArchived || isPublished);
+
       return (
         <ReadTestimony
           testimony={currentTestimony}
           colors={colors}
-          onEdit={handleEdit}
+          onEdit={allowEdit ? handleEdit : null} // Disable edit button for archived or published testimonies
           status={currentTestimony.status}
           isAdmin={isAdmin}
+          isPublished={isPublished || isArchived} // Show published badge for both archived and published testimonies
         />
       );
     } else if (userTestimonies.length === 0 && canSubmit) {
