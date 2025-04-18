@@ -7,9 +7,16 @@ import {
   View,
   Dimensions,
 } from "react-native";
-import { HeaderText, BodyText, CustomButton, CaptionText } from "components";
+import {
+  HeaderText,
+  BodyText,
+  CustomButton,
+  CaptionText,
+  WobblingBell,
+} from "components";
 import { Divider } from "react-native-paper";
 import { fontSizes } from "../styles/theme";
+import { Ionicons } from "@expo/vector-icons";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -80,35 +87,17 @@ export const MainContent = ({
           {/* 4 social links in a square (2x2) */}
           <View>
             <View style={styles.socialLinksGrid}>
-              <TouchableOpacity
-                style={styles.socialButton}
-                onPress={navigateToWailingWall}
-              >
-                <Image
-                  source={require("../assets/megaphone.png")}
-                  style={styles.socialIcon}
-                />
+              <TouchableOpacity style={styles.socialButton}>
+                <Ionicons name="logo-facebook" size={30} color="black" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialButton}>
-                <Image
-                  source={require("../assets/flame.png")}
-                  style={styles.socialIcon}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.socialButton}
-                onPress={navigateToTestimonyWall}
-              >
-                <Image
-                  source={require("../assets/bell.png")}
-                  style={styles.socialIcon}
-                />
+                <Ionicons name="logo-instagram" size={30} color="black" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialButton}>
-                <Image
-                  source={require("../assets/monet.png")}
-                  style={styles.socialIcon}
-                />
+                <Ionicons name="logo-twitter" size={30} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.socialButton}>
+                <Ionicons name="logo-youtube" size={30} color="black" />
               </TouchableOpacity>
             </View>
             <Text
@@ -144,19 +133,23 @@ export const MainContent = ({
           style={styles.sideIconContainer}
           onPress={navigateToWailingWall}
         >
-          <Image
-            source={require("../assets/megaphone.png")}
+          <WobblingBell
+            imageSrc={require("../assets/megaphone.png")}
             style={styles.sideIcon}
-            resizeMode="contain"
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={0}
           />
           <Text style={styles.iconSubtitle}>Wailing Wall</Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
         <View style={styles.sideIconContainer}>
-          <Image
-            source={require("../assets/megaphone.png")}
+          <WobblingBell
+            imageSrc={require("../assets/megaphone.png")}
             style={styles.sideIcon}
-            resizeMode="contain"
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={1000}
           />
           <Text style={styles.iconSubtitle}>Give Today</Text>
         </View>
@@ -166,10 +159,12 @@ export const MainContent = ({
           style={styles.sideIconContainer}
           onPress={navigateToTestimonyWall}
         >
-          <Image
-            source={require("../assets/bell.png")}
+          <WobblingBell
+            imageSrc={require("../assets/bell.png")}
             style={styles.sideIcon}
-            resizeMode="contain"
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={2000}
           />
           <Text style={styles.iconSubtitle}>Testimony Wall</Text>
         </TouchableOpacity>
@@ -245,8 +240,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   socialButton: {
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
     padding: 10,
     width: "40%",
     aspectRatio: 1,

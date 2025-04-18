@@ -262,6 +262,17 @@ export const HomeScreen = ({ navigation }) => {
               <Text style={styles.link}>created by JJ Auer</Text>
             </CaptionText>
           </TouchableOpacity>
+          <Image
+            source={require("../assets/pillars.png")}
+            style={{
+              width: 120,
+              height: 20,
+              marginLeft: 20,
+              marginTop: "auto",
+              alignSelf: "flex-start",
+            }}
+            resizeMode="cover"
+          />
         </ScrollableScreenView>
       </ImageBackground>
     </SafeAreaView>
@@ -373,7 +384,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 15,
     fontStyle: "italic",
-    marginBottom: 20,
   },
   // Original styles
   authContainer: {

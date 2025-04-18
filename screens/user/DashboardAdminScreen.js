@@ -6,6 +6,7 @@ import {
   useColorScheme,
   useWindowDimensions,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 
@@ -22,6 +23,7 @@ import {
   BodyText,
   CustomDialog,
   FormContainer,
+  DashboardHeader,
 } from "components";
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
@@ -186,65 +188,12 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("Testimony", { reviewMode: true });
   };
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: colors.card }]}
-        onPress={handleBackPress}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.text} />
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <HeaderText style={styles.title}>Admin Dashboard</HeaderText>
-        <SubtitleText style={styles.subtitle}>
-          {greeting}, {user?.displayName || "Admin"}
-        </SubtitleText>
-      </View>
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: colors.card }]}
-        onPress={handleSignOut}
-      >
-        <Ionicons name="log-out-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
-    </View>
-  );
-
   const styles = StyleSheet.create({
     content: {
       flex: 1,
       paddingHorizontal: spacing.lg,
       paddingBottom: spacing.lg,
       paddingTop: spacing.sm,
-    },
-    header: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: spacing.md,
-    },
-    backButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 20,
-      elevation: 2,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.2,
-      shadowRadius: 1,
-    },
-    titleContainer: {
-      flex: 1,
-      alignItems: "center",
-    },
-    title: {
-      fontSize: 20,
-      fontWeight: "bold",
-    },
-    subtitle: {
-      fontSize: 14,
-      opacity: 0.7,
     },
     sectionTitle: {
       marginBottom: spacing.sm,
@@ -336,44 +285,46 @@ export const DashboardAdminScreen = ({ navigation }) => {
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {renderHeader()}
+        <DashboardHeader
+          title="Admin Dashboard"
+          subtitle={`${greeting}, ${user?.displayName || "Admin"}`}
+          onBackPress={handleBackPress}
+          onSignOutPress={handleSignOut}
+          colors={colors}
+        />
 
         {/* Admin Dashboard stats section */}
         <View style={styles.statsContainer}>
           <HeaderText style={styles.sectionTitle}>Overview</HeaderText>
           <View style={styles.statsGrid}>
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons
-                name="people-outline"
-                size={24}
-                color={colors.primary}
+            <Surface style={[styles.statCard, { backgroundColor: "#ffd2d2" }]}>
+              <Image
+                source={require("assets/megaphone.png")}
+                style={{ width: 24, height: 24 }}
+                resizeMode="contain"
               />
               <BodyText style={styles.statValue}>{totalSoulsCount}</BodyText>
               <BodyText style={styles.statLabel}>Total Souls</BodyText>
             </Surface>
 
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons
-                name="document-text-outline"
-                size={24}
-                color="#FF9800"
+            <Surface style={[styles.statCard, { backgroundColor: "#fbffd2" }]}>
+              <Image
+                source={require("assets/bell.png")}
+                style={{ width: 24, height: 24 }}
+                resizeMode="contain"
               />
               <BodyText style={styles.statValue}>
                 {testimonySubmissionsCount}
               </BodyText>
-              <BodyText style={styles.statLabel}>
-                Testimony Submissions
-              </BodyText>
+              <BodyText style={styles.statLabel}>Submissions</BodyText>
             </Surface>
 
-            <Surface
-              style={[styles.statCard, { backgroundColor: colors.surface }]}
-            >
-              <Ionicons name="documents-outline" size={24} color="#4CAF50" />
+            <Surface style={[styles.statCard, { backgroundColor: "#ddffd2" }]}>
+              <Image
+                source={require("assets/bell.png")}
+                style={{ width: 24, height: 24 }}
+                resizeMode="contain"
+              />
               <BodyText style={styles.statValue}>{testimoniesCount}</BodyText>
               <BodyText style={styles.statLabel}>Testimonies</BodyText>
             </Surface>

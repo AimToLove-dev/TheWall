@@ -24,6 +24,7 @@ import {
   CustomDialog,
   FormContainer,
   CardGrid,
+  DashboardHeader,
 } from "components";
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
@@ -144,33 +145,16 @@ export const DashboardScreen = ({ navigation }) => {
     navigation.navigate("Testimony");
   };
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: colors.card }]}
-        onPress={handleBackPress}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.text} />
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <HeaderText style={styles.title}>Dashboard</HeaderText>
-        <SubtitleText style={styles.subtitle}>
-          {greeting}, {user?.displayName || "User"}
-        </SubtitleText>
-      </View>
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: colors.card }]}
-        onPress={handleSignOut}
-      >
-        <Ionicons name="log-out-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {renderHeader()}
+        <DashboardHeader
+          title="Dashboard"
+          subtitle={`${greeting}, ${user?.displayName || "User"}`}
+          onBackPress={handleBackPress}
+          onSignOutPress={handleSignOut}
+          colors={colors}
+        />
 
         {/* Quick actions section */}
         <View style={styles.quickActionsSection}>
@@ -184,20 +168,24 @@ export const DashboardScreen = ({ navigation }) => {
             <CardGrid
               cards={[
                 {
-                  text: "Loved Ones",
+                  text: "Add\nLoved Ones",
                   onPress: handleMyWallPress,
                   icon: (
-                    <Ionicons name="people" size={28} color={colors.primary} />
+                    <Image
+                      source={require("../../assets/megaphone.png")}
+                      style={{ width: 28, height: 28 }}
+                      resizeMode="contain"
+                    />
                   ),
                 },
                 {
-                  text: "Testimony",
+                  text: "Submit\nTestimony",
                   onPress: handleTestimonyPress,
                   icon: (
-                    <MaterialCommunityIcons
-                      name="message-text"
-                      size={28}
-                      color={colors.primary}
+                    <Image
+                      source={require("../../assets/bell.png")}
+                      style={{ width: 28, height: 28 }}
+                      resizeMode="contain"
                     />
                   ),
                 },
@@ -227,36 +215,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing.lg,
     paddingTop: spacing.sm,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: spacing.md,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
   },
   sectionTitle: {
     marginBottom: spacing.sm,

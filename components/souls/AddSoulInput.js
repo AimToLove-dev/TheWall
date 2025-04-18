@@ -254,7 +254,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                 formSubmitted &&
                 (validationErrors.firstName || validationErrors.lastName)
                   ? 0
-                  : 16,
+                  : 8,
             }}
           >
             <View style={{ flex: 1 }}>
@@ -313,11 +313,21 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
               )}
             </View>
           </View>
-
+          <Text
+            style={{
+              fontSize: 12,
+              color: colors.text,
+              marginBottom: 16,
+              fontStyle: "italic",
+            }}
+          >
+            Last Names are abbreviated publicly to protect privacy
+          </Text>
           {!(
             formSubmitted &&
             (validationErrors.firstName || validationErrors.lastName)
           ) && <View style={{ height: 0 }} />}
+
           <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
             <TextInput
               label="City"

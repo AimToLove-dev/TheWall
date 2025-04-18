@@ -9,6 +9,7 @@ import { CustomDialog } from "./CustomDialog";
 import { Header } from "./Header";
 import { CardGrid } from "./CardGrid";
 import { WallButtons } from "./WallButtons";
+import { DashboardHeader } from "./DashboardHeader";
 import {
   SubtitleText,
   BodyText,
@@ -75,4 +76,5 @@ export {
   MainContent,
   WallButtons,
   WobblingBell,
+  DashboardHeader,
 };
