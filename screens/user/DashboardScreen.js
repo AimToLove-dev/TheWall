@@ -168,12 +168,12 @@ export const DashboardScreen = ({ navigation }) => {
             <CardGrid
               cards={[
                 {
-                  text: "Add\nLoved Ones",
+                  text: "Manage\nLoved Ones",
                   onPress: handleMyWallPress,
                   icon: (
                     <Image
                       source={require("../../assets/megaphone.png")}
-                      style={{ width: 28, height: 28 }}
+                      style={{ width: 28, height: 28, marginBottom: 8 }}
                       resizeMode="contain"
                     />
                   ),
@@ -184,7 +184,7 @@ export const DashboardScreen = ({ navigation }) => {
                   icon: (
                     <Image
                       source={require("../../assets/bell.png")}
-                      style={{ width: 28, height: 28 }}
+                      style={{ width: 28, height: 28, marginBottom: 8 }}
                       resizeMode="contain"
                     />
                   ),

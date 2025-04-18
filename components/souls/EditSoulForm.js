@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useContext } from "react";
-import { TextInput, Text, Divider } from "react-native-paper";
+import { TextInput, Text } from "react-native-paper";
+import { Formik } from "formik";
+import * as Yup from "yup";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
 import { CustomButton } from "components/CustomButton";
@@ -9,22 +11,19 @@ import { updateSoul, deleteSoul } from "@utils/soulsUtils";
 import { AuthenticatedUserContext } from "providers";
 import { createDisplayName } from "@utils/index";
 
+// Validation schema for the form
+const soulValidationSchema = Yup.object().shape({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  state: Yup.string().matches(/^[A-Z]{2}$/, "State code is 2 letters"),
+  city: Yup.string(),
+});
+
 export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [formData, setFormData] = useState({
-    firstName: soul?.firstName || "",
-    lastName: soul?.lastName || "",
-    state: soul?.state || "",
-    city: soul?.city || "",
-  });
-  const [validationErrors, setValidationErrors] = useState({
-    firstName: false,
-    lastName: false,
-  });
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const colors = getThemeColors();
 
@@ -36,68 +35,22 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
     }, 5000); // Clear after 5 seconds
   };
 
-  const handleInputChange = (field, value) => {
-    // Clear any success/error messages when user starts typing again
-    if (successMessage || error) {
-      setSuccessMessage("");
-      setError("");
-    }
-
-    setFormData({
-      ...formData,
-      [field]: value,
-    });
-
-    // Clear validation errors when user types
-    if (validationErrors[field]) {
-      setValidationErrors({
-        ...validationErrors,
-        [field]: false,
-      });
-    }
-  };
-
-  const validateForm = () => {
-    const errors = {};
-
-    // Required fields validation
-    if (!formData.firstName.trim()) {
-      errors.firstName = true;
-    }
-
-    if (!formData.lastName.trim()) {
-      errors.lastName = true;
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleSubmit = async () => {
-    setFormSubmitted(true);
-
-    if (!validateForm()) {
-      return;
-    }
-
+  const handleSubmit = async (values) => {
     // Clear both messages before starting submission
     setLoading(true);
     setError("");
     setSuccessMessage("");
 
     try {
-      const displayName = createDisplayName(
-        formData.firstName,
-        formData.lastName
-      );
+      const displayName = createDisplayName(values.firstName, values.lastName);
 
       // Update the soul with the new data
       const soulData = {
         name: displayName,
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        city: formData.city || "",
-        state: formData.state || "",
+        firstName: values.firstName.trim(),
+        lastName: values.lastName.trim(),
+        city: values.city || "",
+        state: values.state || "",
         updatedAt: new Date().toISOString(),
       };
 
@@ -152,157 +105,216 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
     }
   };
 
-  // Helper function to get input outline color
-  const getOutlineColor = (fieldName) => {
-    return formSubmitted && validationErrors[fieldName]
-      ? colors.error
-      : undefined;
-  };
-
   return (
     <View style={{ width: "100%" }}>
-      <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-        Edit Soul Information
-      </Text>
-
-      <View
-        style={{
-          flexDirection: "row",
-          gap: 8,
-          marginBottom:
-            formSubmitted &&
-            (validationErrors.firstName || validationErrors.lastName)
-              ? 0
-              : 8,
+      <Formik
+        initialValues={{
+          firstName: soul?.firstName || "",
+          lastName: soul?.lastName || "",
+          state: soul?.state || "",
+          city: soul?.city || "",
         }}
+        validationSchema={soulValidationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize={true}
       >
-        <View style={{ flex: 1 }}>
-          <TextInput
-            label="First Name*"
-            value={formData.firstName}
-            onChangeText={(text) => handleInputChange("firstName", text)}
-            mode="outlined"
-            left={<TextInput.Icon icon="account" />}
-            outlineColor={getOutlineColor("firstName")}
-            outlineStyle={
-              formSubmitted && validationErrors.firstName
-                ? { borderWidth: 2 }
-                : undefined
-            }
-            error={formSubmitted && validationErrors.firstName}
-          />
-          {formSubmitted && validationErrors.firstName && (
-            <Text
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <>
+            <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+              Edit Soul Information
+            </Text>
+
+            <View
               style={{
-                color: colors.error,
-                fontSize: 12,
-                marginBottom: 12,
+                flexDirection: "row",
+                gap: 8,
+                marginBottom:
+                  (touched.firstName && errors.firstName) ||
+                  (touched.lastName && errors.lastName)
+                    ? 0
+                    : 8,
               }}
             >
-              Required
-            </Text>
-          )}
-        </View>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="First Name*"
+                  value={values.firstName}
+                  onChangeText={handleChange("firstName")}
+                  onBlur={handleBlur("firstName")}
+                  mode="outlined"
+                  left={<TextInput.Icon icon="account" />}
+                  error={touched.firstName && errors.firstName}
+                />
+                {touched.firstName && errors.firstName && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.firstName}
+                  </Text>
+                )}
+              </View>
 
-        <View style={{ flex: 1 }}>
-          <TextInput
-            label="Last Name*"
-            value={formData.lastName}
-            onChangeText={(text) => handleInputChange("lastName", text)}
-            mode="outlined"
-            left={<TextInput.Icon icon="account" forceTextInputFocus={false} />}
-            outlineColor={getOutlineColor("lastName")}
-            outlineStyle={
-              formSubmitted && validationErrors.lastName
-                ? { borderWidth: 2 }
-                : undefined
-            }
-            error={formSubmitted && validationErrors.lastName}
-          />
-          {formSubmitted && validationErrors.lastName && (
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="Last Name*"
+                  value={values.lastName}
+                  onChangeText={handleChange("lastName")}
+                  onBlur={handleBlur("lastName")}
+                  mode="outlined"
+                  left={
+                    <TextInput.Icon
+                      icon="account"
+                      forceTextInputFocus={false}
+                    />
+                  }
+                  error={touched.lastName && errors.lastName}
+                />
+                {touched.lastName && errors.lastName && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.lastName}
+                  </Text>
+                )}
+              </View>
+            </View>
             <Text
               style={{
-                color: colors.error,
                 fontSize: 12,
-                marginBottom: 12,
+                color: colors.text,
+                marginBottom: 16,
+                fontStyle: "italic",
               }}
             >
-              Required
+              Last Names are abbreviated publicly to protect privacy
             </Text>
-          )}
-        </View>
-      </View>
-      <Text
-        style={{
-          fontSize: 12,
-          color: colors.text,
-          marginBottom: 16,
-          fontStyle: "italic",
-        }}
-      >
-        Last Names are abbreviated publicly to protect privacy
-      </Text>
 
-      <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-        <TextInput
-          label="City"
-          value={formData.city}
-          onChangeText={(text) => handleInputChange("city", text)}
-          mode="outlined"
-          left={<TextInput.Icon icon="city" forceTextInputFocus={false} />}
-          style={{ flex: 1 }}
-        />
-        <TextInput
-          label="State"
-          value={formData.state}
-          onChangeText={(text) => handleInputChange("state", text)}
-          mode="outlined"
-          left={
-            <TextInput.Icon icon="map-marker" forceTextInputFocus={false} />
-          }
-          style={{ flex: 1 }}
-        />
-      </View>
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="City"
+                  value={values.city}
+                  onChangeText={handleChange("city")}
+                  onBlur={handleBlur("city")}
+                  mode="outlined"
+                  left={
+                    <TextInput.Icon icon="city" forceTextInputFocus={false} />
+                  }
+                  style={{ flex: 1 }}
+                />
+                {touched.city && errors.city && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.city}
+                  </Text>
+                )}
+              </View>
 
-      <Text
-        style={{
-          fontSize: 12,
-          color: colors.text,
-          marginBottom: 16,
-          fontStyle: "italic",
-        }}
-      >
-        Adding location information allows this tribute to appear on local walls
-      </Text>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="State"
+                  value={values.state}
+                  onChangeText={(text) => {
+                    handleChange("state")(text.toUpperCase());
+                  }}
+                  onBlur={handleBlur("state")}
+                  mode="outlined"
+                  placeholder="CA"
+                  placeholderTextColor={colors.placeholderText}
+                  error={touched.state && errors.state}
+                  left={
+                    <TextInput.Icon
+                      icon="map-marker"
+                      forceTextInputFocus={false}
+                    />
+                  }
+                  style={{ flex: 1 }}
+                />
+                {touched.state && errors.state && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.state}
+                  </Text>
+                )}
+              </View>
+            </View>
 
-      {error ? (
-        <Text style={{ color: colors.error, marginBottom: 16 }}>{error}</Text>
-      ) : null}
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.text,
+                marginBottom: 16,
+                fontStyle: "italic",
+              }}
+            >
+              Adding location information allows this tribute to appear on local
+              walls
+            </Text>
 
-      {successMessage ? (
-        <Text style={{ color: colors.success, marginBottom: 16 }}>
-          {successMessage}
-        </Text>
-      ) : null}
+            {error ? (
+              <Text style={{ color: colors.error, marginBottom: 16 }}>
+                {error}
+              </Text>
+            ) : null}
 
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <CustomButton
-          title="Delete"
-          variant="error"
-          onPress={handleDelete}
-          style={{ flex: 1, marginRight: 8, backgroundColor: colors.error }}
-          loading={loading && formData.deleting}
-          disabled={loading}
-        />
-        <CustomButton
-          title="Update"
-          variant="primary"
-          onPress={handleSubmit}
-          loading={loading && !formData.deleting}
-          disabled={loading}
-          style={{ flex: 1 }}
-        />
-      </View>
+            {successMessage ? (
+              <Text style={{ color: colors.success, marginBottom: 16 }}>
+                {successMessage}
+              </Text>
+            ) : null}
+
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <CustomButton
+                title="Delete"
+                variant="error"
+                onPress={handleDelete}
+                style={{
+                  flex: 1,
+                  marginRight: 8,
+                  backgroundColor: colors.error,
+                }}
+                loading={loading && values.deleting}
+                disabled={loading}
+              />
+              <CustomButton
+                title="Update"
+                variant="primary"
+                onPress={handleSubmit}
+                loading={loading && !values.deleting}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </>
+        )}
+      </Formik>
     </View>
   );
 };

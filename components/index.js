@@ -29,8 +29,8 @@ import { WobblingBell } from "./animations/WobblingBell";
 import { DatabaseErrorScreen } from "./error/DatabaseErrorScreen";
 import { ErrorBoundary } from "./error/ErrorBoundary";
 import { ErrorScreen } from "./error/ErrorScreen";
-import { AddSoulForm } from "./souls/AddSoulInput";
-import { EditSoul } from "./souls/EditSoul";
+import { AddSoulForm } from "./souls/AddSoulForm";
+import { EditSoulForm } from "./souls/EditSoulForm";
 import { SoulsList } from "./souls/SoulsList";
 import { CustomInput } from "./inputs/CustomInput";
 import { MediaUpload } from "./inputs/MediaUpload";
@@ -64,7 +64,7 @@ export {
   ErrorBoundary,
   ErrorScreen,
   AddSoulForm,
-  EditSoul,
+  EditSoulForm,
   SoulsList,
   CustomInput,
   MediaUpload,

@@ -18,8 +18,8 @@ import {
   DatabaseErrorScreen,
   SubtitleText,
   BodyText,
-  HeaderText,
   BottomSheet,
+  DashboardHeader,
 } from "components";
 import { AddSoulForm } from "components/souls"; // Import the AddSoulForm
 import { EditSoulForm } from "components/souls/EditSoulForm"; // Import the EditSoulForm
@@ -79,6 +79,19 @@ export const MyWallScreen = ({ navigation }) => {
     closeBottomSheet();
   };
 
+  // Handle back navigation
+  const handleBackPress = () => {
+    navigation.goBack();
+  };
+
+  // Handle sign out
+  const handleSignOut = () => {
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Home" }],
+    });
+  };
+
   useEffect(() => {
     if (user) {
       fetchUserSouls();
@@ -108,7 +121,6 @@ export const MyWallScreen = ({ navigation }) => {
   // Function to navigate to a linked testimony
   const viewLinkedTestimony = async (testimonyId) => {
     try {
-      // Navigate to the testimony view screen
       navigation.navigate("Testimony", {
         testimonyId: testimonyId,
         viewOnly: true,
@@ -121,10 +133,8 @@ export const MyWallScreen = ({ navigation }) => {
   // Handle badge click - either view testimony or open edit form
   const handleBadgeClick = (soul) => {
     if (soul.testimonyId) {
-      // If soul has a linked testimony, navigate to view it
       viewLinkedTestimony(soul.testimonyId);
     } else {
-      // If soul doesn't have a linked testimony, open edit form
       openEditSoulBottomSheet(soul);
     }
   };
@@ -132,18 +142,12 @@ export const MyWallScreen = ({ navigation }) => {
   const renderSoulBadge = (soul) => {
     const isLinked = !!soul.testimonyId;
 
-    // Different styling for linked souls
     const badgeStyle = {
-      backgroundColor: isLinked
-        ? colors.primary + "15" // Lighter background for linked souls
-        : colors.card,
-      borderColor: isLinked
-        ? colors.primary // Primary color border for linked souls
-        : colors.border,
+      backgroundColor: isLinked ? colors.primary + "15" : colors.card,
+      borderColor: isLinked ? colors.primary : colors.border,
     };
 
-    // Calculate a width based on the soul name (approximately 10px per character with some padding)
-    const nameWidth = soul.name.length * 10 + 50; // 50px for padding and icons
+    const nameWidth = soul.name.length * 10 + 50;
     const minBadgeWidth = Math.max(120, nameWidth);
 
     return (
@@ -152,12 +156,10 @@ export const MyWallScreen = ({ navigation }) => {
           style={[
             styles.soulBadge,
             badgeStyle,
-            // Preserve width based on text content
             {
               width: minBadgeWidth,
               minWidth: minBadgeWidth,
             },
-            // Special style for linked souls
             isLinked && styles.linkedSoulBadge,
           ]}
           onPress={() => handleBadgeClick(soul)}
@@ -184,7 +186,6 @@ export const MyWallScreen = ({ navigation }) => {
   };
 
   const renderAddBadge = () => {
-    // Regular add badge button
     return (
       <TouchableOpacity
         style={[
@@ -196,13 +197,12 @@ export const MyWallScreen = ({ navigation }) => {
       >
         <Ionicons name="add" size={20} color={colors.primary} />
         <BodyText style={[styles.soulName, { color: colors.primary }]}>
-          Add Soul
+          Add a name
         </BodyText>
       </TouchableOpacity>
     );
   };
 
-  // If there's an error, show the database error screen
   if (error) {
     return (
       <DatabaseErrorScreen
@@ -216,17 +216,17 @@ export const MyWallScreen = ({ navigation }) => {
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {/* Wall header */}
-        <View style={styles.titleContainer}>
-          <HeaderText style={styles.title}>My Wall</HeaderText>
-          <SubtitleText style={styles.subtitle}>
-            Manage your loved ones
-          </SubtitleText>
-        </View>
+        <DashboardHeader
+          title="My Names"
+          subtitle="Manage your loved ones"
+          onBackPress={handleBackPress}
+          onSignOutPress={handleSignOut}
+          colors={colors}
+        />
 
         <View style={styles.infoContainer}>
           <BodyText style={[styles.infoText, { color: colors.textSecondary }]}>
-            Tap on a soul badge to view or edit.
+            Tap on a name to edit or create a new name to share publicly.
           </BodyText>
         </View>
 
@@ -237,7 +237,6 @@ export const MyWallScreen = ({ navigation }) => {
           </View>
         </ScrollView>
 
-        {/* Bottom Sheet with AddSoulForm or EditSoulForm */}
         <BottomSheet
           isVisible={isBottomSheetVisible}
           onClose={closeBottomSheet}
@@ -307,17 +306,6 @@ const styles = StyleSheet.create({
   },
   testimonyIcon: {
     marginLeft: spacing.xs,
-  },
-  titleContainer: {
-    marginLeft: spacing.md,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "gray",
   },
   bottomSheetContent: {
     padding: spacing.md,

@@ -1,6 +1,5 @@
-import { AddSoulForm } from "./AddSoulInput";
-
-import { EditSoul } from "./EditSoul";
+import { AddSoulForm } from "./AddSoulForm";
+import { EditSoulForm } from "./EditSoulForm";
 import { SoulsList } from "./SoulsList";
 
-export { AddSoulForm, EditSoul, SoulsList };
+export { AddSoulForm, EditSoulForm, SoulsList };

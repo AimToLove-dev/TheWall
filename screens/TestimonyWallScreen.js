@@ -17,7 +17,6 @@ import {
   WallButtons,
 } from "components";
 import { getAllTestimonies } from "utils/testimoniesUtils";
-import { AddSoulInput as AddSoulForm } from "components/souls";
 import { useNavigation } from "@react-navigation/native";
 
 export const TestimonyWallScreen = () => {
