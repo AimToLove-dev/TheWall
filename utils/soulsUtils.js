@@ -40,6 +40,7 @@ export const getAllSouls = async (
     // Get only allowed fields, excluding firstName and lastName
     const safeFields = [
       "name",
+      "firstName",
       "id",
       "userId",
       "email",
@@ -83,6 +84,7 @@ export const getUserSouls = async (
     // Get only allowed fields, excluding firstName and lastName
     const safeFields = [
       "name",
+      "firstName",
       "id",
       "userId",
       "email",
@@ -270,42 +272,16 @@ export const linkTestimonyToSoul = async (soulId, testimonyId) => {
 };
 
 /**
- * Check if user can add more souls
- * @param {string} userId - User ID
- * @param {boolean} isAdmin - Whether the user is an admin
- * @param {number} maxSouls - Maximum number of souls allowed
- * @returns {Promise<boolean>} - Whether the user can add more souls
- */
-export const canAddMoreSouls = async (
-  userId,
-  isAdmin = false,
-  maxSouls = 7
-) => {
-  try {
-    if (isAdmin) return true;
-
-    const count = await countUserSouls(userId);
-    return count < maxSouls;
-  } catch (error) {
-    console.error(
-      `Error checking if user ${userId} can add more souls:`,
-      error
-    );
-    // Default to true to prevent blocking users from adding souls
-    return true;
-  }
-};
-
-/**
  * Find souls matching the given name
  * @param {string} fullName - Full name to match
  * @returns {Promise<Array>} - Array of matching souls
  */
 export const findMatchingSouls = async (fullName) => {
   try {
-    // Define safe fields to retrieve (excluding firstName and lastName)
+    // Define safe fields to retrieve (excluding lastName)
     const safeFields = [
       "name",
+      "firstName",
       "id",
       "userId",
       "email",

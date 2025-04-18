@@ -86,7 +86,7 @@ export const WallButtons = ({
 
 const styles = StyleSheet.create({
   plusButton: {
-    position: "absolute",
+    position: "fixed",
     right: 30,
     bottom: 30,
     width: 60,

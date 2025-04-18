@@ -214,7 +214,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                   handleInputChange("submitterEmail", text)
                 }
                 mode="outlined"
-                left={<TextInput.Icon icon="email" />}
+                left={
+                  <TextInput.Icon icon="email" forceTextInputFocus={false} />
+                }
                 style={{ marginBottom: 16 }}
                 keyboardType="email-address"
                 outlineColor={getOutlineColor("submitterEmail")}
@@ -334,7 +336,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
               value={formData.city}
               onChangeText={(text) => handleInputChange("city", text)}
               mode="outlined"
-              left={<TextInput.Icon icon="city" />}
+              left={<TextInput.Icon icon="city" forceTextInputFocus={false} />}
               style={{ flex: 1 }}
             />
             <TextInput
@@ -342,7 +344,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
               value={formData.state}
               onChangeText={(text) => handleInputChange("state", text)}
               mode="outlined"
-              left={<TextInput.Icon icon="map-marker" />}
+              left={
+                <TextInput.Icon icon="map-marker" forceTextInputFocus={false} />
+              }
               style={{ flex: 1 }}
             />
           </View>

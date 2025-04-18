@@ -6,29 +6,23 @@ import {
   useColorScheme,
   TouchableOpacity,
   ScrollView,
-  TextInput,
 } from "react-native";
 import { LinearTransition, FadeOut } from "react-native-reanimated";
 import { Animated } from "react-native";
 
 import { AuthenticatedUserContext } from "providers";
-import {
-  getUserSouls,
-  updateSoul,
-  deleteSoul,
-  canAddMoreSouls,
-  addSoul,
-  getTestimonyById,
-} from "utils";
+import { getUserSouls, deleteSoul, getTestimonyById } from "utils";
 import {
   View,
   FormContainer,
   DatabaseErrorScreen,
   SubtitleText,
   BodyText,
-  CustomButton,
   HeaderText,
+  BottomSheet,
 } from "components";
+import { AddSoulForm } from "components/souls"; // Import the AddSoulForm
+import { EditSoulForm } from "components/souls/EditSoulForm"; // Import the EditSoulForm
 
 import { Ionicons } from "@expo/vector-icons";
 import { getThemeColors, spacing } from "styles/theme";
@@ -42,23 +36,52 @@ export const MyWallScreen = ({ navigation }) => {
   const [souls, setSouls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSouls, setSelectedSouls] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [canAddMore, setCanAddMore] = useState(false);
+
+  // Bottom sheet state
+  const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+  const [soulToEdit, setSoulToEdit] = useState(null);
 
   // Count for non-linked souls (toward max limit)
   const [unlinkedSoulCount, setUnlinkedSoulCount] = useState(0);
 
-  // New states for the Add Soul form
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [addError, setAddError] = useState(null);
+  // Toggle bottom sheet visibility for adding a new soul
+  const toggleAddBottomSheet = () => {
+    setSoulToEdit(null);
+    setIsBottomSheetVisible(!isBottomSheetVisible);
+  };
+
+  // Open bottom sheet for editing a soul
+  const openEditSoulBottomSheet = (soul) => {
+    setSoulToEdit(soul);
+    setIsBottomSheetVisible(true);
+  };
+
+  // Close bottom sheet
+  const closeBottomSheet = () => {
+    setIsBottomSheetVisible(false);
+  };
+
+  // Handle successful soul addition
+  const handleSoulAdded = (newSoul) => {
+    setSouls([...souls, newSoul]);
+    closeBottomSheet();
+  };
+
+  // Handle successful soul edit
+  const handleSoulEdited = (updatedSoul) => {
+    setSouls(souls.map((s) => (s.id === updatedSoul.id ? updatedSoul : s)));
+    closeBottomSheet();
+  };
+
+  // Handle soul deletion from edit form
+  const handleSoulDeleted = (soulId) => {
+    setSouls(souls.filter((s) => s.id !== soulId));
+    closeBottomSheet();
+  };
 
   useEffect(() => {
     if (user) {
       fetchUserSouls();
-      checkCanAddMore();
     }
   }, [user]);
 
@@ -82,15 +105,6 @@ export const MyWallScreen = ({ navigation }) => {
     }
   };
 
-  const checkCanAddMore = async () => {
-    try {
-      const result = await canAddMoreSouls(user.uid, user.isAdmin);
-      setCanAddMore(result);
-    } catch (error) {
-      console.error("Error checking if user can add more souls:", error);
-    }
-  };
-
   // Function to navigate to a linked testimony
   const viewLinkedTestimony = async (testimonyId) => {
     try {
@@ -104,98 +118,27 @@ export const MyWallScreen = ({ navigation }) => {
     }
   };
 
-  const handleAddSoulSubmit = async () => {
-    if (!firstName.trim() || !lastName.trim() || isSubmitting) return;
-
-    try {
-      setIsSubmitting(true);
-      setAddError(null);
-
-      const fullName = `${firstName.trim()} ${lastName.trim()}`;
-
-      const soulData = {
-        name: fullName,
-        userId: user.uid,
-        createdAt: new Date().toISOString(),
-        status: "active",
-        isPublic: false,
-      };
-
-      const soulId = await addSoul(soulData);
-
-      // Add the ID to the data and update the local state
-      const newSoul = { ...soulData, id: soulId };
-      setSouls([...souls, newSoul]);
-
-      // Reset form
-      setFirstName("");
-      setLastName("");
-      setShowAddForm(false);
-
-      // Check if user can add more souls after this addition
-      checkCanAddMore();
-    } catch (error) {
-      console.error("Error adding soul:", error);
-      setAddError("Failed to add soul. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleAddSoulSuccess = (newSoul) => {
-    setSouls([...souls, newSoul]);
-    setShowAddForm(false);
-    checkCanAddMore();
-  };
-
-  const toggleSoulSelection = (soul) => {
-    // Don't allow toggling for souls with linked testimonies
+  // Handle badge click - either view testimony or open edit form
+  const handleBadgeClick = (soul) => {
     if (soul.testimonyId) {
-      // Instead of toggling selection, go directly to view the testimony
+      // If soul has a linked testimony, navigate to view it
       viewLinkedTestimony(soul.testimonyId);
-      return;
-    }
-
-    if (selectedSouls.some((s) => s.id === soul.id)) {
-      setSelectedSouls(selectedSouls.filter((s) => s.id !== soul.id));
     } else {
-      setSelectedSouls([...selectedSouls, soul]);
-    }
-  };
-
-  const handleSingleSoulDelete = async (soul) => {
-    // Don't allow deletion of souls with linked testimonies
-    if (soul.testimonyId) return;
-
-    try {
-      await deleteSoul(soul.id);
-
-      // Update local state
-      setSouls(souls.filter((s) => s.id !== soul.id));
-
-      // Remove from selected if it was selected
-      setSelectedSouls(selectedSouls.filter((s) => s.id !== soul.id));
-      checkCanAddMore();
-    } catch (error) {
-      console.error("Error deleting soul:", error);
+      // If soul doesn't have a linked testimony, open edit form
+      openEditSoulBottomSheet(soul);
     }
   };
 
   const renderSoulBadge = (soul) => {
-    const isSelected = selectedSouls.some((s) => s.id === soul.id);
     const isLinked = !!soul.testimonyId;
 
     // Different styling for linked souls
     const badgeStyle = {
       backgroundColor: isLinked
         ? colors.primary + "15" // Lighter background for linked souls
-        : isSelected
-        ? colors.primary + "30"
         : colors.card,
       borderColor: isLinked
         ? colors.primary // Primary color border for linked souls
-        : isSelected
-        ? colors.primary
         : colors.border,
     };
 
@@ -217,150 +160,30 @@ export const MyWallScreen = ({ navigation }) => {
             // Special style for linked souls
             isLinked && styles.linkedSoulBadge,
           ]}
-          onPress={() => toggleSoulSelection(soul)}
+          onPress={() => handleBadgeClick(soul)}
         >
-          {isSelected ? (
-            // Show action buttons when selected
-            <View style={styles.actionIcons}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() =>
-                  setSelectedSouls(
-                    selectedSouls.filter((s) => s.id !== soul.id)
-                  )
-                }
-              >
-                <Ionicons name="close" size={18} color={colors.surface} />
-              </TouchableOpacity>
+          <View style={styles.badgeContent}>
+            <BodyText
+              style={[styles.soulName, isLinked && { color: colors.surface }]}
+            >
+              {soul.name}
+            </BodyText>
 
-              {/* Only show delete option for souls without linked testimonies */}
-              {!isLinked && (
-                <TouchableOpacity
-                  style={[
-                    styles.actionIconButton,
-                    { backgroundColor: colors.card },
-                  ]}
-                  onPress={() => handleSingleSoulDelete(soul)}
-                >
-                  <Ionicons
-                    name="trash-outline"
-                    size={18}
-                    color={colors.error}
-                  />
-                </TouchableOpacity>
-              )}
-
-              {/* Show testimony icon for linked souls */}
-              {isLinked && (
-                <TouchableOpacity
-                  style={[
-                    styles.actionIconButton,
-                    { backgroundColor: colors.card },
-                  ]}
-                  onPress={() => viewLinkedTestimony(soul.testimonyId)}
-                >
-                  <Ionicons name="heart" size={18} color={colors.surface} />
-                </TouchableOpacity>
-              )}
-            </View>
-          ) : (
-            // Show name when not selected with a heart icon for linked souls
-            <View style={styles.badgeContent}>
-              <BodyText
-                style={[styles.soulName, isLinked && { color: colors.surface }]}
-              >
-                {soul.name}
-              </BodyText>
-
-              {isLinked && (
-                <TouchableOpacity
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    viewLinkedTestimony(soul.testimonyId);
-                  }}
-                >
-                  <Ionicons
-                    name="heart"
-                    size={16}
-                    color={colors.surface}
-                    style={styles.testimonyIcon}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-          )}
+            {isLinked && (
+              <Ionicons
+                name="heart"
+                size={16}
+                color={colors.surface}
+                style={styles.testimonyIcon}
+              />
+            )}
+          </View>
         </TouchableOpacity>
       </Animated.View>
     );
   };
 
   const renderAddBadge = () => {
-    if (!canAddMore && souls.length >= 7) return null;
-
-    if (showAddForm) {
-      // Check if both inputs have at least 3 characters
-      const isFormValid =
-        firstName.trim().length >= 3 && lastName.trim().length >= 3;
-
-      // Simple single-line badge-like form
-      return (
-        <View
-          style={[
-            styles.soulBadge,
-            styles.addBadge,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.primary,
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: spacing.xs,
-              paddingHorizontal: spacing.sm,
-            },
-          ]}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              setShowAddForm(false);
-              setFirstName("");
-              setLastName("");
-              setAddError(null);
-            }}
-            style={{ marginRight: spacing.xs }}
-          >
-            <Ionicons name="close-circle" size={18} color={colors.error} />
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.inlineBadgeInput}
-            placeholder="First"
-            value={firstName}
-            onChangeText={setFirstName}
-            autoFocus={true}
-            placeholderTextColor={colors.textSecondary}
-          />
-
-          <TextInput
-            style={styles.inlineBadgeInput}
-            placeholder="Last"
-            value={lastName}
-            onChangeText={setLastName}
-            placeholderTextColor={colors.textSecondary}
-          />
-
-          <TouchableOpacity
-            onPress={handleAddSoulSubmit}
-            disabled={!isFormValid || isSubmitting}
-          >
-            <Ionicons
-              name="checkmark-circle"
-              size={18}
-              color={isFormValid ? colors.primary : colors.disabled}
-            />
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
     // Regular add badge button
     return (
       <TouchableOpacity
@@ -369,7 +192,7 @@ export const MyWallScreen = ({ navigation }) => {
           styles.addBadge,
           { borderColor: colors.primary },
         ]}
-        onPress={() => setShowAddForm(true)}
+        onPress={toggleAddBottomSheet}
       >
         <Ionicons name="add" size={20} color={colors.primary} />
         <BodyText style={[styles.soulName, { color: colors.primary }]}>
@@ -390,31 +213,20 @@ export const MyWallScreen = ({ navigation }) => {
     );
   }
 
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: colors.card }]}
-        onPress={() => navigation.navigate("Dashboard")}
-      >
-        <Ionicons name="arrow-back" size={24} color={colors.text} />
-      </TouchableOpacity>
-      <View style={styles.titleContainer}>
-        <HeaderText style={styles.title}>My Wall</HeaderText>
-        <SubtitleText style={styles.subtitle}>
-          Manage your loved ones
-        </SubtitleText>
-      </View>
-    </View>
-  );
-
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
       <View style={styles.content}>
-        {renderHeader()}
+        {/* Wall header */}
+        <View style={styles.titleContainer}>
+          <HeaderText style={styles.title}>My Wall</HeaderText>
+          <SubtitleText style={styles.subtitle}>
+            Manage your loved ones
+          </SubtitleText>
+        </View>
 
         <View style={styles.infoContainer}>
           <BodyText style={[styles.infoText, { color: colors.textSecondary }]}>
-            Tap on a soul to see options.
+            Tap on a soul badge to view or edit.
           </BodyText>
         </View>
 
@@ -424,6 +236,28 @@ export const MyWallScreen = ({ navigation }) => {
             {renderAddBadge()}
           </View>
         </ScrollView>
+
+        {/* Bottom Sheet with AddSoulForm or EditSoulForm */}
+        <BottomSheet
+          isVisible={isBottomSheetVisible}
+          onClose={closeBottomSheet}
+        >
+          <View style={styles.bottomSheetContent}>
+            {!soulToEdit ? (
+              <AddSoulForm
+                onSuccess={handleSoulAdded}
+                onCancel={closeBottomSheet}
+              />
+            ) : (
+              <EditSoulForm
+                soul={soulToEdit}
+                onSuccess={handleSoulEdited}
+                onCancel={closeBottomSheet}
+                onDelete={handleSoulDeleted}
+              />
+            )}
+          </View>
+        </BottomSheet>
       </View>
     </FormContainer>
   );
@@ -439,11 +273,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     marginTop: spacing.xs,
-  },
-  addFormContainer: {
-    marginBottom: spacing.md,
-    padding: spacing.md,
-    backgroundColor: "#f5f5f5",
   },
   badgesContainer: {
     flexDirection: "row",
@@ -469,120 +298,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginHorizontal: spacing.xs,
   },
-  checkmark: {
-    width: 16,
-    height: 16,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  actionBar: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(0,0,0,0.1)",
-  },
-  actionButton: {
-    flex: 1,
-    marginHorizontal: spacing.xs,
-  },
-  addSoulForm: {
-    padding: spacing.md,
-    backgroundColor: "#f5f5f5",
-    marginBottom: spacing.md,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-    borderStyle: "dashed",
-  },
-  inputRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing.sm,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginRight: spacing.sm,
-    fontSize: 16,
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: spacing.xs,
-  },
-  formButton: {
-    marginLeft: spacing.sm,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: spacing.sm,
-  },
-  addSoulFormBadge: {
-    flexDirection: "column",
-    alignItems: "stretch",
-    padding: spacing.md,
-    borderWidth: 1,
-    marginRight: spacing.sm,
-    marginBottom: spacing.sm,
-    minWidth: 100,
-  },
-  simpleInput: {
-    flex: 1,
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginRight: spacing.sm,
-    fontSize: 14,
-  },
-  badgeButtonRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: spacing.sm,
-  },
-  badgeButton: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  badgeIconsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: spacing.sm,
-  },
-  inlineBadgeInput: {
-    flex: 1,
-    fontSize: 14,
-    padding: 2,
-    marginHorizontal: 4,
-    minWidth: 50,
-    maxWidth: 80,
-  },
-  actionIcons: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  actionIcon: {
-    marginHorizontal: spacing.xs,
-  },
-  actionIconButton: {
-    width: 32,
-    height: 32,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: spacing.xs,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  closeButton: {
-    marginHorizontal: spacing.xs,
-  },
   linkedSoulBadge: {
     borderStyle: "solid",
   },
@@ -592,40 +307,6 @@ const styles = StyleSheet.create({
   },
   testimonyIcon: {
     marginLeft: spacing.xs,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.md,
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: spacing.md,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
   },
   titleContainer: {
     marginLeft: spacing.md,
@@ -637,5 +318,8 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: "gray",
+  },
+  bottomSheetContent: {
+    padding: spacing.md,
   },
 });
