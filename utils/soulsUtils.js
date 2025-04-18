@@ -40,16 +40,11 @@ export const getAllSouls = async (
     // Get only allowed fields, excluding firstName and lastName
     const safeFields = [
       "name",
-      "firstName",
       "id",
-      "userId",
-      "email",
-      "submitterEmail",
       "city",
       "state",
       "createdAt",
       "updatedAt",
-      "isPublic",
       "testimonyId",
     ];
 

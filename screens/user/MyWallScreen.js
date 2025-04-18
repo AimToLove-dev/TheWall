@@ -226,7 +226,7 @@ export const MyWallScreen = ({ navigation }) => {
 
         <View style={styles.infoContainer}>
           <BodyText style={[styles.infoText, { color: colors.textSecondary }]}>
-            Tap on a name to edit or create a new name to share publicly.
+            Tap on a name to edit or add a new name to share publicly.
           </BodyText>
         </View>
 

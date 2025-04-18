@@ -71,7 +71,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           city: values.city || "",
           state: values.state || "",
           createdAt: new Date().toISOString(),
-          isPublic: false,
         };
 
         soulId = await addSoul(soulData);
@@ -89,7 +88,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           city: values.city || "",
           state: values.state || "",
           createdAt: new Date().toISOString(),
-          isPublic: false,
           testimonyId: null, // Add this to match the addSoul function's expectations
         };
 
