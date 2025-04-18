@@ -33,6 +33,7 @@ import {
   deleteDocument,
   getDocumentById,
 } from "utils/firebaseUtils";
+import { addSoul } from "utils";
 
 export const TestimonyReviewScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
@@ -154,11 +155,26 @@ export const TestimonyReviewScreen = ({ navigation }) => {
       }
 
       // Add to testimonies collection
-      await addDocument("testimonies", {
+      const testimonyId = await addDocument("testimonies", {
         ...submission,
         reviewedAt: new Date().toISOString(),
         reviewedBy: user.uid,
       });
+
+      // Create a soul with the testimony ID
+      const soulData = {
+        name: submission.displayName || "Anonymous",
+        userId: submission.userId || null,
+        email: submission.email || null,
+        submitterEmail: submission.email || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isPublic: true,
+        testimonyId: testimonyId,
+      };
+
+      // Add the soul to the wall
+      await addSoul(soulData);
 
       // Remove from testimonySubmissions collection
       await deleteDocument("testimonySubmissions", submission.id);

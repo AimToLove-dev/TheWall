@@ -15,7 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { BottomSheet, VerticalMarquee, WallButtons } from "components";
 import { AddSoulForm } from "components";
-import { getAllSouls } from "../utils/soulsUtils";
+import { getAllSouls } from "utils";
 
 // Names component to display in a newspaper-like format
 const NewspaperColumn = ({ souls }) => {
@@ -67,8 +67,19 @@ const NewspaperColumn = ({ souls }) => {
     for (let i = 0; i < words.length; i++) {
       if (i > 0 && i % interval === 0 && currentSoulIndex < souls.length) {
         // Add a soul name
+        const soul = souls[currentSoulIndex];
+        // Check if the soul has a testimony ID and render it in red if it does
+        const hasTestimony =
+          soul.testimonyId !== null && soul.testimonyId !== undefined;
+
         wordGroups.push(
-          <Text key={`soul-${currentSoulIndex}`} style={styles.soulNameInText}>
+          <Text
+            key={`soul-${currentSoulIndex}`}
+            style={[
+              styles.soulNameInText,
+              hasTestimony && styles.soulNameWithTestimony,
+            ]}
+          >
             {souls[currentSoulIndex].name}
           </Text>
         );
@@ -304,6 +315,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "rgba(0, 0, 0, 1)", // Fully opaque for soul names
     paddingHorizontal: 4,
+  },
+  soulNameWithTestimony: {
+    color: "red", // Render names with testimony IDs in red
   },
   columnContainer: {
     width: "100%",
