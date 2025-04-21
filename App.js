@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { StatusBar, useColorScheme, View, Image } from "react-native";
+import React from "react";
+import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import * as Font from "expo-font";
-import { Ionicons } from "@expo/vector-icons";
-import { Provider as PaperProvider, Surface } from "react-native-paper";
+import { Provider as PaperProvider } from "react-native-paper";
 import { AuthenticatedUserProvider } from "./providers";
 import { RootNavigator } from "./navigation/RootNavigator";
 import { ErrorBoundary } from "components";
@@ -11,46 +9,7 @@ import { getThemeColors } from "./styles/theme";
 import "./styles/global.css";
 
 export default function App() {
-  const [isReady, setIsReady] = useState(false);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = getThemeColors(isDark);
-
-  useEffect(() => {
-    async function prepareApp() {
-      try {
-        // Load fonts
-        await Font.loadAsync({
-          ...Ionicons.font,
-          "XTypewriter-Regular": require("./assets/fonts/XTypewriter-Regular.ttf"),
-          "XTypewriter-Bold": require("./assets/fonts/XTypewriter-Bold.ttf"),
-        });
-
-        // Add minimum splash screen time
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.error("Error loading fonts:", error);
-      } finally {
-        setIsReady(true);
-      }
-    }
-
-    prepareApp();
-  }, []);
-
-  if (!isReady) {
-    return (
-      <Surface
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      >
-        <Image
-          source={require("./assets/TheWall.png")}
-          style={{ width: 315, height: 151 }}
-          resizeMode="contain"
-        />
-      </Surface>
-    );
-  }
+  const theme = getThemeColors();
 
   return (
     <PaperProvider theme={theme}>
