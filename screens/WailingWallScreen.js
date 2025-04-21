@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { BottomSheet, VerticalMarquee, WallButtons } from "components";
 import { AddSoulForm } from "components";
@@ -142,6 +142,29 @@ export const WailingWallScreen = () => {
 
     fetchSouls();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchSouls = async () => {
+        try {
+          setIsLoading(true);
+          setError(null);
+
+          // Get all souls
+          const loadedSouls = await getAllSouls();
+
+          setSouls(loadedSouls);
+        } catch (err) {
+          console.error("Error loading souls:", err);
+          setError("Failed to load souls. Please try again.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchSouls();
+    }, [])
+  );
 
   const handleSoulAdded = (newSoul) => {
     // Add the new soul to the list
