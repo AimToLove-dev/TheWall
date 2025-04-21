@@ -187,7 +187,17 @@ export const WailingWallScreen = () => {
   }, []);
 
   const calculateContentHeightMultiplier = (soulCount) => {
-    return Math.max(1, soulCount / 10);
+    const { width } = useWindowDimensions();
+    if (width > 600) {
+      // Medium screens need moderate space
+      if (width < 960) {
+        return 0.5 + Math.max(1, soulCount / 15);
+      }
+      // Large screens need less space
+      return Math.max(1, soulCount / 20);
+    }
+    // Small screens keep original multiplier
+    return 1.3 + Math.max(1, soulCount / 10);
   };
 
   return (
@@ -331,6 +341,7 @@ const styles = StyleSheet.create({
     padding: "1em",
     textAlign: "justify",
     boxShadow: "rgba(6, 24, 44, 0.8) 0px -10px 4px 0px inset",
+    paddingBottom: "100vh",
   },
   soulNameInText: {
     fontSize: 18,
