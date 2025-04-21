@@ -44,15 +44,17 @@ const soulValidationSchema = Yup.object().shape({
       .email("Please enter a valid email")
       .required("Email is required")
       .trim(),
-    otherwise: Yup.string(),
+    otherwise: Yup.string().notRequired(), // Explicitly make it not required when authenticated
   }),
   firstName: Yup.string().required("First name is required"),
   lastInitial: Yup.string()
     .required("Last initial is required")
     .matches(/^[A-Za-z]$/, "Only enter a single letter")
     .max(1, "Only enter a single letter"),
-  state: Yup.string().matches(/^[A-Z]{2}$/, "State code is 2 letters"),
-  city: Yup.string(),
+  state: Yup.string()
+    .matches(/^[A-Z]{2}$/, "State code is 2 letters")
+    .notRequired(),
+  city: Yup.string().notRequired(),
 });
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
@@ -185,11 +187,11 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           lastInitial: "",
           state: "",
           city: "",
-          email: "",
           isAuthenticated: isAuthenticated, // Used for conditional validation
         }}
         validationSchema={soulValidationSchema}
         onSubmit={handleSubmit}
+        enableReinitialize={true} // Add this to ensure form reinitializes when auth state changes
       >
         {({
           handleChange,
@@ -417,7 +419,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                 <CustomButton
                   title="Submit"
                   variant="primary"
-                  onPress={handleSubmit}
+                  onPress={() => handleSubmit()} // Explicitly call it as a function
                   loading={loading}
                   disabled={loading}
                   style={{ flex: 1 }}
