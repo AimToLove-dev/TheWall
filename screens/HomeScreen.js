@@ -101,42 +101,12 @@ export const HomeScreen = ({ navigation }) => {
 
                   {/* Logo section with megaphone and bell on sides */}
                   <View style={styles.logoWithIconsContainer}>
-                    {/* Megaphone - Left side */}
-                    <TouchableOpacity
-                      style={styles.sideIconContainer}
-                      onPress={navigateToWailingWall}
-                    >
-                      <WobblingBell
-                        imageSrc={require("../assets/megaphone.png")}
-                        style={styles.sideIcon}
-                        size={40}
-                        wobbleDelay={3000}
-                        startingDelay={0}
-                      />
-                      <Text style={styles.iconSubtitle}>Wailing Wall</Text>
-                    </TouchableOpacity>
-
                     {/* 'The Wall' Logo - Center */}
                     <Image
                       source={require("../assets/TheWall.png")}
                       style={styles.mastheadImage}
                       resizeMode="contain"
                     />
-
-                    {/* Bell - Right side */}
-                    <TouchableOpacity
-                      style={styles.sideIconContainer}
-                      onPress={navigateToTestimonyWall}
-                    >
-                      <WobblingBell
-                        imageSrc={require("../assets/bell.png")}
-                        style={styles.sideIcon}
-                        size={40}
-                        wobbleDelay={3000}
-                        startingDelay={1500}
-                      />
-                      <Text style={styles.iconSubtitle}>Testimony Wall</Text>
-                    </TouchableOpacity>
                   </View>
                 </View>
 

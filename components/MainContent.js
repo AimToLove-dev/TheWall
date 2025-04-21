@@ -50,6 +50,74 @@ export const MainContent = ({
         />
       </View>
 
+      {/* Introduction Section */}
+      <View style={styles.introductionSection}>
+        <BodyText style={styles.introText}>
+          The Wall is a virtual expression of a prophetic timeline inspired by
+          words from Bob Jones, Lou Engle Ministries, and Monet Beltran (founder
+          of AIM TO LOVE). Simply put, it's a website featuring two powerful
+          spaces:
+        </BodyText>
+
+        {/* Two wall descriptions */}
+        <View style={styles.wallDescriptionsContainer}>
+          {/* Wailing Wall description */}
+          <View style={styles.wallDescriptionColumn}>
+            <View style={styles.wallDescriptionHeader}>
+              <TouchableOpacity onPress={navigateToWailingWall}>
+                <WobblingBell
+                  imageSrc={require("../assets/megaphone.png")}
+                  style={styles.wallIcon}
+                  size={40}
+                  wobbleDelay={3000}
+                  startingDelay={0}
+                />
+              </TouchableOpacity>
+              <View style={styles.wallTitleContainer}>
+                <HeaderText style={styles.wallTitle}>Wailing Wall</HeaderText>
+              </View>
+            </View>
+            <BodyText style={styles.wallDescription}>
+              A place to submit the names of loved ones in the LGBTQ community
+              so we can join in interceding for them in love and hope.{" "}
+              <TouchableOpacity onPress={navigateToWailingWall}>
+                <Text style={styles.visitLink}>Visit &gt;</Text>
+              </TouchableOpacity>
+            </BodyText>
+          </View>
+
+          {/* Vertical Divider */}
+          <View style={styles.wallDescriptionDivider} />
+
+          {/* Testimony Wall description */}
+          <View style={styles.wallDescriptionColumn}>
+            <View style={styles.wallDescriptionHeader}>
+              <TouchableOpacity onPress={navigateToTestimonyWall}>
+                <WobblingBell
+                  imageSrc={require("../assets/bell.png")}
+                  style={styles.wallIcon}
+                  size={40}
+                  wobbleDelay={3000}
+                  startingDelay={1500}
+                />
+              </TouchableOpacity>
+              <View style={styles.wallTitleContainer}>
+                <HeaderText style={styles.wallTitle}>Testimony Wall</HeaderText>
+              </View>
+            </View>
+            <BodyText style={styles.wallDescription}>
+              We believe these testimonies will reflect the transformative love
+              of God in a real and tangible way.{" "}
+              <TouchableOpacity onPress={navigateToTestimonyWall}>
+                <Text style={styles.visitLink}>Visit &gt;</Text>
+              </TouchableOpacity>
+            </BodyText>
+          </View>
+        </View>
+      </View>
+
+      <Divider style={styles.divider} />
+
       {/* Two Column Layout */}
       <View style={styles.twoColumnContainer}>
         {/* Column 1 - 2/3 width */}
@@ -68,10 +136,14 @@ export const MainContent = ({
             />
           </View>
 
-          {/* Title */}
-          <HeaderText style={styles.columnTitle}>
-            FROM PRIDE TO PROMISE!
-          </HeaderText>
+          {/* Title - Replaced text with image */}
+          <View style={styles.p2pImageContainer}>
+            <Image
+              source={require("../assets/p2p.png")}
+              style={styles.p2pImage}
+              resizeMode="contain"
+            />
+          </View>
 
           {/* Horizontal rule */}
           <Divider style={styles.divider} />
@@ -81,8 +153,18 @@ export const MainContent = ({
 
           {/* Paragraph */}
           <BodyText style={styles.paragraph}>
-            We are calling you to action: to intentionally love, pray for, and
-            evangelize the LGBTQ+ community.
+            Monet beltran saw a vision of a Holy Revolution--doors of the Church
+            bursting open as the LGBTQ+ flooded in. She believes the Lord has
+            comissioned her saying{" "}
+            <Text style={{ fontWeight: "bold" }}>
+              Prepare a banquet table for the LGBTQ+.
+            </Text>
+          </BodyText>
+          <Divider style={styles.divider} />
+          <BodyText style={styles.paragraph}>
+            We are called to the Wall! A united voice proclaiming Jesus and the
+            power of transformation. Calling the LGBTQ+ and the Church into a
+            journey of healing, liberty, and holiness.
           </BodyText>
         </View>
 
@@ -91,6 +173,18 @@ export const MainContent = ({
 
         {/* Column 2 - 1/3 width */}
         <View style={styles.rightColumn}>
+          {/* Subtitle */}
+          <HeaderText style={styles.subtitle}>VISION STATEMENT</HeaderText>
+
+          <BodyText style={styles.paragraph}>
+            To ignite a Holy Revolution where love and truth converge, bringing
+            awakening, healing, and freedom to hearts in the LGBTQ+ community
+            through the life changing power of the blood of Jesus.
+          </BodyText>
+
+          {/* Horizontal rule */}
+          <Divider style={styles.divider} />
+
           {/* 4 social links in a square (2x2) */}
           <View>
             <View style={styles.socialLinksGrid}>
@@ -131,19 +225,6 @@ export const MainContent = ({
               LETS BE SOCIAL!
             </Text>
           </View>
-          {/* Horizontal rule */}
-          <Divider style={styles.divider} />
-          {/* Subtitle */}
-          <HeaderText style={styles.subtitle}>OUR VISION</HeaderText>
-
-          <BodyText style={styles.paragraph}>
-            Monet beltran saw a vision of a Holy Revolution--doors of the Church
-            bursting open as the LGBTQ+ flooded in. She believes the Lord has
-            comissioned her saying{" "}
-            <Text style={{ fontWeight: "bold" }}>
-              Prepare a banquet table for the LGBTQ+.
-            </Text>
-          </BodyText>
         </View>
       </View>
 
@@ -154,38 +235,36 @@ export const MainContent = ({
           style={styles.sideIconContainer}
           onPress={navigateToWailingWall}
         >
-          <WobblingBell
-            imageSrc={require("../assets/megaphone.png")}
+          <Image
+            source={require("../assets/megaphone.png")}
             style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={0}
           />
           <Text style={styles.iconSubtitle}>Wailing Wall</Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
-        <View style={styles.sideIconContainer}>
-          <WobblingBell
-            imageSrc={require("../assets/give.png")}
+        <TouchableOpacity
+          style={styles.sideIconContainer}
+          onPress={() =>
+            Linking.openURL(
+              "https://give.tithe.ly/?formId=587270ba-6865-11ee-90fc-1260ab546d11"
+            )
+          }
+        >
+          <Image
+            source={require("../assets/give.png")}
             style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={1000}
           />
           <Text style={styles.iconSubtitle}>Give Today</Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.verticalDivider} />
         {/* Bell - Right side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
           onPress={navigateToTestimonyWall}
         >
-          <WobblingBell
-            imageSrc={require("../assets/bell.png")}
+          <Image
+            source={require("../assets/bell.png")}
             style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={2000}
           />
           <Text style={styles.iconSubtitle}>Testimony Wall</Text>
         </TouchableOpacity>
@@ -236,7 +315,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   divider: {
-    height: 2,
+    height: 1,
     backgroundColor: "#000",
     marginVertical: 10,
   },
@@ -258,7 +337,7 @@ const styles = StyleSheet.create({
   socialRow: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 10,
+    marginTop: 10,
   },
   socialButton: {
     padding: 10,
@@ -323,5 +402,69 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     aspectRatio: 16 / 9,
+  },
+  introductionSection: {
+    margin: 0,
+  },
+  introTitle: {
+    fontWeight: "bold",
+    fontSize: fontSizes.large,
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  introText: {
+    fontSize: fontSizes.medium,
+    textAlign: "justify",
+    marginBottom: 20,
+  },
+  wallDescriptionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  wallDescriptionColumn: {
+    flex: 1,
+  },
+  wallDescriptionHeader: {
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  wallIcon: {
+    width: 40,
+    height: 40,
+    marginRight: 10,
+  },
+  wallTitleContainer: {
+    flex: 1,
+  },
+  wallTitle: {
+    fontWeight: "bold",
+    fontSize: "1em",
+    textAlign: "left",
+  },
+  wallDescription: {
+    fontSize: fontSizes.small,
+    textAlign: "justify",
+  },
+  wallDescriptionDivider: {
+    width: 1,
+    backgroundColor: "#000",
+    marginHorizontal: 10,
+    opacity: 0.5,
+    height: "75%",
+    marginTop: "auto",
+  },
+  visitLink: {
+    fontWeight: "bold",
+    color: "#3e477d",
+    textDecorationLine: "underline",
+  },
+  p2pImageContainer: {
+    alignItems: "center",
+    marginVertical: 0,
+  },
+  p2pImage: {
+    width: "100%",
+    height: 32,
   },
 });
