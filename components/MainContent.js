@@ -6,6 +6,7 @@ import {
   Text,
   View,
   Dimensions,
+  Linking,
 } from "react-native";
 import {
   HeaderText,
@@ -24,6 +25,14 @@ export const MainContent = ({
   navigateToWailingWall,
   navigateToTestimonyWall,
 }) => {
+  // Social media URLs
+  const socialLinks = {
+    facebook: "https://www.facebook.com/AIM2LOVE1",
+    tiktok: "https://www.tiktok.com/@aimtolove",
+    youtube: "https://www.youtube.com/channel/UChpxx6QSAjC0jzDsvbvL4RA",
+    twitter: "https://twitter.com/aimtolove_?",
+  };
+
   return (
     <View
       style={{
@@ -85,16 +94,28 @@ export const MainContent = ({
           {/* 4 social links in a square (2x2) */}
           <View>
             <View style={styles.socialLinksGrid}>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={() => Linking.openURL(socialLinks.facebook)}
+              >
                 <Ionicons name="logo-facebook" size={30} color="black" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <Ionicons name="logo-instagram" size={30} color="black" />
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={() => Linking.openURL(socialLinks.tiktok)}
+              >
+                <Ionicons name="logo-tiktok" size={30} color="black" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={() => Linking.openURL(socialLinks.twitter)}
+              >
                 <Ionicons name="logo-twitter" size={30} color="black" />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                onPress={() => Linking.openURL(socialLinks.youtube)}
+              >
                 <Ionicons name="logo-youtube" size={30} color="black" />
               </TouchableOpacity>
             </View>
@@ -104,6 +125,7 @@ export const MainContent = ({
                 whiteSpace: "nowrap",
                 fontSize: "x-small",
                 textAlign: "center",
+                fontFamily: "XTypewriter-Regular",
               }}
             >
               LETS BE SOCIAL!
