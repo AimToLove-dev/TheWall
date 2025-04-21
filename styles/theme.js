@@ -20,6 +20,17 @@ export const fontSizes = {
   xxxl: 28,
 };
 
+export const fonts = {
+  regular: {
+    fontFamily: "XTypewriter-Regular",
+    fontWeight: "normal",
+  },
+  bold: {
+    fontFamily: "XTypewriter-Bold",
+    fontWeight: "bold",
+  },
+};
+
 export const shadows = {
   small: Platform.select({
     ios: {
@@ -58,26 +69,111 @@ export const shadows = {
 
 // Helper function to get theme colors while maintaining backward compatibility
 export const getThemeColors = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  const theme = isDark ? MD3DarkTheme : MD3LightTheme;
+  const baseTheme = MD3LightTheme;
 
-  // Override colors here if needed
-  theme.colors = {
-    ...theme.colors,
-    primary: "#1a1c1a",
-    background: "#ffffff",
-    onSurface: "#333333",
-    surface: "#ffffff",
-    surfaceVariant: "#f5f5f5",
-    onSurfaceVariant: "#333333",
-    onSurfaceDisabled: "#cccccc",
-    error: "#b00020",
-    outline: "#cccccc",
-    placeholderText: "rgb(73 69 79 / 40%)", // Custom placeholder color
+  // Create a complete theme object for React Native Paper
+  const theme = {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      primary: "#1a1c1a",
+      background: "#ffffff",
+      onSurface: "#333333",
+      surface: "#ffffff",
+      surfaceVariant: "#f5f5f5",
+      onSurfaceVariant: "#333333",
+      onSurfaceDisabled: "#cccccc",
+      error: "#b00020",
+      outline: "#cccccc",
+      placeholderText: "rgb(73 69 79 / 40%)", // Custom placeholder color
+    },
+    // Apply XTypewriter fonts to every text variant
+    fonts: {
+      regular: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      medium: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      light: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      thin: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      // Body text variants
+      bodyLarge: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      bodyMedium: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      bodySmall: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      // Label variants
+      labelLarge: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      labelMedium: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      labelSmall: {
+        fontFamily: "XTypewriter-Regular",
+        fontWeight: "normal",
+      },
+      // Headings
+      titleLarge: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      titleMedium: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      titleSmall: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      displayLarge: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      displayMedium: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      displaySmall: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      headlineLarge: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      headlineMedium: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+      headlineSmall: {
+        fontFamily: "XTypewriter-Bold",
+        fontWeight: "bold",
+      },
+    },
   };
 
+  // Also return simplified theme values for backward compatibility
   return {
+    ...theme,
     primary: theme.colors.primary,
     background: theme.colors.background,
     surface: theme.colors.surface,

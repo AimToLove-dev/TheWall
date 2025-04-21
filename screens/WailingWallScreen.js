@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   newspaperText: {
     fontSize: 16,
-    fontFamily: "serif",
+    fontFamily: "XTypewriter-Regular",
     color: "rgba(0, 0, 0, 0.2)", // Much more transparent for lorem ipsum text
     lineHeight: 24,
     textAlign: "justify",
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   soulNameInText: {
     fontSize: 18,
-    fontFamily: "serif",
+    fontFamily: "XTypewriter-Regular",
     fontWeight: "bold",
     color: "rgba(0, 0, 0, 1)", // Fully opaque for soul names
     paddingHorizontal: 4,

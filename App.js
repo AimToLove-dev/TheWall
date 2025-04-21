@@ -22,6 +22,8 @@ export default function App() {
         // Load fonts
         await Font.loadAsync({
           ...Ionicons.font,
+          "XTypewriter-Regular": require("./assets/fonts/XTypewriter-Regular.ttf"),
+          "XTypewriter-Bold": require("./assets/fonts/XTypewriter-Bold.ttf"),
         });
 
         // Add minimum splash screen time

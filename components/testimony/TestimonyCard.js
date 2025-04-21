@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xs,
   },
   title: {
-    fontFamily: "serif", // Newspaper style font
+    fontFamily: "XTypewriter-Regular",
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 4,
@@ -271,6 +271,7 @@ const styles = StyleSheet.create({
   },
   testimonyText: {
     position: "relative",
+    fontFamily: "XTypewriter-Regular",
   },
   newspaperColumns: {
     columnCount: 2,
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: "#333",
     textAlign: "justify",
-    letterSpacing: 0.2, // Newspaper style text
+    fontFamily: "XTypewriter-Regular",
   },
   firstLetter: {
     fontSize: 22,

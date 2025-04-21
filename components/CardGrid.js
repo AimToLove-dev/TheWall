@@ -45,7 +45,6 @@ export const CardGrid = ({
 
           <Text
             style={{
-              color: colors.text,
               fontWeight: "bold",
               textAlign: "center",
               textTransform: "uppercase",

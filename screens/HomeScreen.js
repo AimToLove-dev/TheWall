@@ -366,6 +366,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     maxWidth: "100%",
     overflowWrap: "normal",
+    fontFamily: "XTypewriter-Regular",
   },
   // Page footer styles
   pageFooter: {

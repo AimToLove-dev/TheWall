@@ -68,14 +68,12 @@ export const MainContent = ({
           <Divider style={styles.divider} />
 
           {/* Second title */}
-          <HeaderText style={styles.columnTitle}>I AM TRANS!</HeaderText>
+          <HeaderText style={styles.columnTitle}>COME TO THE WALL</HeaderText>
 
           {/* Paragraph */}
           <BodyText style={styles.paragraph}>
-            Our mission is to share the transformative power of faith and
-            provide a supportive community for those on their journey. Every
-            story matters, and your experience can inspire others who are
-            seeking their own path to peace and fulfillment.
+            We are calling you to action: to intentionally love, pray for, and
+            evangelize the LGBTQ+ community.
           </BodyText>
         </View>
 
@@ -111,17 +109,18 @@ export const MainContent = ({
               LETS BE SOCIAL!
             </Text>
           </View>
-
           {/* Horizontal rule */}
           <Divider style={styles.divider} />
           {/* Subtitle */}
           <HeaderText style={styles.subtitle}>OUR VISION</HeaderText>
 
-          {/* Paragraph */}
           <BodyText style={styles.paragraph}>
-            Connect with us on social media to join our growing community. Share
-            your journey, find support, and stay updated on upcoming events and
-            resources designed to help you along your path.
+            Monet beltran saw a vision of a Holy Revolution--doors of the Church
+            bursting open as the LGBTQ+ flooded in. She believes the Lord has
+            comissioned her saying{" "}
+            <Text style={{ fontWeight: "bold" }}>
+              Prepare a banquet table for the LGBTQ+.
+            </Text>
           </BodyText>
         </View>
       </View>
@@ -145,7 +144,7 @@ export const MainContent = ({
         <View style={styles.verticalDivider} />
         <View style={styles.sideIconContainer}>
           <WobblingBell
-            imageSrc={require("../assets/megaphone.png")}
+            imageSrc={require("../assets/give.png")}
             style={styles.sideIcon}
             size={40}
             wobbleDelay={3000}
@@ -293,6 +292,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.xsmall || 12,
     fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "XTypewriter-Regular",
   },
   headerImageContainer: {
     width: "100%",
