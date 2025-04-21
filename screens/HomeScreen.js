@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   useColorScheme,
@@ -30,10 +30,19 @@ import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainContent, ScrollableScreenView } from "components";
 import { Linking } from "react-native";
+import { Ionicons } from "@expo/vector-icons"; // Added for social icons
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colors = getThemeColors();
+
+  // Social media URLs
+  const socialLinks = {
+    facebook: "https://www.facebook.com/AIM2LOVE1",
+    tiktok: "https://www.tiktok.com/@aimtolove",
+    youtube: "https://www.youtube.com/channel/UChpxx6QSAjC0jzDsvbvL4RA",
+    twitter: "https://twitter.com/aimtolove_?",
+  };
 
   const handleLoginPress = () => {
     navigation.navigate("Auth", { screen: "Login" });
@@ -92,7 +101,7 @@ export const HomeScreen = ({ navigation }) => {
                     <View style={styles.centerLineWithText}>
                       <View style={styles.halfLine}></View>
                       <Text style={styles.prideToPomiseText}>
-                        From Pride to Promise
+                        AIM TO LOVE PRESENTS
                       </Text>
                       <View style={styles.halfLine}></View>
                     </View>
@@ -132,7 +141,9 @@ export const HomeScreen = ({ navigation }) => {
                     />
 
                     {/* Center text */}
-                    <Text style={styles.theWallLoveText}>THEWALL.LOVE</Text>
+                    <Text style={styles.theWallLoveText}>
+                      From Pride to Promise
+                    </Text>
 
                     {/* Right side flames */}
                     <Image
@@ -221,6 +232,28 @@ export const HomeScreen = ({ navigation }) => {
               © {new Date().getFullYear()} The Wall. All rights reserved.
             </CaptionText>
             <TouchableOpacity></TouchableOpacity>
+            <View style={styles.socialIconsContainer}>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(socialLinks.facebook)}
+              >
+                <Ionicons name="logo-facebook" size={24} color="#4267B2" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(socialLinks.twitter)}
+              >
+                <Ionicons name="logo-twitter" size={24} color="#1DA1F2" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(socialLinks.tiktok)}
+              >
+                <Ionicons name="logo-tiktok" size={24} color="#000000" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => Linking.openURL(socialLinks.youtube)}
+              >
+                <Ionicons name="logo-youtube" size={24} color="#FF0000" />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TouchableOpacity
@@ -256,12 +289,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   mastheadImage: {
-    height: 80,
-    flexGrow: 1,
-    flex: 0.6, // Give more space to the center logo
-    minWidth: 0,
-    maxWidth: 300,
-    marginHorizontal: 10, // Reduced from 20 to give more space on small screens
+    width: "100%",
+    height: 100,
+    marginTop: 10,
   },
   mastheadLines: {
     width: "100%",
@@ -317,29 +347,6 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 10,
   },
-  sideIconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    flex: 0.2, // Changed from fixed width to flex
-    minWidth: 40, // Add minimum width
-    maxWidth: 80, // Add maximum width
-  },
-  sideIcon: {
-    height: 40,
-    width: 40,
-    marginBottom: 5,
-    // Make the icon responsive
-    maxWidth: "100%",
-    maxHeight: "100%",
-    aspectRatio: 1,
-  },
-  iconSubtitle: {
-    fontSize: 12,
-    textAlign: "center",
-    maxWidth: "100%",
-    overflowWrap: "normal",
-    fontFamily: "XTypewriter-Regular",
-  },
   // Page footer styles
   pageFooter: {
     marginTop: 20,
@@ -357,6 +364,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 15,
     fontStyle: "italic",
+  },
+  socialIconsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 10,
+    gap: 15,
   },
   // Original styles
   authContainer: {

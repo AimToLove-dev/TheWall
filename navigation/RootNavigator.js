@@ -77,7 +77,7 @@ export const RootNavigator = () => {
     if (fontLoaded && minTimePassed && !isLoading) {
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 500,
+        duration: 1000,
         useNativeDriver: true,
       }).start();
     }
