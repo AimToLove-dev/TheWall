@@ -124,16 +124,20 @@ export const MainContent = ({
         <View style={styles.leftColumn}>
           {/* 2 images side by side */}
           <View style={styles.imagesContainer}>
-            <Image
-              source={require("../assets/before.png")}
-              style={styles.columnImage}
-              resizeMode="cover"
-            />
-            <Image
-              source={require("../assets/after.png")}
-              style={styles.columnImage}
-              resizeMode="cover"
-            />
+            <View style={styles.imageWrapper}>
+              <Image
+                source={require("../assets/before.png")}
+                style={styles.columnImage}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.imageWrapper}>
+              <Image
+                source={require("../assets/after.png")}
+                style={styles.columnImage}
+                resizeMode="cover"
+              />
+            </View>
           </View>
 
           {/* Title - Replaced text with image */}
@@ -297,10 +301,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 15,
+    width: "100%",
+  },
+  imageWrapper: {
+    flex: 1,
+    aspectRatio: 1, // This ensures a square shape
+    marginHorizontal: 5,
+    overflow: "hidden", // This ensures the image doesn't overflow the wrapper
   },
   columnImage: {
-    width: "48%",
-    height: 120,
+    width: "100%",
+    height: "100%",
   },
   columnTitle: {
     fontWeight: "bold",
