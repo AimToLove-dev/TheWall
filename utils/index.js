@@ -24,20 +24,20 @@ export const passwordResetSchema = Yup.object().shape({
 });
 
 /**
- * Creates a formatted display name from first and last name
- * Format: "FirstName LastInitial." (e.g., "John D.")
+ * Creates a formatted display name from first name and last initial
+ * Format: "FirstName L." (e.g., "John D.")
  *
  * @param {string} firstName - The person's first name
- * @param {string} lastName - The person's last name
+ * @param {string} lastInitial - The person's last initial (single letter)
  * @returns {string} Formatted display name
  */
-export const createDisplayName = (firstName, lastName) => {
-  if (!firstName || !lastName) return "";
+export const createDisplayName = (firstName, lastInitial) => {
+  if (!firstName || !lastInitial) return "";
 
   const trimmedFirst = firstName.trim();
-  const trimmedLast = lastName.trim();
+  const trimmedInitial = lastInitial.trim().charAt(0).toUpperCase();
 
-  if (!trimmedFirst || !trimmedLast) return "";
+  if (!trimmedFirst || !trimmedInitial) return "";
 
-  return `${trimmedFirst} ${trimmedLast.charAt(0).toUpperCase()}.`;
+  return `${trimmedFirst} ${trimmedInitial}.`;
 };

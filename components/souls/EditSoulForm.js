@@ -14,7 +14,10 @@ import { createDisplayName } from "@utils/index";
 // Validation schema for the form
 const soulValidationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
+  lastInitial: Yup.string()
+    .required("Last initial is required")
+    .matches(/^[A-Za-z]$/, "Only enter a single letter")
+    .max(1, "Only enter a single letter"),
   state: Yup.string().matches(/^[A-Z]{2}$/, "State code is 2 letters"),
   city: Yup.string(),
 });
@@ -42,13 +45,16 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
     setSuccessMessage("");
 
     try {
-      const displayName = createDisplayName(values.firstName, values.lastName);
+      const displayName = createDisplayName(
+        values.firstName,
+        values.lastInitial
+      );
 
       // Update the soul with the new data
       const soulData = {
         name: displayName,
         firstName: values.firstName.trim(),
-        lastName: values.lastName.trim(),
+        lastInitial: values.lastInitial.trim(),
         city: values.city || "",
         state: values.state || "",
         updatedAt: new Date().toISOString(),
@@ -110,7 +116,7 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
       <Formik
         initialValues={{
           firstName: soul?.firstName || "",
-          lastName: soul?.lastName || "",
+          lastInitial: soul?.lastInitial || "",
           state: soul?.state || "",
           city: soul?.city || "",
         }}
@@ -137,7 +143,7 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
                 gap: 8,
                 marginBottom:
                   (touched.firstName && errors.firstName) ||
-                  (touched.lastName && errors.lastName)
+                  (touched.lastInitial && errors.lastInitial)
                     ? 0
                     : 8,
               }}
@@ -167,20 +173,27 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
 
               <View style={{ flex: 1 }}>
                 <TextInput
-                  label="Last Name*"
-                  value={values.lastName}
-                  onChangeText={handleChange("lastName")}
-                  onBlur={handleBlur("lastName")}
+                  label="Last Initial*"
+                  value={values.lastInitial}
+                  onChangeText={(text) => {
+                    // Only allow a single letter and automatically convert to uppercase
+                    if (text.length <= 1) {
+                      handleChange("lastInitial")(text.toUpperCase());
+                    }
+                  }}
+                  onBlur={handleBlur("lastInitial")}
                   mode="outlined"
+                  maxLength={1}
+                  placeholder="D"
                   left={
                     <TextInput.Icon
                       icon="account"
                       forceTextInputFocus={false}
                     />
                   }
-                  error={touched.lastName && errors.lastName}
+                  error={touched.lastInitial && errors.lastInitial}
                 />
-                {touched.lastName && errors.lastName && (
+                {touched.lastInitial && errors.lastInitial && (
                   <Text
                     style={{
                       color: colors.error,
@@ -188,7 +201,7 @@ export const EditSoulForm = ({ soul, onSuccess, onCancel, onDelete }) => {
                       marginBottom: 12,
                     }}
                   >
-                    {errors.lastName}
+                    {errors.lastInitial}
                   </Text>
                 )}
               </View>

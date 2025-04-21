@@ -166,7 +166,12 @@ export const MyWallScreen = ({ navigation }) => {
         >
           <View style={styles.badgeContent}>
             <BodyText
-              style={[styles.soulName, isLinked && { color: colors.surface }]}
+              style={[
+                styles.soulName,
+                isLinked && {
+                  color: colors.error,
+                },
+              ]}
             >
               {soul.name}
             </BodyText>
@@ -175,7 +180,7 @@ export const MyWallScreen = ({ navigation }) => {
               <Ionicons
                 name="heart"
                 size={16}
-                color={colors.surface}
+                color={colors.error}
                 style={styles.testimonyIcon}
               />
             )}

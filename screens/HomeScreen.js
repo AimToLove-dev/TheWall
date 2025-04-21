@@ -318,6 +318,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     fontWeight: "bold",
     fontSize: 16,
+    fontFamily: "XTypewriter-Regular",
   },
   flameStrip: {
     marginTop: 10,
@@ -337,6 +338,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     fontWeight: "bold",
     fontSize: 16,
+    fontFamily: "XTypewriter-Regular",
   },
   logoWithIconsContainer: {
     flexDirection: "row",

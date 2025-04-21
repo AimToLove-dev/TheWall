@@ -47,10 +47,12 @@ const soulValidationSchema = Yup.object().shape({
     otherwise: Yup.string(),
   }),
   firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
+  lastInitial: Yup.string()
+    .required("Last initial is required")
+    .matches(/^[A-Za-z]$/, "Only enter a single letter")
+    .max(1, "Only enter a single letter"),
   state: Yup.string().matches(/^[A-Z]{2}$/, "State code is 2 letters"),
   city: Yup.string(),
-  phone: Yup.string(),
 });
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
@@ -83,7 +85,10 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setButtonState(ButtonState.SUBMIT); // Reset button state
 
     try {
-      const displayName = createDisplayName(values.firstName, values.lastName);
+      const displayName = createDisplayName(
+        values.firstName,
+        values.lastInitial
+      );
       let soulId;
 
       // Path 1: User is logged in and email is verified
@@ -118,8 +123,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           state: values.state || "",
           createdAt: new Date().toISOString(),
           testimonyId: null,
-          // Store the hash but not the actual email
-          emailHash: emailHash,
         };
 
         // Use the hashed email as document ID to enforce one submission per email
@@ -179,10 +182,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         initialValues={{
           submitterEmail: "",
           firstName: "",
-          lastName: "",
+          lastInitial: "",
           state: "",
           city: "",
-          phone: "",
           email: "",
           isAuthenticated: isAuthenticated, // Used for conditional validation
         }}
@@ -249,7 +251,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                     gap: 8,
                     marginBottom:
                       (touched.firstName && errors.firstName) ||
-                      (touched.lastName && errors.lastName)
+                      (touched.lastInitial && errors.lastInitial)
                         ? 0
                         : 8,
                   }}
@@ -279,15 +281,22 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
 
                   <View style={{ flex: 1 }}>
                     <TextInput
-                      label="Last Name*"
-                      value={values.lastName}
-                      onChangeText={handleChange("lastName")}
-                      onBlur={handleBlur("lastName")}
+                      label="Last Initial*"
+                      value={values.lastInitial}
+                      onChangeText={(text) => {
+                        // Only allow a single letter and automatically convert to uppercase
+                        if (text.length <= 1) {
+                          handleChange("lastInitial")(text.toUpperCase());
+                        }
+                      }}
+                      onBlur={handleBlur("lastInitial")}
                       mode="outlined"
+                      maxLength={1}
+                      placeholder="D"
                       left={<TextInput.Icon icon="account" />}
-                      error={touched.lastName && errors.lastName}
+                      error={touched.lastInitial && errors.lastInitial}
                     />
-                    {touched.lastName && errors.lastName && (
+                    {touched.lastInitial && errors.lastInitial && (
                       <Text
                         style={{
                           color: colors.error,
@@ -295,21 +304,11 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                           marginBottom: 12,
                         }}
                       >
-                        {errors.lastName}
+                        {errors.lastInitial}
                       </Text>
                     )}
                   </View>
                 </View>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: colors.text,
-                    marginBottom: 16,
-                    fontStyle: "italic",
-                  }}
-                >
-                  Last Names are abbreviated publicly to protect privacy
-                </Text>
 
                 <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
                   <View style={{ flex: 1 }}>
