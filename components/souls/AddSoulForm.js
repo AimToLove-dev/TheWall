@@ -9,9 +9,32 @@ import { View } from "components";
 import { CustomButton } from "components/CustomButton";
 import { addSoul } from "@utils/soulsUtils";
 import { AuthenticatedUserContext } from "providers";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "config";
 import { createDisplayName } from "@utils/index";
+import { useNavigation } from "@react-navigation/native";
+
+// Button state enum - frozen object for immutability
+const ButtonState = Object.freeze({
+  SUBMIT: "submit",
+  LOGIN: "login",
+  SIGNUP: "signup",
+});
+
+// Hash email function to create consistent anonymous IDs
+const hashEmail = (email) => {
+  // Simple string hashing function that creates a consistent hash
+  let hash = 0;
+  if (!email || email.length === 0) return hash;
+
+  for (let i = 0; i < email.length; i++) {
+    const char = email.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  // Prefix with 'anon_' to identify as anonymous submission
+  return `anon_${Math.abs(hash).toString(16)}`;
+};
 
 // Validation schema for the form
 const soulValidationSchema = Yup.object().shape({
@@ -19,7 +42,8 @@ const soulValidationSchema = Yup.object().shape({
     is: false,
     then: Yup.string()
       .email("Please enter a valid email")
-      .required("Email is required"),
+      .required("Email is required")
+      .trim(),
     otherwise: Yup.string(),
   }),
   firstName: Yup.string().required("First name is required"),
@@ -27,7 +51,6 @@ const soulValidationSchema = Yup.object().shape({
   state: Yup.string().matches(/^[A-Z]{2}$/, "State code is 2 letters"),
   city: Yup.string(),
   phone: Yup.string(),
-  email: Yup.string().email("Please enter a valid email"),
 });
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
@@ -35,6 +58,9 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [buttonState, setButtonState] = useState(ButtonState.SUBMIT);
+
+  const navigation = useNavigation();
 
   // Check if user is authenticated and email is verified
   const isAuthenticated = user && isEmailVerified;
@@ -54,6 +80,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setLoading(true);
     setError("");
     setSuccessMessage("");
+    setButtonState(ButtonState.SUBMIT); // Reset button state
 
     try {
       const displayName = createDisplayName(values.firstName, values.lastName);
@@ -64,10 +91,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         // Call the soulUtils/addSoul function with proper data
         const soulData = {
           name: displayName,
-          firstName: values.firstName.trim(),
-          lastName: values.lastName.trim(),
           userId: user.uid,
-          email: user.email, // Using the logged-in user's email
           city: values.city || "",
           state: values.state || "",
           createdAt: new Date().toISOString(),
@@ -77,25 +101,43 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       }
       // Path 2: Anonymous submission or user's email not verified
       else {
-        // Use direct document creation with email as document ID
-        // This follows the security rule: documentId == request.resource.data.email
+        // Ensure we have a valid email
+        if (!values.submitterEmail || values.submitterEmail.trim() === "") {
+          setError("Email is required for anonymous submissions");
+          setLoading(false);
+          return;
+        }
+
+        // Hash the email to create a consistent document ID for this email
+        const emailHash = hashEmail(values.submitterEmail.toLowerCase().trim());
+
+        // Store only necessary data (no PII)
         const soulData = {
           name: displayName,
-          firstName: values.firstName.trim(),
-          lastName: values.lastName.trim(),
-          email: values.submitterEmail,
-          submitterEmail: values.submitterEmail,
           city: values.city || "",
           state: values.state || "",
           createdAt: new Date().toISOString(),
-          testimonyId: null, // Add this to match the addSoul function's expectations
+          testimonyId: null,
+          // Store the hash but not the actual email
+          emailHash: emailHash,
         };
 
-        // For anonymous users, use submitterEmail as document ID
-        // to satisfy the security rule requirement
-        const soulRef = doc(db, "souls", values.submitterEmail);
+        // Use the hashed email as document ID to enforce one submission per email
+        const soulRef = doc(db, "souls", emailHash);
+
+        // Check if this email has already submitted
+        const existingDoc = await getDoc(soulRef);
+        if (existingDoc.exists()) {
+          setError(
+            "Only one submission per email address is allowed. Please create an account to add more."
+          );
+          setButtonState(ButtonState.SIGNUP);
+          setLoading(false);
+          return;
+        }
+
         await setDoc(soulRef, soulData);
-        soulId = values.submitterEmail;
+        soulId = emailHash;
       }
 
       // Reset form after successful submission
@@ -117,11 +159,14 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       console.error("Error adding soul:", error);
       // Clear success message if there was one and set error
       setSuccessMessage("");
+
       if (error.message.toLowerCase().includes("permission")) {
         setError("Only 1 anonymous submission allowed. Please login.");
+        setButtonState(ButtonState.LOGIN);
       } else {
         setError(error.message || "Failed to add soul. Please try again.");
       }
+
       clearMessages(); // Start timeout to clear messages
     } finally {
       setLoading(false);
@@ -153,7 +198,8 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           touched,
         }) => (
           <>
-            {!error?.toLowerCase().includes("login") && (
+            {/* Hide form fields if login/signup button is shown */}
+            {buttonState === ButtonState.SUBMIT && (
               <>
                 {!isAuthenticated && (
                   <>
@@ -352,11 +398,20 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                 onPress={onCancel}
                 style={{ flex: 1, marginRight: 8 }}
               />
-              {error?.toLowerCase().includes("login") ? (
+              {buttonState === ButtonState.LOGIN ? (
                 <CustomButton
                   title="Login"
                   variant="primary"
                   onPress={() => navigation.navigate("login")}
+                  style={{ flex: 1 }}
+                />
+              ) : buttonState === ButtonState.SIGNUP ? (
+                <CustomButton
+                  title="Sign Up"
+                  variant="primary"
+                  onPress={() =>
+                    navigation.navigate("Auth", { screen: "Signup" })
+                  }
                   style={{ flex: 1 }}
                 />
               ) : (

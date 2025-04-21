@@ -44,7 +44,7 @@ export const RootNavigator = () => {
         TestimonyWall: "testimonies",
         Auth: {
           screens: {
-            Login: "login", // Maps /login to the existing LoginScreen
+            Login: "login",
             Signup: "signup",
             ForgotPassword: "forgot-password",
           },
