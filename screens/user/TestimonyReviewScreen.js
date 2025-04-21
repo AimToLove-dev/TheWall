@@ -170,7 +170,7 @@ export const TestimonyReviewScreen = ({ navigation }) => {
         afterImage: submission.afterImage || null,
         video: submission.video || null,
         createdAt: submission.createdAt,
-        updatedAt: submission.updatedAt,
+        updatedAt: submission.updatedAt || new Date().toISOString(), // Ensure updatedAt is always defined
         approvedAt: new Date().toISOString(),
         soulId: null, // Will be updated after soul creation
         userId: submission.userId || null,
