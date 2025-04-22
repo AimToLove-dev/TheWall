@@ -88,12 +88,12 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                   />
                 </View>
               ) : (
-                <View style={[styles.image, styles.placeholderContainer]}>
-                  <Text style={styles.placeholderText}>Before</Text>
-                </View>
+                <View
+                  style={[styles.image, styles.placeholderContainer]}
+                ></View>
               )}
               {item.beforeImage && (
-                <Text style={styles.imageCaptionText}>Before</Text>
+                <Text style={styles.imageCaptionText}>BEFORE</Text>
               )}
             </View>
 
@@ -108,12 +108,12 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                   />
                 </View>
               ) : (
-                <View style={[styles.image, styles.placeholderContainer]}>
-                  <Text style={styles.placeholderText}>After</Text>
-                </View>
+                <View
+                  style={[styles.image, styles.placeholderContainer]}
+                ></View>
               )}
               {item.afterImage && (
-                <Text style={styles.imageCaptionText}>After</Text>
+                <Text style={styles.imageCaptionText}>AFTER</Text>
               )}
             </View>
 
@@ -154,12 +154,12 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                   )}
                 </View>
               ) : (
-                <View style={[styles.image, styles.placeholderContainer]}>
-                  <Text style={styles.placeholderText}>No Video</Text>
-                </View>
+                <View
+                  style={[styles.image, styles.placeholderContainer]}
+                ></View>
               )}
               {(item.video || item.videoUrl || item.videoUri) && (
-                <Text style={styles.imageCaptionText}>Video</Text>
+                <Text style={styles.imageCaptionText}>VIDEO</Text>
               )}
             </View>
           </View>
@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: "#888", // Newspaper style divider
+    borderBottomWidth: 2,
+    borderBottomColor: "black", // Newspaper style divider
     paddingBottom: spacing.xs,
   },
   title: {
@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
+    color: "black",
   },
   nameText: {
     fontSize: 12,
@@ -266,10 +267,16 @@ const styles = StyleSheet.create({
   },
   imageCaptionText: {
     textAlign: "center",
-    fontStyle: "italic",
     fontSize: 12,
-    color: "#555",
-    marginTop: 4,
+    color: "white",
+    margin: 2,
+    marginTop: -18,
+    padding: 10,
+    backgroundColor: "black",
+    borderRadius: 8,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    fontFamily: "XTypewriter-Bold",
   },
   playButtonContainer: {
     position: "absolute",

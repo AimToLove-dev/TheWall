@@ -64,6 +64,7 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
   const styles = StyleSheet.create({
     mastheadImage: {
       height: 80,
+      marginTop: spacing.xl,
       width: "100%",
       alignSelf: "center",
       maxWidth: 800,

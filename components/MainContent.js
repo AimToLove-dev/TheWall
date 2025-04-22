@@ -110,7 +110,7 @@ export const MainContent = ({
         <View style={styles.imagesContainer}>
           <View style={styles.imageWrapper}>
             <Image
-              source={require("../assets/before.png")}
+              source={require("../assets/before.jpeg")}
               style={styles.columnImage}
               resizeMode="cover"
             />
