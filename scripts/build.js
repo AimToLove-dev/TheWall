@@ -8,7 +8,17 @@ console.log("🚀 Starting SEO-optimized build process...");
 console.log("📦 Running Expo export...");
 execSync("npx expo export", { stdio: "inherit" });
 
-// Step 2: Post-process the HTML to inject SEO tags
+// Step 2: Generate sitemap
+console.log("🗺️ Generating sitemap...");
+execSync("node scripts/generate-sitemap.js", { stdio: "inherit" });
+
+// Step 3: Copy sitemap to the dist folder
+console.log("📋 Copying sitemap to distribution folder...");
+const sitemapSource = path.join(__dirname, "..", "web-build-template", "sitemap.xml");
+const sitemapDest = path.join(__dirname, "..", "dist", "sitemap.xml");
+fs.copyFileSync(sitemapSource, sitemapDest);
+
+// Step 4: Post-process the HTML to inject SEO tags
 console.log("🔧 Injecting SEO metadata into HTML...");
 
 // Path to the generated index.html
@@ -60,7 +70,7 @@ htmlContent = htmlContent.replace(
 // Write the modified HTML back to the file
 fs.writeFileSync(indexPath, htmlContent, "utf-8");
 
-console.log("✅ Build completed with SEO metadata injected into HTML!");
+console.log("✅ Build completed with SEO metadata and sitemap generated!");
 console.log("🔍 Your site is now ready for crawlers and link previews.");
 
 // Optional: Deploy to Firebase
