@@ -202,12 +202,6 @@ export const WailingWallScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* SEO Component for web platforms */}
-      <SEO
-        title="Wailing Wall | The Wall - A Place for Prayer and Intercession"
-        description="Submit names of loved ones in the LGBTQ+ community for prayer and intercession. Join our community in faith, hope, and love as we stand in the gap with prayer."
-        image="https://yourwebsite.com/assets/megaphone.png"
-      />
 
       <ImageBackground
         source={require("../assets/brickSeamless.png")}

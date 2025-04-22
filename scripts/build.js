@@ -14,7 +14,12 @@ execSync("node scripts/generate-sitemap.js", { stdio: "inherit" });
 
 // Step 3: Copy sitemap and robots.txt to the dist folder
 console.log("📋 Copying sitemap and robots.txt to distribution folder...");
-const sitemapSource = path.join(__dirname, "..", "web-build-template", "sitemap.xml");
+const sitemapSource = path.join(
+  __dirname,
+  "..",
+  "web-build-template",
+  "sitemap.xml"
+);
 const sitemapDest = path.join(__dirname, "..", "dist", "sitemap.xml");
 const robotsSource = path.join(__dirname, "..", "robots.txt");
 const robotsDest = path.join(__dirname, "..", "dist", "robots.txt");
