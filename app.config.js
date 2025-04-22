@@ -1,4 +1,5 @@
 import "dotenv/config";
+import path from "path";
 
 export default {
   expo: {
@@ -26,6 +27,18 @@ export default {
     web: {
       favicon: "./assets/favicon.png",
       assetBundlePatterns: ["**/*"],
+      // SEO metadata that will be injected at build time
+      meta: {
+        title: "The Wall - A Holy Revolution for the LGBTQ+ Community",
+        description:
+          "The Wall is a holy revolution that provides a place to love, pray for, and evangelize the LGBTQ+ community through our Wailing Wall and Testimony Wall initiatives.",
+        image: "https://your-domain.com/assets/TheWall.png", // Replace with your actual domain
+        url: "https://your-domain.com", // Replace with your actual domain
+      },
+      // Custom HTML template
+      build: {
+        templatePath: "./web-build-template/index.html",
+      },
     },
     extra: {
       apiKey: process.env.API_KEY,
