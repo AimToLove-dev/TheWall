@@ -19,6 +19,7 @@ export const TestimonyCard = ({ item, index, onPress }) => {
 
   const [expanded, setExpanded] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false); // Add fullscreen state
   const videoRef = useRef(null);
 
   // Get the testimony text
@@ -35,6 +36,10 @@ export const TestimonyCard = ({ item, index, onPress }) => {
   // Function to handle video playback state
   const handleVideoPlaybackStatusUpdate = (status) => {
     setIsVideoPlaying(status.isPlaying);
+    // Check if fullscreen status changed
+    if (status.fullscreen !== undefined && status.fullscreen !== isFullscreen) {
+      setIsFullscreen(status.fullscreen);
+    }
   };
 
   // Function to toggle video play/pause
@@ -60,14 +65,11 @@ export const TestimonyCard = ({ item, index, onPress }) => {
         resizeMode="repeat"
       >
         <View style={[styles.cardContent]}>
-          {/* Header with title and name */}
+          {/* Header with title */}
           <View style={styles.headerContainer}>
-            <HeaderText style={styles.title}>
+            <HeaderText style={styles.title} numberOfLines={1}>
               {item.title || "My Testimony"}
             </HeaderText>
-            <BodyText style={styles.nameText}>
-              By {item.displayName || "Anonymous"}
-            </BodyText>
           </View>
 
           {/* Images and video grid - 3 columns */}
@@ -78,7 +80,10 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                 <View style={styles.imageContainer}>
                   <Image
                     source={{ uri: item.beforeImage }}
-                    style={[styles.image, { filter: "grayscale(100%)" }]}
+                    style={[
+                      styles.image,
+                      { filter: "grayscale(100%)", scale: "none" },
+                    ]}
                     resizeMode="cover"
                   />
                 </View>
@@ -98,7 +103,7 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                 <View style={styles.imageContainer}>
                   <Image
                     source={{ uri: item.afterImage }}
-                    style={styles.image}
+                    style={[styles.image, { scale: "none" }]}
                     resizeMode="cover"
                   />
                 </View>
@@ -124,15 +129,16 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                     rate={1.0}
                     volume={1.0}
                     isMuted={false}
-                    resizeMode="contain"
+                    resizeMode={isFullscreen ? "contain" : "cover"}
                     shouldPlay={false}
                     isLooping={false}
                     useNativeControls
                     style={styles.image}
                     videoStyle={{
-                      height: "100%",
-                      width: "100%",
-                      objectFit: "contain",
+                      height: "-webkit-fill-available",
+                      width: "-webkit-fill-available",
+                      objectFit: isFullscreen ? "contain" : "cover",
+                      scale: "none",
                     }}
                     onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
                   />
@@ -176,15 +182,20 @@ export const TestimonyCard = ({ item, index, onPress }) => {
               </View>
             </View>
 
-            {/* Read more button */}
-            <TouchableOpacity
-              onPress={toggleExpanded}
-              style={styles.readMoreButton}
-            >
-              <Text style={styles.readMoreText}>
-                {expanded ? "Show less" : "View Full Testimony"}
-              </Text>
-            </TouchableOpacity>
+            {/* Read more button and name */}
+            <View style={styles.bottomRow}>
+              <BodyText style={styles.nameText}>
+                By {item.displayName || "Anonymous"}
+              </BodyText>
+              <TouchableOpacity
+                onPress={toggleExpanded}
+                style={styles.readMoreButton}
+              >
+                <Text style={styles.readMoreText}>
+                  {expanded ? "Show less" : "View Full Testimony"}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ImageBackground>
@@ -216,6 +227,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 4,
+    flexShrink: 1,
+    // Web properties for text truncation
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
   },
   nameText: {
     fontSize: 12,
@@ -301,9 +317,15 @@ const styles = StyleSheet.create({
   expandedText: {
     maxHeight: undefined,
   },
+  bottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: spacing.xs,
+    paddingTop: spacing.xs,
+  },
   readMoreButton: {
     alignSelf: "flex-end",
-    marginTop: spacing.xs,
   },
   readMoreText: {
     fontStyle: "italic",
