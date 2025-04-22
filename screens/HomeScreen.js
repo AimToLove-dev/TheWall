@@ -75,10 +75,10 @@ export const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {/* SEO Component for web platforms */}
-      <SEO 
-        title="The Wall - A Holy Revolution for the LGBTQ+ Community" 
+      <SEO
+        title="The Wall - A Holy Revolution for the LGBTQ+ Community"
         description="The Wall provides a place to love, pray for, and evangelize the LGBTQ+ community through our Wailing Wall and Testimony Wall initiatives. Join our holy revolution of love and hope."
-        image="https://yourwebsite.com/assets/TheWall.png" 
+        image="https://yourwebsite.com/assets/TheWall.png"
       />
 
       <ImageBackground

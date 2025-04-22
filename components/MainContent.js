@@ -38,10 +38,7 @@ export const MainContent = ({
       accessibilityLabel="The Wall - A Holy Revolution for the LGBTQ+ Community"
     >
       {/* Header Image - Main Page Title (H1 equivalent) */}
-      <View 
-        style={styles.headerImageContainer}
-        accessibilityRole="header"
-      >
+      <View style={styles.headerImageContainer} accessibilityRole="header">
         <Image
           source={require("../assets/header.png")}
           style={styles.headerImage}
@@ -50,31 +47,35 @@ export const MainContent = ({
           accessibilityLabel="The Wall - Homepage Header"
         />
         <View style={styles.screenReaderOnly}>
-          <Text accessibilityRole="heading" accessibilityLevel={1}>The Wall - A Holy Revolution</Text>
+          <Text accessibilityRole="heading" accessibilityLevel={1}>
+            The Wall - A Holy Revolution
+          </Text>
         </View>
       </View>
 
       {/* Introduction Section */}
-      <View 
+      <View
         style={styles.introductionSection}
         accessibilityRole="region"
         accessible={true}
         accessibilityLabel="Our Mission Walls"
       >
         <View style={styles.screenReaderOnly}>
-          <Text accessibilityRole="heading" accessibilityLevel={2}>Our Mission Walls</Text>
+          <Text accessibilityRole="heading" accessibilityLevel={2}>
+            Our Mission Walls
+          </Text>
         </View>
-        
+
         {/* Two wall descriptions */}
         <View style={styles.wallDescriptionsContainer}>
           {/* Wailing Wall description */}
-          <View 
+          <View
             style={styles.wallDescriptionColumn}
             accessibilityRole="region"
             accessible={true}
           >
             <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={navigateToWailingWall}
                 accessible={true}
                 accessibilityLabel="Go to Wailing Wall"
@@ -89,7 +90,7 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText 
+                <HeaderText
                   style={styles.wallTitle}
                   accessibilityRole="heading"
                   accessibilityLevel={3}
@@ -101,7 +102,7 @@ export const MainContent = ({
             <BodyText style={styles.wallDescription}>
               A place to submit the names of loved ones in the LGBTQ community
               so we can join in interceding for them in love and hope.{" "}
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={navigateToWailingWall}
                 accessible={true}
                 accessibilityLabel="Visit Wailing Wall"
@@ -115,13 +116,13 @@ export const MainContent = ({
           <View style={styles.wallDescriptionDivider} />
 
           {/* Testimony Wall description */}
-          <View 
+          <View
             style={styles.wallDescriptionColumn}
             accessibilityRole="region"
             accessible={true}
           >
             <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={navigateToTestimonyWall}
                 accessible={true}
                 accessibilityLabel="Go to Testimony Wall"
@@ -136,7 +137,7 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText 
+                <HeaderText
                   style={styles.wallTitle}
                   accessibilityRole="heading"
                   accessibilityLevel={3}
@@ -148,7 +149,7 @@ export const MainContent = ({
             <BodyText style={styles.wallDescription}>
               We believe these testimonies will reflect the transformative love
               of God in a real and tangible way.{" "}
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={navigateToTestimonyWall}
                 accessible={true}
                 accessibilityLabel="Visit Testimony Wall"
@@ -163,16 +164,18 @@ export const MainContent = ({
       <Divider style={styles.divider} />
 
       {/* Vision and Mission Section */}
-      <View 
+      <View
         style={styles.contentContainer}
         accessibilityRole="region"
         accessible={true}
         accessibilityLabel="Our Vision and Mission"
       >
         <View style={styles.screenReaderOnly}>
-          <Text accessibilityRole="heading" accessibilityLevel={2}>Our Vision and Mission</Text>
+          <Text accessibilityRole="heading" accessibilityLevel={2}>
+            Our Vision and Mission
+          </Text>
         </View>
-        
+
         {/* 2 images side by side */}
         <View style={styles.imagesContainer}>
           <View style={styles.imageWrapper}>
@@ -194,9 +197,9 @@ export const MainContent = ({
             />
           </View>
         </View>
-        
+
         {/* Title - Replaced text with image */}
-        <View 
+        <View
           style={styles.p2pImageContainer}
           accessibilityRole="heading"
           accessibilityLevel={3}
@@ -225,7 +228,7 @@ export const MainContent = ({
       </View>
 
       {/* Navigation Section */}
-      <View 
+      <View
         style={styles.logoWithIconsContainer}
         accessibilityRole="navigation"
         accessible={true}
@@ -282,10 +285,10 @@ export const MainContent = ({
 
 const styles = StyleSheet.create({
   screenReaderOnly: {
-    position: 'absolute',
+    position: "absolute",
     width: 1,
     height: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   contentContainer: {
     width: "100%",

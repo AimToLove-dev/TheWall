@@ -68,8 +68,8 @@ export const TestimonyWallScreen = () => {
   return (
     <View style={styles.container}>
       {/* SEO Component for web platforms */}
-      <SEO 
-        title="Testimony Wall | The Wall - Stories of Transformation and Hope" 
+      <SEO
+        title="Testimony Wall | The Wall - Stories of Transformation and Hope"
         description="Explore testimonies reflecting the transformative love of God. Read powerful stories of faith, hope, and love from the LGBTQ+ community and their journey with faith."
         image="https://yourwebsite.com/assets/bell.png"
       />
