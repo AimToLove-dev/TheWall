@@ -78,7 +78,7 @@ export const HomeScreen = ({ navigation }) => {
       <SEO
         title="The Wall - A Holy Revolution for the LGBTQ+ Community"
         description="The Wall provides a place to love, pray for, and evangelize the LGBTQ+ community through our Wailing Wall and Testimony Wall initiatives. Join our holy revolution of love and hope."
-        image="https://thewall-3de3b.web.app/assets/assets/TheWall.e2c20466bae5b3ef9afd5e2ea64cd3d9.png"
+        image="https://firebasestorage.googleapis.com/v0/b/thewall-3de3b.firebasestorage.app/o/preview.png?alt=media&token=f2c6b0d6-1f62-4451-adad-d22373a9c50c"
       />
 
       <ImageBackground
