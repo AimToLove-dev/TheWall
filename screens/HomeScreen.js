@@ -23,6 +23,7 @@ import {
   CaptionText,
   FormContainer,
   WobblingBell,
+  SEO,
 } from "components";
 import { getThemeColors } from "../styles/theme";
 import { AuthenticatedUserContext } from "providers";
@@ -73,6 +74,13 @@ export const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* SEO Component for web platforms */}
+      <SEO 
+        title="The Wall - A Holy Revolution for the LGBTQ+ Community" 
+        description="The Wall provides a place to love, pray for, and evangelize the LGBTQ+ community through our Wailing Wall and Testimony Wall initiatives. Join our holy revolution of love and hope."
+        image="https://yourwebsite.com/assets/TheWall.png" 
+      />
+
       <ImageBackground
         source={require("../assets/brickSeamless.png")}
         style={styles.backgroundImage}

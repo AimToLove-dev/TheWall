@@ -33,24 +33,53 @@ export const MainContent = ({
         marginHorizontal: "auto",
         width: "100%",
       }}
+      accessibilityRole="main"
+      accessible={true}
+      accessibilityLabel="The Wall - A Holy Revolution for the LGBTQ+ Community"
     >
-      {/* Header Image */}
-      <View style={styles.headerImageContainer}>
+      {/* Header Image - Main Page Title (H1 equivalent) */}
+      <View 
+        style={styles.headerImageContainer}
+        accessibilityRole="header"
+      >
         <Image
           source={require("../assets/header.png")}
           style={styles.headerImage}
           resizeMode="contain"
+          accessible={true}
+          accessibilityLabel="The Wall - Homepage Header"
         />
+        <View style={styles.screenReaderOnly}>
+          <Text accessibilityRole="heading" accessibilityLevel={1}>The Wall - A Holy Revolution</Text>
+        </View>
       </View>
 
       {/* Introduction Section */}
-      <View style={styles.introductionSection}>
+      <View 
+        style={styles.introductionSection}
+        accessibilityRole="region"
+        accessible={true}
+        accessibilityLabel="Our Mission Walls"
+      >
+        <View style={styles.screenReaderOnly}>
+          <Text accessibilityRole="heading" accessibilityLevel={2}>Our Mission Walls</Text>
+        </View>
+        
         {/* Two wall descriptions */}
         <View style={styles.wallDescriptionsContainer}>
           {/* Wailing Wall description */}
-          <View style={styles.wallDescriptionColumn}>
+          <View 
+            style={styles.wallDescriptionColumn}
+            accessibilityRole="region"
+            accessible={true}
+          >
             <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity onPress={navigateToWailingWall}>
+              <TouchableOpacity 
+                onPress={navigateToWailingWall}
+                accessible={true}
+                accessibilityLabel="Go to Wailing Wall"
+                accessibilityHint="Navigate to the Wailing Wall page"
+              >
                 <WobblingBell
                   imageSrc={require("../assets/megaphone.png")}
                   style={styles.wallIcon}
@@ -60,13 +89,23 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText style={styles.wallTitle}>Wailing Wall</HeaderText>
+                <HeaderText 
+                  style={styles.wallTitle}
+                  accessibilityRole="heading"
+                  accessibilityLevel={3}
+                >
+                  Wailing Wall
+                </HeaderText>
               </View>
             </View>
             <BodyText style={styles.wallDescription}>
               A place to submit the names of loved ones in the LGBTQ community
               so we can join in interceding for them in love and hope.{" "}
-              <TouchableOpacity onPress={navigateToWailingWall}>
+              <TouchableOpacity 
+                onPress={navigateToWailingWall}
+                accessible={true}
+                accessibilityLabel="Visit Wailing Wall"
+              >
                 <Text style={styles.visitLink}>Visit &gt;</Text>
               </TouchableOpacity>
             </BodyText>
@@ -76,9 +115,18 @@ export const MainContent = ({
           <View style={styles.wallDescriptionDivider} />
 
           {/* Testimony Wall description */}
-          <View style={styles.wallDescriptionColumn}>
+          <View 
+            style={styles.wallDescriptionColumn}
+            accessibilityRole="region"
+            accessible={true}
+          >
             <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity onPress={navigateToTestimonyWall}>
+              <TouchableOpacity 
+                onPress={navigateToTestimonyWall}
+                accessible={true}
+                accessibilityLabel="Go to Testimony Wall"
+                accessibilityHint="Navigate to the Testimony Wall page"
+              >
                 <WobblingBell
                   imageSrc={require("../assets/bell.png")}
                   style={styles.wallIcon}
@@ -88,13 +136,23 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText style={styles.wallTitle}>Testimony Wall</HeaderText>
+                <HeaderText 
+                  style={styles.wallTitle}
+                  accessibilityRole="heading"
+                  accessibilityLevel={3}
+                >
+                  Testimony Wall
+                </HeaderText>
               </View>
             </View>
             <BodyText style={styles.wallDescription}>
               We believe these testimonies will reflect the transformative love
               of God in a real and tangible way.{" "}
-              <TouchableOpacity onPress={navigateToTestimonyWall}>
+              <TouchableOpacity 
+                onPress={navigateToTestimonyWall}
+                accessible={true}
+                accessibilityLabel="Visit Testimony Wall"
+              >
                 <Text style={styles.visitLink}>Visit &gt;</Text>
               </TouchableOpacity>
             </BodyText>
@@ -104,8 +162,17 @@ export const MainContent = ({
 
       <Divider style={styles.divider} />
 
-      {/* Content as a single column */}
-      <View style={styles.contentContainer}>
+      {/* Vision and Mission Section */}
+      <View 
+        style={styles.contentContainer}
+        accessibilityRole="region"
+        accessible={true}
+        accessibilityLabel="Our Vision and Mission"
+      >
+        <View style={styles.screenReaderOnly}>
+          <Text accessibilityRole="heading" accessibilityLevel={2}>Our Vision and Mission</Text>
+        </View>
+        
         {/* 2 images side by side */}
         <View style={styles.imagesContainer}>
           <View style={styles.imageWrapper}>
@@ -113,6 +180,8 @@ export const MainContent = ({
               source={require("../assets/before.png")}
               style={[styles.columnImage, { scale: "none" }]}
               resizeMode="cover"
+              accessible={true}
+              accessibilityLabel="Before transformation image"
             />
           </View>
           <View style={styles.imageWrapper}>
@@ -120,15 +189,24 @@ export const MainContent = ({
               source={require("../assets/after.png")}
               style={[styles.columnImage, { scale: "none" }]}
               resizeMode="cover"
+              accessible={true}
+              accessibilityLabel="After transformation image"
             />
           </View>
         </View>
+        
         {/* Title - Replaced text with image */}
-        <View style={styles.p2pImageContainer}>
+        <View 
+          style={styles.p2pImageContainer}
+          accessibilityRole="heading"
+          accessibilityLevel={3}
+        >
           <Image
             source={require("../assets/p2p.png")}
             style={styles.p2pImage}
             resizeMode="contain"
+            accessible={true}
+            accessibilityLabel="Pain to Purpose"
           />
         </View>
 
@@ -146,12 +224,19 @@ export const MainContent = ({
         </BodyText>
       </View>
 
-      {/* Logo section with megaphone and bell on sides */}
-      <View style={styles.logoWithIconsContainer}>
+      {/* Navigation Section */}
+      <View 
+        style={styles.logoWithIconsContainer}
+        accessibilityRole="navigation"
+        accessible={true}
+        accessibilityLabel="Quick Navigation"
+      >
         {/* Megaphone - Left side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
           onPress={navigateToWailingWall}
+          accessible={true}
+          accessibilityLabel="Go to Wailing Wall"
         >
           <Image
             source={require("../assets/megaphone.png")}
@@ -167,6 +252,8 @@ export const MainContent = ({
               "https://give.tithe.ly/?formId=587270ba-6865-11ee-90fc-1260ab546d11"
             )
           }
+          accessible={true}
+          accessibilityLabel="Give Today - Support our mission"
         >
           <Image
             source={require("../assets/give.png")}
@@ -179,6 +266,8 @@ export const MainContent = ({
         <TouchableOpacity
           style={styles.sideIconContainer}
           onPress={navigateToTestimonyWall}
+          accessible={true}
+          accessibilityLabel="Go to Testimony Wall"
         >
           <Image
             source={require("../assets/bell.png")}
@@ -192,6 +281,12 @@ export const MainContent = ({
 };
 
 const styles = StyleSheet.create({
+  screenReaderOnly: {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    overflow: 'hidden',
+  },
   contentContainer: {
     width: "100%",
     marginVertical: 20,

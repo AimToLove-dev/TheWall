@@ -21,6 +21,7 @@ import {
 import BottomSheet from "./BottomSheet";
 import { ScrollableScreenView } from "./ScrollableScreenView";
 import { VerticalMarquee } from "./VerticalMarquee";
+import { SEO } from "./SEO";
 
 // Import animation components
 import { WobblingBell } from "./animations/WobblingBell";
@@ -77,4 +78,5 @@ export {
   WallButtons,
   WobblingBell,
   DashboardHeader,
+  SEO,
 };
