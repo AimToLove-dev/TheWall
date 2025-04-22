@@ -12,11 +12,15 @@ execSync("npx expo export", { stdio: "inherit" });
 console.log("🗺️ Generating sitemap...");
 execSync("node scripts/generate-sitemap.js", { stdio: "inherit" });
 
-// Step 3: Copy sitemap to the dist folder
-console.log("📋 Copying sitemap to distribution folder...");
+// Step 3: Copy sitemap and robots.txt to the dist folder
+console.log("📋 Copying sitemap and robots.txt to distribution folder...");
 const sitemapSource = path.join(__dirname, "..", "web-build-template", "sitemap.xml");
 const sitemapDest = path.join(__dirname, "..", "dist", "sitemap.xml");
+const robotsSource = path.join(__dirname, "..", "robots.txt");
+const robotsDest = path.join(__dirname, "..", "dist", "robots.txt");
+
 fs.copyFileSync(sitemapSource, sitemapDest);
+fs.copyFileSync(robotsSource, robotsDest);
 
 // Step 4: Post-process the HTML to inject SEO tags
 console.log("🔧 Injecting SEO metadata into HTML...");
