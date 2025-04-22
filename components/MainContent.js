@@ -110,15 +110,15 @@ export const MainContent = ({
         <View style={styles.imagesContainer}>
           <View style={styles.imageWrapper}>
             <Image
-              source={require("../assets/before.jpeg")}
-              style={styles.columnImage}
+              source={require("../assets/before.png")}
+              style={[styles.columnImage, { scale: "none" }]}
               resizeMode="cover"
             />
           </View>
           <View style={styles.imageWrapper}>
             <Image
               source={require("../assets/after.png")}
-              style={styles.columnImage}
+              style={[styles.columnImage, { scale: "none" }]}
               resizeMode="cover"
             />
           </View>
