@@ -124,11 +124,16 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                     rate={1.0}
                     volume={1.0}
                     isMuted={false}
-                    resizeMode="cover"
+                    resizeMode="contain"
                     shouldPlay={false}
                     isLooping={false}
                     useNativeControls
                     style={styles.image}
+                    videoStyle={{
+                      height: "100%",
+                      width: "100%",
+                      objectFit: "contain",
+                    }}
                     onPlaybackStatusUpdate={handleVideoPlaybackStatusUpdate}
                   />
                   {!isVideoPlaying && (
@@ -232,6 +237,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+    objectFit: "contain",
   },
   placeholderContainer: {
     aspectRatio: 1,

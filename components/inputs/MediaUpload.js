@@ -31,7 +31,7 @@ export const MediaUpload = ({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.8,
+      quality: 1,
     });
 
     if (!result.canceled) {

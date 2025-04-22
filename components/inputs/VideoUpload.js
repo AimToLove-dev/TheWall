@@ -93,7 +93,12 @@ export const VideoUpload = ({
         <View>
           <Video
             source={{ uri: video }}
-            style={{ width: 200, height: 150 }}
+            style={{ width: "100%", height: 200, objectFit: "contain" }}
+            videoStyle={{
+              height: "100%",
+              width: "100%",
+              objectFit: "contain",
+            }}
             useNativeControls
             resizeMode="contain"
           />

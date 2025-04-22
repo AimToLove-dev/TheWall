@@ -290,11 +290,16 @@ export const ReadTestimony = ({
                 rate={1.0}
                 volume={1.0}
                 isMuted={false}
-                resizeMode="cover"
+                resizeMode="contain"
                 shouldPlay={false}
                 isLooping={false}
                 useNativeControls
                 style={styles.video}
+                videoStyle={{
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "contain",
+                }}
               />
             ) : (
               <View style={styles.videoPlaceholder}>
