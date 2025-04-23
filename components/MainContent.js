@@ -239,6 +239,11 @@ export const MainContent = ({
       </View>
 
       {/* Navigation Section */}
+      <View style={styles.sectionHeaderContainer} accessibilityRole="header">
+        <HeaderText style={styles.sectionHeader}>
+          OTHER WAYS TO JOIN:
+        </HeaderText>
+      </View>
       <View
         style={styles.logoWithIconsContainer}
         accessibilityRole="navigation"
@@ -304,7 +309,7 @@ export const MainContent = ({
           />
           <HeaderText style={styles.iconTitle}>INVITE US</HeaderText>
           <Text style={styles.iconSubtitle}>
-            A sound of love and liberation
+            To Preach, Testify, and Release the sound of love and liberation
           </Text>
         </TouchableOpacity>
       </View>
@@ -453,5 +458,13 @@ const styles = StyleSheet.create({
   p2pImage: {
     width: "100%",
     height: 32,
+  },
+  sectionHeaderContainer: {
+    alignItems: "center",
+  },
+  sectionHeader: {
+    fontSize: fontSizes.medium,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
