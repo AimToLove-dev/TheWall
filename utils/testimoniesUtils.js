@@ -60,7 +60,7 @@ export const submitTestimony = async (testimonyData) => {
     };
 
     // Check if user is admin
-    const isAdmin = testimonyData.isAdmin === true;
+    const isAdmin = testimonyData.submittedByAdmin === true;
 
     if (isAdmin) {
       // For admins, continue to use auto-generated IDs
