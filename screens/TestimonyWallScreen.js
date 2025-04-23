@@ -7,6 +7,7 @@ import {
   Text,
   ImageBackground,
   View,
+  Linking,
 } from "react-native";
 import { ActivityIndicator, Surface } from "react-native-paper";
 import { TestimonyWall } from "components/testimony";
@@ -104,7 +105,9 @@ export const TestimonyWallScreen = () => {
           <CustomButton
             title="Add Testimony"
             variant="primary"
-            onPress={() => navigation.navigate("Auth")}
+            onPress={() =>
+              Linking.openURL("https://mailchi.mp/aimtolove/welcome-overcomer")
+            }
             style={{ flex: 1 }}
           />
         </View>

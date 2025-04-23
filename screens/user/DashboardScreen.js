@@ -7,6 +7,7 @@ import {
   useWindowDimensions,
   TouchableOpacity,
   Image,
+  Linking,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 
@@ -142,7 +143,7 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   const handleTestimonyPress = () => {
-    navigation.navigate("Testimony");
+    Linking.openURL("https://mailchi.mp/aimtolove/welcome-overcomer");
   };
 
   return (
