@@ -241,11 +241,17 @@ export const MainContent = ({
           accessible={true}
           accessibilityLabel="Go to Wailing Wall"
         >
-          <Image
-            source={require("../assets/megaphone.png")}
+          <WobblingBell
+            imageSrc={require("../assets/megaphone.png")}
             style={styles.sideIcon}
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={0}
           />
-          <Text style={styles.iconSubtitle}>Wailing Wall</Text>
+          <HeaderText style={styles.iconTitle}>BE LOVE</HeaderText>
+          <Text style={styles.iconSubtitle}>
+            Be empowered to love and evangelize the LGBTQ+
+          </Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
         <TouchableOpacity
@@ -256,13 +262,19 @@ export const MainContent = ({
             )
           }
           accessible={true}
-          accessibilityLabel="Give Today - Support our mission"
+          accessibilityLabel="Fund The Movement - Support our mission"
         >
-          <Image
-            source={require("../assets/give.png")}
+          <WobblingBell
+            imageSrc={require("../assets/give.png")}
             style={styles.sideIcon}
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={1000}
           />
-          <Text style={styles.iconSubtitle}>Give Today</Text>
+          <HeaderText style={styles.iconTitle}>FUND THE MOVEMENT</HeaderText>
+          <Text style={styles.iconSubtitle}>
+            Invest in Revival-Support Outreach to the LGBTQ+ Community
+          </Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
         {/* Bell - Right side */}
@@ -272,11 +284,17 @@ export const MainContent = ({
           accessible={true}
           accessibilityLabel="Go to Testimony Wall"
         >
-          <Image
-            source={require("../assets/bell.png")}
+          <WobblingBell
+            imageSrc={require("../assets/bell.png")}
             style={styles.sideIcon}
+            size={40}
+            wobbleDelay={3000}
+            startingDelay={2000}
           />
-          <Text style={styles.iconSubtitle}>Testimony Wall</Text>
+          <HeaderText style={styles.iconTitle}>INVITE US</HeaderText>
+          <Text style={styles.iconSubtitle}>
+            A sound of love and liberation
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -327,21 +345,21 @@ const styles = StyleSheet.create({
     hyphens: "auto",
   },
   verticalDivider: {
-    width: 1,
+    width: 2,
+    height: "100%",
     backgroundColor: "#000",
-    marginHorizontal: 5,
+    marginHorizontal: 10,
+    opacity: 0.7,
   },
   logoWithIconsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginVertical: 20,
-    padding: 10,
   },
   sideIconContainer: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
+
     padding: 10,
   },
   sideIcon: {
@@ -349,11 +367,19 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 5,
   },
-  iconSubtitle: {
-    fontSize: fontSizes.xsmall || 12,
+  iconTitle: {
+    fontSize: fontSizes.small,
     fontWeight: "bold",
     textAlign: "center",
     fontFamily: "XTypewriter-Regular",
+    letterSpacing: -0.5, // Condensed text spacing
+  },
+  iconSubtitle: {
+    fontSize: fontSizes.xsmall || 12,
+    fontWeight: "bold",
+    textAlign: "justify", // Justified text alignment
+    fontFamily: "XTypewriter-Regular",
+    hyphens: "auto",
   },
   headerImageContainer: {
     width: "100%",
