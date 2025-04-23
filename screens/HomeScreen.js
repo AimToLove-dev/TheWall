@@ -40,7 +40,7 @@ export const HomeScreen = ({ navigation }) => {
   const socialLinks = {
     facebook: "https://www.facebook.com/AIM2LOVE1",
     tiktok: "https://www.tiktok.com/@aimtolove",
-    youtube: "https://www.youtube.com/channel/UChpxx6QSAjC0jzDsvbvL4RA",
+    instagram: "https://www.instagram.com/aim_tolove",
     twitter: "https://twitter.com/aimtolove_?",
   };
 
@@ -249,22 +249,12 @@ export const HomeScreen = ({ navigation }) => {
                 <Ionicons name="logo-tiktok" size={24} color="#000000" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => Linking.openURL(socialLinks.youtube)}
+                onPress={() => Linking.openURL(socialLinks.instagram)}
               >
-                <Ionicons name="logo-youtube" size={24} color="#FF0000" />
+                <Ionicons name="logo-instagram" size={24} color="#FF0000" />
               </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL("https://www.linkedin.com/in/auerjj/")
-            }
-          >
-            <CaptionText style={styles.pageNumber}>
-              <Text style={styles.link}>created by JJ Auer</Text>
-            </CaptionText>
-          </TouchableOpacity>
           <Image
             source={require("../assets/pillars.png")}
             style={{
