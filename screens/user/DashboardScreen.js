@@ -146,7 +146,7 @@ export const DashboardScreen = ({ navigation }) => {
   };
 
   const handleTestimonyPress = () => {
-    Linking.openURL("https://mailchi.mp/aimtolove/welcome-overcomer");
+    Linking.openURL("https://mailchi.mp/aimtolove/welcome");
   };
 
   return (

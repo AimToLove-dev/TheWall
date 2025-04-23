@@ -106,7 +106,7 @@ export const TestimonyWallScreen = () => {
             title="Add Testimony"
             variant="primary"
             onPress={() =>
-              Linking.openURL("https://mailchi.mp/aimtolove/welcome-overcomer")
+              Linking.openURL("https://mailchi.mp/aimtolove/welcome")
             }
             style={{ flex: 1 }}
           />
