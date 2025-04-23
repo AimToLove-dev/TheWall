@@ -45,6 +45,9 @@ export const DashboardScreen = ({ navigation }) => {
   const isAdmin = user?.isAdmin || false;
 
   useEffect(() => {
+    if (!user?.emailVerified) {
+      navigation.replace("Home");
+    }
     // Redirect to admin dashboard if user is an admin
     if (isAdmin) {
       navigation.replace("DashboardAdmin");
@@ -151,7 +154,7 @@ export const DashboardScreen = ({ navigation }) => {
       <View style={styles.content}>
         <DashboardHeader
           title="Dashboard"
-          subtitle={`${greeting}, ${user?.displayName || "User"}`}
+          subtitle={greeting}
           onBackPress={handleBackPress}
           onSignOutPress={handleSignOut}
           colors={colors}

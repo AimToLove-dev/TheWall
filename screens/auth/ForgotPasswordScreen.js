@@ -40,8 +40,9 @@ export const ForgotPasswordScreen = ({ navigation }) => {
       .then(() => {
         Alert.alert(
           "Password Reset Email Sent",
-          "Check your email for a password reset link",
-          [{ text: "OK", onPress: () => navigation.goBack() }]
+          "Check your email for a password reset link"[
+            { text: "OK", onPress: () => navigation.goBack() }
+          ]
         );
       })
       .catch((error) => {

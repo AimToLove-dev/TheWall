@@ -1,19 +1,32 @@
 "use client";
 
-import { useContext, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { useContext, useState, useEffect } from "react";
+import { View, StyleSheet, Linking } from "react-native";
 import { useTheme } from "react-native-paper";
 import { BodyText, CustomButton } from "components";
 import { spacing } from "styles/theme";
-import { sendEmailVerification } from "firebase/auth";
+import { sendEmailVerification, signOut } from "firebase/auth";
 import { AuthenticatedUserContext } from "../../providers";
+import { auth } from "config";
+import { useNavigation } from "@react-navigation/native";
 
 export const EmailVerificationScreen = () => {
   const { user } = useContext(AuthenticatedUserContext);
   const [verificationSent, setVerificationSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showBackToLogin, setShowBackToLogin] = useState(false);
 
   const theme = useTheme();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (verificationSent) {
+      const timer = setTimeout(() => {
+        setShowBackToLogin(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [verificationSent]);
 
   const handleSendVerification = async () => {
     if (!user) return;
@@ -26,6 +39,20 @@ export const EmailVerificationScreen = () => {
       console.error("Error sending verification email:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBackToLogin = () => {
+    // Use Linking to navigate back to login, which will reload the app and refresh auth data
+    Linking.openURL("/login");
+  };
+
+  const handleCancelVerification = async () => {
+    try {
+      await signOut(auth);
+      navigation.navigate("Home");
+    } catch (error) {
+      console.error("Error during logout:", error);
     }
   };
 
@@ -59,8 +86,18 @@ export const EmailVerificationScreen = () => {
     },
     verificationButton: {
       minWidth: 200,
+      marginBottom: spacing.md,
+    },
+    backToLoginButton: {
+      minWidth: 200,
+      marginTop: spacing.lg,
+    },
+    cancelButton: {
+      minWidth: 200,
+      marginTop: spacing.md,
     },
   });
+
   return (
     <View style={styles.verificationContainer}>
       <BodyText style={styles.verificationTitle}>
@@ -72,8 +109,7 @@ export const EmailVerificationScreen = () => {
       {verificationSent ? (
         <BodyText style={styles.verificationSuccess}>
           Verification email sent! Please check your inbox and click the
-          verification link. After verifying, you may need to sign out and sign
-          back in.
+          verification link.
         </BodyText>
       ) : (
         <CustomButton
@@ -84,6 +120,20 @@ export const EmailVerificationScreen = () => {
           style={styles.verificationButton}
         />
       )}
+      {showBackToLogin && (
+        <CustomButton
+          title="Back to Login"
+          variant="primary"
+          onPress={handleBackToLogin}
+          style={styles.backToLoginButton}
+        />
+      )}
+      <CustomButton
+        title="Cancel"
+        variant="outline"
+        onPress={handleCancelVerification}
+        style={styles.cancelButton}
+      />
     </View>
   );
 };
