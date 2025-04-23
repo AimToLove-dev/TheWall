@@ -5,14 +5,13 @@ import { getThemeColors } from "../styles/theme";
 
 const theme = getThemeColors();
 
-export const ComingSoon = ({ 
-  title, 
-  description, 
-  imageSrc,
-  onGoBack 
-}) => {
+export const ComingSoon = ({ title, description, imageSrc, onGoBack }) => {
   return (
-    <View style={styles.container} accessible={true} accessibilityLabel={`${title} - Coming Soon Page`}>
+    <View
+      style={styles.container}
+      accessible={true}
+      accessibilityLabel={`${title} - Coming Soon Page`}
+    >
       <View style={styles.content}>
         <Image
           source={imageSrc}
@@ -21,21 +20,21 @@ export const ComingSoon = ({
           accessible={true}
           accessibilityLabel={`${title} icon`}
         />
-        
-        <HeaderText style={styles.title} accessibilityRole="heading" accessibilityLevel={1}>
+
+        <HeaderText
+          style={styles.title}
+          accessibilityRole="heading"
+          accessibilityLevel={1}
+        >
           {title}
         </HeaderText>
-        
+
         <View style={styles.divider} />
-        
-        <BodyText style={styles.description}>
-          {description}
-        </BodyText>
-        
-        <BodyText style={styles.comingSoonText}>
-          Coming Soon
-        </BodyText>
-        
+
+        <BodyText style={styles.description}>{description}</BodyText>
+
+        <BodyText style={styles.comingSoonText}>Coming Soon</BodyText>
+
         <CustomButton
           title="Go Back"
           onPress={onGoBack}
@@ -97,5 +96,5 @@ const styles = StyleSheet.create({
   },
   goBackButton: {
     marginTop: 20,
-  }
+  },
 });
