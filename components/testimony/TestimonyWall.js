@@ -8,6 +8,7 @@ import {
   FlatList,
   ImageBackground,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -59,6 +60,10 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
   const navigateToReadTestimony = (testimony) => {
     // TODO: Implement navigation to read testimony details
     //navigation.navigate("ReadTestimony", { testimony });
+  };
+
+  const navigateToHome = () => {
+    navigation.navigate("Home");
   };
 
   const styles = StyleSheet.create({
@@ -151,11 +156,17 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("assets/TheWall.png")}
-        style={styles.mastheadImage}
-        resizeMode="contain"
-      />
+      <TouchableOpacity
+        onPress={navigateToHome}
+        accessibleRole="button"
+        accessibilityLabel="Go to home page"
+      >
+        <Image
+          source={require("assets/TheWall.png")}
+          style={styles.mastheadImage}
+          resizeMode="contain"
+        />
+      </TouchableOpacity>
       <FlatList
         ref={flatListRef}
         data={testimonies}

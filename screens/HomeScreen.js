@@ -142,7 +142,7 @@ export const HomeScreen = ({ navigation }) => {
 
                     {/* Center text */}
                     <Text style={styles.theWallLoveText}>
-                      From Pride to Promise
+                      FROM PRIDE TO PROMISE
                     </Text>
 
                     {/* Right side flames */}
