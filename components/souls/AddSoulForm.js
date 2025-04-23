@@ -244,7 +244,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                 )}
 
                 <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-                  Loved One's Information
+                  LGBTQ+ Friend or Family Member
                 </Text>
 
                 <View
