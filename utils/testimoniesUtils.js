@@ -117,7 +117,7 @@ export const linkTestimonyToSoulRecord = async (testimonyId, soulId) => {
  */
 export const getAllTestimonies = async (
   sortBy = "createdAt",
-  sortDirection = "desc"
+  sortDirection = "asc"
 ) => {
   try {
     const testimonies = await queryDocuments(
