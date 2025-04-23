@@ -18,6 +18,7 @@ import {
 import { Divider } from "react-native-paper";
 import { fontSizes } from "../styles/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -25,6 +26,16 @@ export const MainContent = ({
   navigateToWailingWall,
   navigateToTestimonyWall,
 }) => {
+  const navigation = useNavigation();
+
+  const navigateToBeLove = () => {
+    navigation.navigate("BeLove");
+  };
+
+  const navigateToInviteUs = () => {
+    navigation.navigate("InviteUs");
+  };
+
   return (
     <View
       style={{
@@ -237,12 +248,12 @@ export const MainContent = ({
         {/* Megaphone - Left side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
-          onPress={navigateToWailingWall}
+          onPress={navigateToBeLove}
           accessible={true}
-          accessibilityLabel="Go to Wailing Wall"
+          accessibilityLabel="Go to Be Love"
         >
           <WobblingBell
-            imageSrc={require("../assets/megaphone.png")}
+            imageSrc={require("../assets/flame.png")}
             style={styles.sideIcon}
             size={40}
             wobbleDelay={3000}
@@ -280,12 +291,12 @@ export const MainContent = ({
         {/* Bell - Right side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
-          onPress={navigateToTestimonyWall}
+          onPress={navigateToInviteUs}
           accessible={true}
-          accessibilityLabel="Go to Testimony Wall"
+          accessibilityLabel="Go to Invite Us"
         >
           <WobblingBell
-            imageSrc={require("../assets/bell.png")}
+            imageSrc={require("../assets/connect.png")}
             style={styles.sideIcon}
             size={40}
             wobbleDelay={3000}

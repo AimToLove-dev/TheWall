@@ -6,6 +6,8 @@ export { EmailVerificationScreen } from "./auth/EmailVerification";
 
 export { WailingWallScreen } from "./WailingWallScreen";
 export { TestimonyWallScreen } from "./TestimonyWallScreen";
+export { BeLoveScreen } from "./BeLoveScreen";
+export { InviteUsScreen } from "./InviteUsScreen";
 export { DashboardScreen } from "./user/DashboardScreen";
 export { DashboardAdminScreen } from "./user/DashboardAdminScreen";
 export { MyWallScreen } from "./user/MyWallScreen";

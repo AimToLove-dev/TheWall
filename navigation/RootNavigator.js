@@ -11,7 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { AuthStack } from "./AuthStack";
 import { UserStack } from "./UserStack";
-import { HomeScreen, WailingWallScreen, TestimonyWallScreen } from "../screens";
+import { HomeScreen, WailingWallScreen, TestimonyWallScreen, BeLoveScreen, InviteUsScreen } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
 // import { Header } from "components";
 import { auth } from "config";
@@ -91,6 +91,8 @@ export const RootNavigator = () => {
         Home: "",
         WailingWall: "wailing-wall",
         TestimonyWall: "testimonies",
+        BeLove: "be-love",
+        InviteUs: "invite-us",
         Auth: {
           screens: {
             Login: "login",
@@ -116,6 +118,10 @@ export const RootNavigator = () => {
         {/* Wailing Wall screen is always accessible */}
         <Stack.Screen name="WailingWall" component={WailingWallScreen} />
         <Stack.Screen name="TestimonyWall" component={TestimonyWallScreen} />
+        
+        {/* Our new screens */}
+        <Stack.Screen name="BeLove" component={BeLoveScreen} />
+        <Stack.Screen name="InviteUs" component={InviteUsScreen} />
 
         {/* Auth stack for login/signup */}
         <Stack.Screen name="Auth" component={AuthStack} />
