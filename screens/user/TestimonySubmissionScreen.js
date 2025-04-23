@@ -62,11 +62,10 @@ export const TestimonySubmissionScreen = ({ navigation }) => {
           );
           setUserTestimonySubmission(testimonySubmissions);
 
-          // Admin users can continue to use submissions as before
-          if (isAdmin && testimonySubmissions.length > 0) {
-            const latestTestimony = testimonySubmissions[0]; // Assuming sorted by date desc
-            setCurrentTestimony(latestTestimony);
-            setIsEditing(false);
+          // Admin users edit all testimonies
+          if (isAdmin) {
+            setCurrentTestimony(null);
+            setIsEditing(true);
             setLoadingTestimonies(false);
             return;
           }
