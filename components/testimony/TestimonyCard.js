@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -22,6 +22,53 @@ export const TestimonyCard = ({ item, index, onPress }) => {
   const [isFullscreen, setIsFullscreen] = useState(false); // Add fullscreen state
   const videoRef = useRef(null);
 
+  // Effect to add fullscreen change event listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      // Check if we're exiting fullscreen
+      if (isFullscreen && !document.fullscreenElement && videoRef.current) {
+        videoRef.current.pauseAsync();
+        setIsVideoPlaying(false);
+      }
+
+      // Update fullscreen state
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    // Add event listeners for fullscreen changes
+    if (Platform.OS === "web") {
+      document.addEventListener("fullscreenchange", handleFullscreenChange);
+      document.addEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange
+      );
+      document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+      document.addEventListener("MSFullscreenChange", handleFullscreenChange);
+    }
+
+    // Clean up event listeners when component unmounts
+    return () => {
+      if (Platform.OS === "web") {
+        document.removeEventListener(
+          "fullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "webkitfullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "mozfullscreenchange",
+          handleFullscreenChange
+        );
+        document.removeEventListener(
+          "MSFullscreenChange",
+          handleFullscreenChange
+        );
+      }
+    };
+  }, [isFullscreen]);
+
   // Get the testimony text
   const fullText = item.testimony || "";
   const previewText = fullText
@@ -33,11 +80,20 @@ export const TestimonyCard = ({ item, index, onPress }) => {
     setExpanded(!expanded);
   };
 
-  // Function to handle video playback state
+  // Function to handle video playback status update
   const handleVideoPlaybackStatusUpdate = (status) => {
     setIsVideoPlaying(status.isPlaying);
+
     // Check if fullscreen status changed
     if (status.fullscreen !== undefined && status.fullscreen !== isFullscreen) {
+      // When exiting fullscreen, pause the video first before updating state
+      if (isFullscreen && !status.fullscreen && videoRef.current) {
+        videoRef.current.pauseAsync();
+        // Update the playing status to reflect the paused state
+        setIsVideoPlaying(false);
+      }
+
+      // Update fullscreen state after handling the pause logic
       setIsFullscreen(status.fullscreen);
     }
   };
@@ -49,8 +105,26 @@ export const TestimonyCard = ({ item, index, onPress }) => {
         videoRef.current.pauseAsync();
       } else {
         videoRef.current.playAsync();
+        // Enable fullscreen on all mobile devices regardless of screen size
+        if (Platform.OS === "web" && isMobileDevice()) {
+          videoRef.current.presentFullscreenPlayer();
+        }
       }
     }
+  };
+
+  // Helper function to detect mobile devices or small screens
+  const isMobileDevice = () => {
+    // Check for mobile device via user agent
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isMobile = /android|iphone|ipad|ipod|blackberry|windows phone/i.test(
+      userAgent
+    );
+
+    // Consider small screens (width < 768px) as "mobile" for a better viewing experience
+    const isSmallScreen = window.innerWidth < 768;
+
+    return isMobile || isSmallScreen;
   };
 
   return (
