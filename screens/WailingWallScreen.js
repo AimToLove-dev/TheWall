@@ -13,95 +13,85 @@ import {
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
-import { BottomSheet, VerticalMarquee, WallButtons, SEO } from "components";
+import { BottomSheet, VerticalMarquee, WallButtons } from "components";
 import { AddSoulForm } from "components";
 import { getAllSouls } from "utils";
 
-// Names component to display in a newspaper-like format
+// Names component to display in a credits-style format
 const NewspaperColumn = ({ souls }) => {
   const { width } = useWindowDimensions();
 
-  // Calculate column width based on screen size
-  const getColumnWidth = () => {
-    if (width < 600) {
-      // Extra small/small screens (mobile) - 1/2 screen width
-      return "50%";
-    } else if (width < 960) {
-      // Medium screens (tablets) - 1/3 screen width
-      return "33%";
-    } else {
-      // Large screens (desktop) - 1/4 screen width
-      return "25%";
-    }
-  };
-
-  // Lorem ipsum paragraphs
-  const loremIpsum = [
-    "The Spirit of the Sovereign Lord is on me, because the Lord has anointed me to proclaim good news to the poor. He has sent me to bind up the brokenhearted, to proclaim freedom for the captives and release from darkness for the prisoners, to proclaim the year of the Lord's favor and the day of vengeance of our God, to comfort all who mourn, and provide for those who grieve in Zion— to bestow on them a crown of beauty instead of ashes, the oil of joy instead of mourning, and a garment of praise instead of a spirit of despair. They will be called oaks of righteousness, a planting of the Lord for the display of his splendor.",
-
-    "They will rebuild the ancient ruins and restore the places long devastated; they will renew the ruined cities that have been devastated for generations. Strangers will shepherd your flocks; foreigners will work your fields and vineyards. And you will be called priests of the Lord, you will be named ministers of our God. You will feed on the wealth of nations, and in their riches you will boast.",
-
-    "Instead of your shame you will receive a double portion, and instead of disgrace you will rejoice in your inheritance. And so you will inherit a double portion in your land, and everlasting joy will be yours. For I, the Lord, love justice; I hate robbery and wrongdoing. In my faithfulness I will reward my people and make an everlasting covenant with them.",
-
-    "Their descendants will be known among the nations and their offspring among the peoples. All who see them will acknowledge that they are a people the Lord has blessed. I delight greatly in the Lord; my soul rejoices in my God. For he has clothed me with garments of salvation and arrayed me in a robe of his righteousness, as a bridegroom adorns his head like a priest, and as a bride adorns herself with her jewels.",
-
-    "For as the soil makes the sprout come up and a garden causes seeds to grow, so the Sovereign Lord will make righteousness and praise spring up before all nations.",
-  ];
-
-  // Create paragraphs with soul names injected
+  // Create content with soul names in two columns, credits style
   const createNewspaperContent = () => {
     if (!souls || souls.length === 0) {
-      return <Text style={styles.newspaperText}>{loremIpsum.join(" ")}</Text>;
-    }
-
-    // Create one long paragraph from all lorem ipsum text
-    const longParagraph = loremIpsum.join(" ");
-    const words = longParagraph.split(" ");
-    const wordGroups = [];
-
-    // Calculate interval to space out names evenly
-    const interval = Math.floor(words.length / (souls.length + 1));
-
-    // Insert names between words at calculated intervals
-    let currentSoulIndex = 0;
-    for (let i = 0; i < words.length; i++) {
-      if (i > 0 && i % interval === 0 && currentSoulIndex < souls.length) {
-        // Add a soul name
-        const soul = souls[currentSoulIndex];
-        // Check if the soul has a testimony ID and render it in red if it does
-        const hasTestimony =
-          soul.testimonyId !== null && soul.testimonyId !== undefined;
-
-        wordGroups.push(
-          <Text
-            key={`soul-${currentSoulIndex}`}
-            style={[
-              styles.soulNameInText,
-              hasTestimony && styles.soulNameWithTestimony,
-            ]}
-          >
-            {souls[currentSoulIndex].name}
-          </Text>
-        );
-        currentSoulIndex++;
-      }
-
-      // Add the current word
-      wordGroups.push(
-        <Text key={`word-${i}`} style={styles.newspaperText}>
-          {i > 0 ? " " : ""}
-          {words[i]}
-        </Text>
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.noSoulsText}>Add names to the wall...</Text>
+        </View>
       );
     }
 
-    return <Text style={styles.paragraphContainer}>{wordGroups}</Text>;
+    // Divide souls into left and right columns
+    const leftColumnSouls = [];
+    const rightColumnSouls = [];
+
+    souls.forEach((soul, index) => {
+      if (index % 2 === 0) {
+        leftColumnSouls.push(soul);
+      } else {
+        rightColumnSouls.push(soul);
+      }
+    });
+
+    return (
+      <View style={styles.creditsContainer}>
+        {/* Left column - right aligned */}
+        <View style={styles.creditsColumn}>
+          {leftColumnSouls.map((soul, index) => {
+            const hasTestimony =
+              soul.testimonyId !== null && soul.testimonyId !== undefined;
+
+            return (
+              <Text
+                key={`left-${index}`}
+                style={[
+                  styles.leftColumnName,
+                  hasTestimony && styles.soulNameWithTestimony,
+                ]}
+              >
+                {soul.name}
+              </Text>
+            );
+          })}
+        </View>
+
+        {/* Right column - left aligned */}
+        <View style={styles.creditsColumn}>
+          {rightColumnSouls.map((soul, index) => {
+            const hasTestimony =
+              soul.testimonyId !== null && soul.testimonyId !== undefined;
+
+            return (
+              <Text
+                key={`right-${index}`}
+                style={[
+                  styles.rightColumnName,
+                  hasTestimony && styles.soulNameWithTestimony,
+                ]}
+              >
+                {soul.name}
+              </Text>
+            );
+          })}
+        </View>
+      </View>
+    );
   };
 
   return (
-    <View style={[styles.newspaperContainer, { width: getColumnWidth() }]}>
+    <View style={[styles.newspaperContainer, { width: "min(90vw,  400px)" }]}>
       <ImageBackground
-        source={require("../assets/paper.jpg")}
+        source={require("../assets/isaiah.png")}
         style={styles.backgroundImage}
         resizeMode="repeat"
       >
@@ -112,14 +102,26 @@ const NewspaperColumn = ({ souls }) => {
 };
 
 export const WailingWallScreen = () => {
-  const [isPaused, setIsPaused] = useState(false);
+  const [scrollSpeed, setScrollSpeed] = useState(30); // Default speed of 30px/s
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0); // Key to force WallButtons to remount
   const navigation = useNavigation();
 
   // Add state for souls with proper loading
   const [souls, setSouls] = useState([]);
+
+  // Fisher-Yates shuffle algorithm to randomize soul names
+  const shuffleArray = (array) => {
+    // Create a copy of the array to avoid mutating the original
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap elements
+    }
+    return shuffled;
+  };
 
   // Load real souls from database
   useEffect(() => {
@@ -131,7 +133,7 @@ export const WailingWallScreen = () => {
         // Get all souls
         const loadedSouls = await getAllSouls();
 
-        setSouls(loadedSouls);
+        setSouls(shuffleArray(loadedSouls));
       } catch (err) {
         console.error("Error loading souls:", err);
         setError("Failed to load souls. Please try again.");
@@ -153,7 +155,7 @@ export const WailingWallScreen = () => {
           // Get all souls
           const loadedSouls = await getAllSouls();
 
-          setSouls(loadedSouls);
+          setSouls(shuffleArray(loadedSouls));
         } catch (err) {
           console.error("Error loading souls:", err);
           setError("Failed to load souls. Please try again.");
@@ -178,7 +180,8 @@ export const WailingWallScreen = () => {
   };
 
   const handleTogglePause = useCallback(() => {
-    setIsPaused((prev) => !prev);
+    setScrollSpeed((prevSpeed) => (prevSpeed === 0 ? 30 : 0)); // Toggle between 0 and 30
+    setAnimationKey((prevKey) => prevKey + 1); // Increment animation key to restart animation
   }, []);
 
   // Toggle bottom sheet function
@@ -186,23 +189,20 @@ export const WailingWallScreen = () => {
     setBottomSheetVisible((prev) => !prev);
   }, []);
 
-  const calculateContentHeightMultiplier = (soulCount) => {
-    const { width } = useWindowDimensions();
-    if (width > 600) {
-      // Medium screens need moderate space
-      if (width < 960) {
-        return 0.5 + Math.max(1, soulCount / 15);
-      }
-      // Large screens need less space
-      return Math.max(1, soulCount / 20);
-    }
-    // Small screens keep original multiplier
-    return 1.3 + Math.max(1, soulCount / 10);
+  // Calculate the actual content height in pixels
+  const calculateContentHeight = (soulCount) => {
+    const ROW_HEIGHT = 30; // Height per row in pixels
+    const MARGIN = 4;
+    // Calculate how many rows we need (half the total souls since we have 2 columns)
+    const rowsNeeded = Math.ceil(soulCount / 2);
+
+    // Calculate total height needed in pixels
+    // Add some padding for better appearance
+    return rowsNeeded * (ROW_HEIGHT + MARGIN);
   };
 
   return (
     <View style={styles.container}>
-
       <ImageBackground
         source={require("../assets/brickSeamless.png")}
         style={styles.backgroundImage}
@@ -220,11 +220,8 @@ export const WailingWallScreen = () => {
             >
               <VerticalMarquee
                 style={styles.marqueeContainer}
-                duration={50000}
-                isPaused={isPaused}
-                contentHeightMultiplier={calculateContentHeightMultiplier(
-                  souls.length
-                )}
+                speed={scrollSpeed} // Speed in pixels per second instead of duration
+                contentHeight={calculateContentHeight(souls.length)}
               >
                 <View style={styles.columnContainer}>
                   <NewspaperColumn souls={souls} />
@@ -236,6 +233,7 @@ export const WailingWallScreen = () => {
       </ImageBackground>
       {/* Wall Buttons - Both Back and Plus buttons */}
       <WallButtons
+        key={animationKey} // Use animation key to force remount
         onPlusPress={toggleBottomSheet}
         backNavigateTo="Home"
         fadeAnimation={true}
@@ -331,32 +329,61 @@ const styles = StyleSheet.create({
     alignSelf: "center", // Center the column horizontally
     boxShadow: "rgba(6, 24, 44, 0.8) 0px 0 6px -1px",
   },
-  newspaperText: {
-    fontSize: 16,
-    fontFamily: "XTypewriter-Regular",
-    color: "rgba(0, 0, 0, 0.2)", // Much more transparent for lorem ipsum text
-    lineHeight: 24,
-    textAlign: "justify",
+  creditsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
   },
-  paragraphContainer: {
-    padding: "1em",
-    textAlign: "justify",
-    boxShadow: "rgba(6, 24, 44, 0.8) 0px -10px 4px 0px inset",
-    paddingBottom: "100vh",
+  creditsColumn: {
+    flex: 1,
+    justifyContent: "flex-start",
   },
-  soulNameInText: {
+  leftColumnName: {
+    textAlign: "right",
     fontSize: 18,
     fontFamily: "XTypewriter-Regular",
     fontWeight: "bold",
     color: "rgba(0, 0, 0, 1)", // Fully opaque for soul names
-    paddingHorizontal: 4,
+    paddingRight: 12,
+    height: 30, // Fixed row height
+    lineHeight: 30, // Aligns text vertically in the center
+    marginVertical: 2, // Small spacing between names
+  },
+  rightColumnName: {
+    textAlign: "left",
+    fontSize: 18,
+    fontFamily: "XTypewriter-Regular",
+    fontWeight: "bold",
+    color: "rgba(0, 0, 0, 1)", // Fully opaque for soul names
+    paddingLeft: 12,
+    height: 30, // Fixed row height
+    lineHeight: 30, // Aligns text vertically in the center
+    marginVertical: 2, // Small spacing between names
   },
   soulNameWithTestimony: {
     color: "red", // Render names with testimony IDs in red
+  },
+  noSoulsText: {
+    fontSize: 18,
+    fontFamily: "XTypewriter-Regular",
+    fontStyle: "italic",
+    color: "rgba(0, 0, 0, 0.5)", // Semi-transparent for no souls message
+  },
+  separator: {
+    fontSize: 18,
+    fontFamily: "XTypewriter-Regular",
+    color: "rgba(0, 0, 0, 0.7)", // Slightly transparent for separator
   },
   columnContainer: {
     width: "100%",
     alignItems: "center", // Center the column in the available space
     justifyContent: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    minHeight: 100,
   },
 });

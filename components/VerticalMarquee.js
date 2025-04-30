@@ -6,7 +6,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-// Vertical Marquee Implementation - Modified for dynamic content height
+// Vertical Marquee Implementation - Modified for speed-based scrolling
 const TranslatedElement = ({
   index,
   children,
@@ -43,23 +43,35 @@ const TranslatedElement = ({
   );
 };
 
-const ChildrenScroller = ({ duration, contentHeight, children, isPaused }) => {
+const ChildrenScroller = ({ speed, contentHeight, children }) => {
   const offset = useSharedValue(0);
   const [cycleCount, setCycleCount] = useState(0);
   const lastCycleRef = useRef(-1);
+  const lastFrameTimestamp = useRef(null);
 
   // Use a frame callback for smooth animation
   useFrameCallback((i) => {
-    // Only update animation if not paused
-    if (!isPaused) {
-      const timeSincePreviousFrame = i.timeSincePreviousFrame ?? 16;
-      // Previous offset value
+    // If this is the first frame or we're resuming from pause
+    if (lastFrameTimestamp.current === null) {
+      lastFrameTimestamp.current = i.timestamp;
+      return;
+    }
+
+    // Only update animation if speed is not zero
+    if (speed > 0) {
+      // Calculate time passed since the last frame (in milliseconds)
+      const timePassed = i.timestamp - lastFrameTimestamp.current;
+
+      // Calculate pixels to move based on speed (pixels per second)
+      const pixelsToMove = (speed * timePassed) / 1000;
+
+      // Previous offset value for cycle detection
       const prevOffset = offset.value;
 
-      // Move the content upward (negative value)
-      offset.value += (timeSincePreviousFrame * contentHeight) / duration;
+      // Move the content upward
+      offset.value += pixelsToMove;
 
-      // Check if we've completed a cycle (when offset jumps from near contentHeight back to 0)
+      // Check if we've completed a cycle
       if (
         prevOffset > 0.9 * contentHeight &&
         offset.value % contentHeight < 0.1 * contentHeight
@@ -73,9 +85,17 @@ const ChildrenScroller = ({ duration, contentHeight, children, isPaused }) => {
 
       offset.value = offset.value % contentHeight;
     }
+
+    // Always update the timestamp, even when paused
+    lastFrameTimestamp.current = i.timestamp;
   }, true);
 
-  // Always use 3 elements for smooth looping (previous, current, next)
+  // Reset timestamp when speed changes (to handle pause/resume)
+  useEffect(() => {
+    lastFrameTimestamp.current = null;
+  }, [speed === 0]); // Only trigger when pausing state changes
+
+  // Always use 3 elements for smooth looping
   const count = 3;
   const renderChild = (index) => (
     <TranslatedElement
@@ -93,18 +113,17 @@ const ChildrenScroller = ({ duration, contentHeight, children, isPaused }) => {
 };
 
 export const VerticalMarquee = ({
-  duration = 3000,
+  speed = 25, // Default speed in pixels per second (instead of duration)
   children,
   style,
-  isPaused,
-  contentHeightMultiplier = 2, // Default multiplier for backward compatibility
+  contentHeight, // Direct contentHeight parameter
 }) => {
   const [screenHeight, setScreenHeight] = useState(
     Dimensions.get("window").height
   );
 
-  // Calculate content height based on screen height and multiplier
-  const contentHeight = screenHeight * contentHeightMultiplier;
+  // Ensure content height is at least 100vh (screen height)
+  const effectiveContentHeight = Math.max(contentHeight || 0, screenHeight);
 
   // Update screen height when dimensions change
   useEffect(() => {
@@ -123,11 +142,7 @@ export const VerticalMarquee = ({
       }}
       pointerEvents="box-none"
     >
-      <ChildrenScroller
-        duration={duration}
-        contentHeight={contentHeight}
-        isPaused={isPaused}
-      >
+      <ChildrenScroller speed={speed} contentHeight={effectiveContentHeight}>
         {children}
       </ChildrenScroller>
     </View>

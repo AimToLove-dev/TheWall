@@ -17,7 +17,7 @@ export const WallButtons = ({
     if (fadeAnimation) {
       // Start the fade animation
       Animated.timing(fadeAnim, {
-        toValue: 0.2, // Fade to 20% opacity
+        toValue: 0,
         duration: 10000, // 10 seconds
         useNativeDriver: true,
       }).start();
@@ -35,7 +35,7 @@ export const WallButtons = ({
       fadeAnim.setValue(1);
       // Start fade animation again
       Animated.timing(fadeAnim, {
-        toValue: 0.2,
+        toValue: 0,
         duration: 10000,
         useNativeDriver: true,
       }).start();
@@ -51,7 +51,7 @@ export const WallButtons = ({
       fadeAnim.setValue(1);
       // Start fade animation again
       Animated.timing(fadeAnim, {
-        toValue: 0.2,
+        toValue: 0,
         duration: 10000,
         useNativeDriver: true,
       }).start();
