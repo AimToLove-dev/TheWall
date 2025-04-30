@@ -171,7 +171,7 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
         ref={flatListRef}
         data={testimonies}
         renderItem={renderItem}
-        keyExtractor={(item, index) => `testimony-${item.id || index}`}
+        keyExtractor={(item, index) => `testimony-${index}`}
         contentContainerStyle={styles.listContent}
         onEndReached={_loadMoreContentAsync}
         onEndReachedThreshold={0.5}
