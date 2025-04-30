@@ -237,6 +237,7 @@ export const WailingWallScreen = () => {
         onPlusPress={toggleBottomSheet}
         backNavigateTo="Home"
         fadeAnimation={true}
+        minOpacity={0}
       />
       {/* Bottom Sheet - rendered outside the ImageBackground for proper layering */}
       <BottomSheet isVisible={isBottomSheetVisible} onClose={toggleBottomSheet}>

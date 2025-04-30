@@ -8,6 +8,7 @@ export const WallButtons = ({
   onPlusPress,
   backNavigateTo = "Home",
   fadeAnimation = true,
+  minOpacity = 0.2,
 }) => {
   const navigation = useNavigation();
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -17,7 +18,7 @@ export const WallButtons = ({
     if (fadeAnimation) {
       // Start the fade animation
       Animated.timing(fadeAnim, {
-        toValue: 0,
+        toValue: minOpacity,
         duration: 10000, // 10 seconds
         useNativeDriver: true,
       }).start();
@@ -35,7 +36,7 @@ export const WallButtons = ({
       fadeAnim.setValue(1);
       // Start fade animation again
       Animated.timing(fadeAnim, {
-        toValue: 0,
+        toValue: minOpacity,
         duration: 10000,
         useNativeDriver: true,
       }).start();
@@ -51,7 +52,7 @@ export const WallButtons = ({
       fadeAnim.setValue(1);
       // Start fade animation again
       Animated.timing(fadeAnim, {
-        toValue: 0,
+        toValue: minOpacity,
         duration: 10000,
         useNativeDriver: true,
       }).start();
