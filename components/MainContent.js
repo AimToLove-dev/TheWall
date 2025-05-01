@@ -28,8 +28,8 @@ export const MainContent = ({
 }) => {
   const navigation = useNavigation();
 
-  const navigateToBeLove = () => {
-    navigation.navigate("BeLove");
+  const navigateToResources = () => {
+    navigation.navigate("Resources");
   };
 
   const navigateToInviteUs = () => {
@@ -250,12 +250,12 @@ export const MainContent = ({
         accessible={true}
         accessibilityLabel="Quick Navigation"
       >
-        {/* Megaphone - Left side */}
+        {/* Resources - Left side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
-          onPress={navigateToBeLove}
+          onPress={navigateToResources}
           accessible={true}
-          accessibilityLabel="Go to Be Love"
+          accessibilityLabel="Go to Resources"
         >
           <WobblingBell
             imageSrc={require("../assets/flame.png")}
@@ -264,9 +264,9 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={0}
           />
-          <HeaderText style={styles.iconTitle}>BE LOVE</HeaderText>
+          <HeaderText style={styles.iconTitle}>RESOURCES</HeaderText>
           <Text style={styles.iconSubtitle}>
-            Be empowered to love and evangelize the LGBTQ+
+            Access materials to help love and evangelize the LGBTQ+
           </Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />

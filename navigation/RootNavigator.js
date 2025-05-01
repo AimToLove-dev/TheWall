@@ -15,7 +15,7 @@ import {
   HomeScreen,
   WailingWallScreen,
   TestimonyWallScreen,
-  BeLoveScreen,
+  ResourcesScreen,
   InviteUsScreen,
 } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
@@ -97,7 +97,7 @@ export const RootNavigator = () => {
         Home: "",
         WailingWall: "wailing-wall",
         TestimonyWall: "testimonies",
-        BeLove: "be-love",
+        Resources: "resources",
         InviteUs: "invite-us",
         Auth: {
           screens: {
@@ -126,7 +126,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="TestimonyWall" component={TestimonyWallScreen} />
 
         {/* Our new screens */}
-        <Stack.Screen name="BeLove" component={BeLoveScreen} />
+        <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="InviteUs" component={InviteUsScreen} />
 
         {/* Auth stack for login/signup */}

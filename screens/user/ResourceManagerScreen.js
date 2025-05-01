@@ -1,67 +1,44 @@
 "use client";
 
-import { useContext, useState, useEffect } from "react";
-import { StyleSheet, Alert } from "react-native";
+import { useContext, useState } from "react";
+import { StyleSheet, Alert, ScrollView, Linking } from "react-native";
 
 import { AuthenticatedUserContext } from "providers";
 import {
   View,
   HeaderText,
   SubtitleText,
+  BodyText,
   FormContainer,
   DashboardHeader,
+  CustomButton,
 } from "components";
-import { GoogleDriveUrlInput } from "components/dashboard";
 import { getThemeColors, spacing } from "styles/theme";
-import {
-  getResourceSettings,
-  updateResourceSettings,
-} from "utils/resourceUtils";
 
 export const ResourceManagerScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colors = getThemeColors();
 
-  const [googleDriveUrl, setGoogleDriveUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Load current settings on component mount
-  useEffect(() => {
-    loadResourceSettings();
-  }, []);
-
-  const loadResourceSettings = async () => {
-    try {
-      setIsLoading(true);
-      const settings = await getResourceSettings();
-      if (settings?.googleDriveFolderUrl) {
-        setGoogleDriveUrl(settings.googleDriveFolderUrl);
-      }
-    } catch (error) {
-      console.error("Error loading resource settings:", error);
-      Alert.alert("Error", "Failed to load resource settings");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUrlChange = async (url) => {
-    try {
-      setIsLoading(true);
-      await updateResourceSettings({
-        googleDriveFolderUrl: url,
-      });
-      setGoogleDriveUrl(url);
-    } catch (error) {
-      console.error("Error saving resource settings:", error);
-      Alert.alert("Error", "Failed to save resource settings");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleBackPress = () => {
     navigation.goBack();
+  };
+
+  const openGoogleDrive = () => {
+    // Open the Google Drive folder where resources are stored
+    Linking.openURL(
+      "https://drive.google.com/drive/folders/1yNAxbHAKZE7jzhVb3BZsks_ZLa7Ld8_Q"
+    ).catch((err) => {
+      Alert.alert("Error", "Could not open Google Drive folder");
+    });
+  };
+
+  const openAppsScript = () => {
+    // Open the Google Apps Script editor
+    Linking.openURL("https://script.google.com").catch((err) => {
+      Alert.alert("Error", "Could not open Google Apps Script editor");
+    });
   };
 
   return (
@@ -74,22 +51,92 @@ export const ResourceManagerScreen = ({ navigation }) => {
           colors={colors}
         />
 
-        <View style={styles.formContainer}>
+        <ScrollView
+          style={styles.formContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <HeaderText style={styles.sectionTitle}>
-            Google Drive Settings
+            How Resources Work
           </HeaderText>
-          <SubtitleText style={styles.sectionDescription}>
-            Enter the URL of a public Google Drive folder to use as your
-            resources source.
-          </SubtitleText>
 
-          <GoogleDriveUrlInput
-            initialUrl={googleDriveUrl}
-            onUrlChange={handleUrlChange}
-            colors={colors}
-            isLoading={isLoading}
-          />
-        </View>
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Resources Overview
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              Resources are files stored in Google Drive that appear in the
+              Resources section of the app. These files are automatically loaded
+              from a specific Google Drive folder.
+            </BodyText>
+          </View>
+
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Adding Resources
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              To add new resources, simply upload files to the Google Drive
+              folder. The files will automatically appear in the app's Resources
+              section. Click the button below to open the folder.
+            </BodyText>
+            <CustomButton
+              title="Open Google Drive Folder"
+              onPress={openGoogleDrive}
+              style={styles.actionButton}
+            />
+          </View>
+
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Removing or Updating Resources
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              To remove resources, delete the files from the Google Drive
+              folder. To update a resource, replace the existing file in the
+              folder with a new version (keeping the same filename).
+            </BodyText>
+          </View>
+
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Resource Display
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              Files from the folder will be displayed in the Resources section
+              with appropriate icons based on file type (documents,
+              spreadsheets, PDFs, etc.). If no files are present, users will see
+              a "Coming Soon" message.
+            </BodyText>
+          </View>
+
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Advanced: Changing the Folder
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              If you need to use a different Google Drive folder, this requires
+              updating the Google Apps Script code. The script contains the
+              folder ID that determines which files are displayed. Click below
+              to open the Apps Script editor where you can modify the folder ID.
+            </BodyText>
+            <CustomButton
+              title="Open Apps Script Editor"
+              onPress={openAppsScript}
+              style={styles.actionButton}
+            />
+          </View>
+
+          <View style={styles.infoCard}>
+            <SubtitleText style={styles.infoTitle}>
+              Technical Support
+            </SubtitleText>
+            <BodyText style={styles.infoText}>
+              If you need help with managing resources or modifying the Apps
+              Script, please contact your technical administrator. Changes to
+              the Apps Script require programming knowledge.
+            </BodyText>
+          </View>
+        </ScrollView>
       </View>
     </FormContainer>
   );
@@ -103,13 +150,29 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
   },
   formContainer: {
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
+    flex: 1,
   },
   sectionTitle: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
   },
-  sectionDescription: {
+  infoCard: {
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderRadius: 8,
+    padding: spacing.lg,
     marginBottom: spacing.lg,
-    opacity: 0.7,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.1)",
+  },
+  infoTitle: {
+    marginBottom: spacing.sm,
+    fontWeight: "600",
+  },
+  infoText: {
+    marginBottom: spacing.md,
+    lineHeight: 22,
+  },
+  actionButton: {
+    marginTop: spacing.sm,
   },
 });

@@ -121,3 +121,25 @@ export const validateGoogleDriveURL = async (url) => {
     };
   }
 };
+
+/**
+ * Fetch resources from Google Apps Script endpoint
+ * @returns {Promise<Array>} - Array of resource files
+ */
+export const fetchResourcesFromGoogleScript = async () => {
+  try {
+    const endpoint =
+      "https://script.google.com/macros/s/AKfycbwa71xUlGlZUdJGThp9SNzCeErXeloZfMqjAbS6HsmTLZXvmC7ebSSNvbbPMftmONyRHA/exec";
+    const response = await fetch(endpoint);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch resources: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching resources:", error);
+    return [];
+  }
+};
