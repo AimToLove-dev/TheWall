@@ -9,6 +9,7 @@ import { CardGrid } from "./dashboard/CardGrid";
 import { WallButtons } from "./wall/WallButtons";
 import { DashboardHeader } from "./dashboard/DashboardHeader";
 import { AdminFunctionButton } from "./dashboard/AdminFunctionButton";
+import { ComingSoon } from "./ComingSoon";
 import {
   SubtitleText,
   BodyText,
@@ -75,4 +76,5 @@ export {
   WobblingBell,
   DashboardHeader,
   AdminFunctionButton,
+  ComingSoon,
 };

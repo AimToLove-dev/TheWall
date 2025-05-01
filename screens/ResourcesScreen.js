@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { ComingSoon } from "../components/ComingSoon";
+import { ComingSoon, ScrollableScreenView } from "components";
 import { useNavigation } from "@react-navigation/native";
 import { fetchResourcesFromGoogleScript } from "../utils/resourceUtils";
 import { getThemeColors } from "../styles/theme";
@@ -119,17 +119,19 @@ export const ResourcesScreen = () => {
       <Text style={styles.header}>Resources</Text>
       <Text style={styles.subheader}>Available materials and documents</Text>
 
-      <FlatList
-        data={resources}
-        renderItem={renderResourceItem}
-        keyExtractor={(item) => item.name}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            No resources currently available.
-          </Text>
-        }
-      />
+      <ScrollableScreenView>
+        <FlatList
+          data={resources}
+          renderItem={renderResourceItem}
+          keyExtractor={(item) => item.name}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>
+              No resources currently available.
+            </Text>
+          }
+        />
+      </ScrollableScreenView>
 
       <TouchableOpacity
         style={styles.backButton}

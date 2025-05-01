@@ -264,9 +264,9 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={0}
           />
-          <HeaderText style={styles.iconTitle}>RESOURCES</HeaderText>
+          <HeaderText style={styles.iconTitle}>RESOURCE</HeaderText>
           <Text style={styles.iconSubtitle}>
-            Access materials to help love and evangelize the LGBTQ+
+            Access materials to help be love, and evangelize the LGBTQ+
           </Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
@@ -287,9 +287,9 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={1000}
           />
-          <HeaderText style={styles.iconTitle}>FUND THE MOVEMENT</HeaderText>
+          <HeaderText style={styles.iconTitle}>INVEST</HeaderText>
           <Text style={styles.iconSubtitle}>
-            Invest in Revival-Support Outreach to the LGBTQ+ Community
+            Fund Revival-Support Outreach for the LGBTQ+ Community
           </Text>
         </TouchableOpacity>
         <View style={styles.verticalDivider} />
@@ -307,9 +307,10 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={2000}
           />
-          <HeaderText style={styles.iconTitle}>INVITE US</HeaderText>
+          <HeaderText style={styles.iconTitle}>INVITE</HeaderText>
           <Text style={styles.iconSubtitle}>
-            To Preach, Testify, and Release the sound of love and liberation
+            Our team to Preach, Testify, and Release the sound of love and
+            liberation
           </Text>
         </TouchableOpacity>
       </View>
