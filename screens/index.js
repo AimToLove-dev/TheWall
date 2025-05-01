@@ -13,3 +13,4 @@ export { DashboardAdminScreen } from "./user/DashboardAdminScreen";
 export { MyWallScreen } from "./user/MyWallScreen";
 export { TestimonySubmissionScreen } from "./user/TestimonySubmissionScreen";
 export { TestimonyReviewScreen } from "./user/TestimonyReviewScreen";
+export { ResourceManagerScreen } from "./user/ResourceManagerScreen";

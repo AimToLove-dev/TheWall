@@ -5,6 +5,7 @@ import {
   MyWallScreen,
   TestimonySubmissionScreen,
   EmailVerificationScreen,
+  ResourceManagerScreen,
 } from "screens";
 import { TestimonyReviewScreen } from "@screens/user/TestimonyReviewScreen";
 import { DashboardAdminScreen } from "screens/user/DashboardAdminScreen";
@@ -38,6 +39,7 @@ export const UserStack = () => {
         name="TestimonySubmissionSuccess"
         component={TestimonySubmissionSuccessScreen}
       />
+      <Stack.Screen name="ResourceManager" component={ResourceManagerScreen} />
     </Stack.Navigator>
   );
 };

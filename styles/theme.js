@@ -84,6 +84,7 @@ export const getThemeColors = () => {
       onSurfaceVariant: "#333333",
       onSurfaceDisabled: "#cccccc",
       error: "#b00020",
+      success: "#20b000",
       outline: "#cccccc",
       placeholderText: "rgb(73 69 79 / 40%)", // Custom placeholder color
     },
@@ -179,6 +180,8 @@ export const getThemeColors = () => {
     surface: theme.colors.surface,
     text: theme.colors.onSurface,
     error: theme.colors.error,
+    success: theme.colors.success,
+    placeholderText: theme.colors.placeholderText,
     border: theme.colors.outline,
     card: theme.colors.surfaceVariant,
     textSecondary: theme.colors.onSurfaceVariant,

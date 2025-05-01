@@ -184,8 +184,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
   };
 
   const handleResourcesPress = () => {
-    const driveUrl = "https://drive.google.com";
-    Linking.openURL(driveUrl);
+    navigation.navigate("ResourceManager");
   };
 
   const styles = StyleSheet.create({
@@ -308,7 +307,7 @@ export const DashboardAdminScreen = ({ navigation }) => {
 
             <AdminFunctionButton
               title="Resources"
-              description="Manage resources via Google Drive"
+              description="Manage public resources via Google Drive"
               iconName="folder-open"
               onPress={handleResourcesPress}
               colors={colors}
