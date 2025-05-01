@@ -8,6 +8,7 @@ import { CustomDialog } from "./common/CustomDialog";
 import { CardGrid } from "./dashboard/CardGrid";
 import { WallButtons } from "./wall/WallButtons";
 import { DashboardHeader } from "./dashboard/DashboardHeader";
+import { AdminFunctionButton } from "./dashboard/AdminFunctionButton";
 import {
   SubtitleText,
   BodyText,
@@ -73,4 +74,5 @@ export {
   WallButtons,
   WobblingBell,
   DashboardHeader,
+  AdminFunctionButton,
 };

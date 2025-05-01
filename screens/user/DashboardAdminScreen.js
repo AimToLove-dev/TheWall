@@ -5,8 +5,8 @@ import {
   StyleSheet,
   useColorScheme,
   useWindowDimensions,
-  TouchableOpacity,
   Image,
+  Linking,
 } from "react-native";
 import { Easing } from "react-native-reanimated";
 
@@ -19,15 +19,14 @@ import { getUserSouls } from "utils";
 import {
   View,
   HeaderText,
-  SubtitleText,
   BodyText,
   CustomDialog,
   FormContainer,
   DashboardHeader,
+  AdminFunctionButton,
 } from "components";
 
 import { getThemeColors, spacing, shadows } from "styles/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { Surface, useTheme } from "react-native-paper";
 
 export const DashboardAdminScreen = ({ navigation }) => {
@@ -184,8 +183,9 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("TestimonyReview");
   };
 
-  const handleTestimonyManagePress = () => {
-    navigation.navigate("Testimony", { reviewMode: true });
+  const handleResourcesPress = () => {
+    const driveUrl = "https://drive.google.com";
+    Linking.openURL(driveUrl);
   };
 
   const styles = StyleSheet.create({
@@ -227,49 +227,8 @@ export const DashboardAdminScreen = ({ navigation }) => {
     adminSection: {
       marginBottom: spacing.lg,
     },
-    adminBadge: {
-      backgroundColor: "#FF6B00",
-      paddingHorizontal: spacing.sm,
-      paddingVertical: 2,
-    },
-    adminBadgeText: {
-      color: "#FFFFFF",
-      fontSize: 12,
-      fontWeight: "bold",
-    },
     adminCard: {
       ...shadows.small,
-    },
-    adminButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      padding: spacing.md,
-    },
-    adminIconContainer: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: spacing.md,
-    },
-    adminButtonText: {
-      flex: 1,
-    },
-    adminButtonTitle: {
-      fontWeight: "bold",
-      fontSize: 16,
-    },
-    adminButtonDescription: {
-      fontSize: 12,
-      opacity: 0.7,
-    },
-    recentActivitySection: {
-      flex: 1,
-      marginBottom: spacing.lg,
-    },
-    activityCard: {
-      padding: spacing.md,
-      flex: 1,
     },
     emptyState: {
       flex: 1,
@@ -339,31 +298,21 @@ export const DashboardAdminScreen = ({ navigation }) => {
             elevation={1}
             style={[styles.adminCard, { backgroundColor: colors.surface }]}
           >
-            <TouchableOpacity
-              style={styles.adminButton}
+            <AdminFunctionButton
+              title="Testimony Approval"
+              description="Manage pending testimony submissions"
+              iconName="shield-checkmark"
               onPress={handleTestimonyReviewPress}
-            >
-              <View style={styles.adminIconContainer}>
-                <Ionicons
-                  name="shield-checkmark"
-                  size={24}
-                  color={colors.primary}
-                />
-              </View>
-              <View style={styles.adminButtonText}>
-                <BodyText style={styles.adminButtonTitle}>
-                  Testimony Approval
-                </BodyText>
-                <BodyText style={styles.adminButtonDescription}>
-                  Manage pending testimony submissions
-                </BodyText>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={24}
-                color={colors.textSecondary}
-              />
-            </TouchableOpacity>
+              colors={colors}
+            />
+
+            <AdminFunctionButton
+              title="Resources"
+              description="Manage resources via Google Drive"
+              iconName="folder-open"
+              onPress={handleResourcesPress}
+              colors={colors}
+            />
           </Surface>
         </View>
       </View>
