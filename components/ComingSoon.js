@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Image, Dimensions } from "react-native";
 import { HeaderText, BodyText, CustomButton } from "components";
-import { getThemeColors } from "../styles/theme";
+import { getThemeColors } from "styles/theme";
 
 const theme = getThemeColors();
 

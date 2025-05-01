@@ -5,8 +5,8 @@ import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import { Video } from "expo-av";
 import * as ImagePicker from "expo-image-picker";
-import { uploadVideo } from "../../config";
-import { auth } from "../../config";
+import { uploadVideo } from "config";
+import { auth } from "config";
 
 export const VideoUpload = ({
   onVideoSelect,

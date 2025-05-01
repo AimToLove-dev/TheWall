@@ -9,7 +9,11 @@ import {
   Dimensions,
   Platform,
 } from "react-native";
-import { SubtitleText, BodyText, HeaderText } from "components/Typography";
+import {
+  SubtitleText,
+  BodyText,
+  HeaderText,
+} from "@components/common/Typography";
 import { spacing } from "styles/theme";
 import { Video } from "expo-av"; // Import Video component for video playback
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for play button

@@ -2,7 +2,7 @@
 
 import { FlatList } from "react-native";
 import { Surface, List, IconButton, Text, Chip } from "react-native-paper";
-import { View } from "components/View";
+import { View } from "@components/views/View";
 import { useState, useEffect, useContext } from "react";
 import { AuthenticatedUserContext } from "providers";
 import {

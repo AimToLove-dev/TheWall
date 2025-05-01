@@ -3,7 +3,7 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import { HelperText } from "react-native-paper";
-import { BodyText } from "components/Typography";
+import { BodyText } from "@components/common/Typography";
 import { getThemeColors } from "styles/theme";
 import { spacing } from "styles/theme";
 

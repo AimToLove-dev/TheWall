@@ -17,7 +17,11 @@ import {
   ReadTestimony,
   EditTestimony,
 } from "components";
-import { HeaderText, SubtitleText, BodyText } from "components/Typography";
+import {
+  HeaderText,
+  SubtitleText,
+  BodyText,
+} from "@components/common/Typography";
 import { getThemeColors, spacing } from "styles/theme";
 import {
   submitTestimony,

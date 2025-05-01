@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { SubtitleText, BodyText } from "components/Typography";
+import { SubtitleText, BodyText } from "@components/common/Typography";
 import { spacing, getThemeColors } from "styles/theme";
 import TestimonyCard from "./TestimonyCard";
 

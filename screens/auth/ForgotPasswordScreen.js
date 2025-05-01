@@ -15,7 +15,11 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "config";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomInput, CustomButton, FormContainer } from "components";
-import { HeaderText, SubtitleText, ErrorText } from "components/Typography";
+import {
+  HeaderText,
+  SubtitleText,
+  ErrorText,
+} from "@components/common/Typography";
 import { getThemeColors, spacing } from "styles/theme";
 
 const forgotPasswordSchema = Yup.object().shape({

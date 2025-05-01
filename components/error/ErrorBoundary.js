@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Surface, Text, Button } from "react-native-paper";
-import { View } from "components/View";
+import { View } from "@components/views/View";
 import { getThemeColors } from "styles/theme";
 
 const __DEV__ = process.env.NODE_ENV !== "production";

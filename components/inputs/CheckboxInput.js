@@ -4,7 +4,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { HelperText } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import { BodyText } from "components/Typography";
+import { BodyText } from "@components/common/Typography";
 import { getThemeColors } from "styles/theme";
 import { spacing } from "styles/theme";
 

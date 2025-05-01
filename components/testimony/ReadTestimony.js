@@ -1,7 +1,11 @@
 import React from "react";
 import { View, StyleSheet, Image, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { HeaderText, SubtitleText, BodyText } from "components/Typography";
+import {
+  HeaderText,
+  SubtitleText,
+  BodyText,
+} from "@components/common/Typography";
 import { CustomButton } from "components";
 import { spacing } from "styles/theme";
 import { Video } from "expo-av"; // Import Video component for playing videos

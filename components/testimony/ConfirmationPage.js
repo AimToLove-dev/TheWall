@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { HeaderText, BodyText } from "components/Typography";
+import { HeaderText, BodyText } from "@components/common/Typography";
 import { CustomButton } from "components";
 import { spacing } from "styles/theme";
 

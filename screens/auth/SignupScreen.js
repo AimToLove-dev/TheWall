@@ -20,7 +20,7 @@ import {
   SubtitleText,
   LinkText,
   ErrorText,
-} from "components/Typography";
+} from "@components/common/Typography";
 import { getThemeColors, spacing } from "styles/theme";
 
 const signupValidationSchema = Yup.object().shape({

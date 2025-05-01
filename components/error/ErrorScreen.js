@@ -1,7 +1,7 @@
 "use client";
 
 import { Surface, Text, Button } from "react-native-paper";
-import { View } from "components/View";
+import { View } from "@components/views/View";
 import { getThemeColors } from "styles/theme";
 
 export const ErrorScreen = ({

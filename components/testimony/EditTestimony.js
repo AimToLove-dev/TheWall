@@ -17,7 +17,7 @@ import {
   SubtitleText,
   BodyText,
   ErrorText,
-} from "components/Typography";
+} from "@components/common/Typography";
 import { spacing } from "styles/theme";
 import { createDisplayName } from "@utils/index";
 

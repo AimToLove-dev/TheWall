@@ -16,7 +16,7 @@ import {
   WobblingBell,
 } from "components";
 import { Divider } from "react-native-paper";
-import { fontSizes } from "../styles/theme";
+import { fontSizes } from "styles/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 

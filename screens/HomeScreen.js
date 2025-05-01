@@ -17,7 +17,6 @@ import {
 import {
   HeaderText,
   BodyText,
-  Logo,
   CustomButton,
   SubtitleText,
   CaptionText,

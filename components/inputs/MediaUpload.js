@@ -4,8 +4,8 @@ import { useState } from "react";
 import { View, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import { uploadImage } from "../../config";
-import { auth } from "../../config";
+import { uploadImage } from "config";
+import { auth } from "config";
 
 export const MediaUpload = ({
   onImageSelect,

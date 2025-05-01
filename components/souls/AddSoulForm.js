@@ -6,7 +6,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
-import { CustomButton } from "components/CustomButton";
+import { CustomButton } from "@components/common/CustomButton";
 import { addSoul } from "@utils/soulsUtils";
 import { AuthenticatedUserContext } from "providers";
 import { doc, setDoc, getDoc } from "firebase/firestore";

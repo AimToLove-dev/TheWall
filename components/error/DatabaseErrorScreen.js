@@ -1,7 +1,7 @@
 "use client";
 
 import { Surface, Text, Button, useTheme, Icon } from "react-native-paper";
-import { View } from "components/View";
+import { View } from "@components/views/View";
 
 export const DatabaseErrorScreen = ({ onRetry, retryText = "Try Again" }) => {
   const theme = useTheme();

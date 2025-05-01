@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { HeaderText, SubtitleText } from "./Typography";
-import { spacing } from "../styles/theme";
+import { HeaderText, SubtitleText } from "components/common/Typography";
+import { spacing } from "styles/theme";
 
 export const DashboardHeader = ({
   title,

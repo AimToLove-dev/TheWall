@@ -6,7 +6,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
-import { CustomButton } from "components/CustomButton";
+import { CustomButton } from "@components/common/CustomButton";
 import { updateSoul, deleteSoul } from "@utils/soulsUtils";
 import { AuthenticatedUserContext } from "providers";
 import { createDisplayName } from "@utils/index";

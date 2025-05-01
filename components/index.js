@@ -1,15 +1,13 @@
 // Base components
-import { View } from "./View";
-import { Logo } from "./Logo";
-import { Icon } from "./Icon";
-import { BackButton } from "./BackButton";
-import { CustomButton } from "./CustomButton";
-import { FormContainer } from "./FormContainer";
-import { CustomDialog } from "./CustomDialog";
-import { Header } from "./Header";
-import { CardGrid } from "./CardGrid";
-import { WallButtons } from "./WallButtons";
-import { DashboardHeader } from "./DashboardHeader";
+import { View } from "./views/View";
+import { Icon } from "./archive/Icon";
+import { BackButton } from "./wall/BackButton";
+import { CustomButton } from "./common/CustomButton";
+import { FormContainer } from "./views/FormContainer";
+import { CustomDialog } from "./common/CustomDialog";
+import { CardGrid } from "./dashboard/CardGrid";
+import { WallButtons } from "./wall/WallButtons";
+import { DashboardHeader } from "./dashboard/DashboardHeader";
 import {
   SubtitleText,
   BodyText,
@@ -17,10 +15,10 @@ import {
   LinkText,
   ErrorText,
   CaptionText,
-} from "./Typography";
-import BottomSheet from "./BottomSheet";
-import { ScrollableScreenView } from "./ScrollableScreenView";
-import { VerticalMarquee } from "./VerticalMarquee";
+} from "./common/Typography";
+import BottomSheet from "./common/BottomSheet";
+import { ScrollableScreenView } from "./views/ScrollableScreenView";
+import { VerticalMarquee } from "./souls/VerticalMarquee";
 
 // Import animation components
 import { WobblingBell } from "./animations/WobblingBell";
@@ -43,13 +41,11 @@ import { MainContent } from "./MainContent";
 
 export {
   View,
-  Logo,
   Icon,
   BackButton,
   CustomButton,
   FormContainer,
   CustomDialog,
-  Header,
   SubtitleText,
   BodyText,
   HeaderText,
