@@ -1,6 +1,6 @@
 "use client";
 
-import { View, ImageBackground } from "react-native";
+import { View, ImageBackground, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import { getThemeColors } from "styles/theme";
 
@@ -17,6 +17,7 @@ export const CustomButton = ({
   rightIcon,
   backgroundImage,
   imageStyle,
+  mode,
 }) => {
   const colors = getThemeColors();
 
@@ -62,7 +63,8 @@ export const CustomButton = ({
 
   // Map our custom variants to Paper modes
   const getMode = () => {
-    switch (variant) {
+    const modeFromProps = mode || variant;
+    switch (modeFromProps) {
       case "primary":
         return "contained";
       case "secondary":
@@ -80,13 +82,13 @@ export const CustomButton = ({
   const getContentStyle = () => {
     switch (size) {
       case "small":
-        return { paddingVertical: 4, paddingHorizontal: 8 };
+        return { paddingVertical: 4, paddingHorizontal: 8, margin: 0 };
       case "medium":
-        return { paddingVertical: 8, paddingHorizontal: 16 };
+        return { paddingVertical: 8, paddingHorizontal: 8, margin: 0 };
       case "large":
-        return { paddingVertical: 12, paddingHorizontal: 24 };
+        return { paddingVertical: 12, paddingHorizontal: 8, margin: 0 };
       default:
-        return { paddingVertical: 8, paddingHorizontal: 16 };
+        return { paddingVertical: 8, paddingHorizontal: 8, margin: 0 };
     }
   };
 
@@ -122,9 +124,18 @@ export const CustomButton = ({
               flexDirection: "row",
               alignItems: "center",
               boxShadow: "rgba(6, 24, 44, 0.8) 0px 0px 2px 0px inset",
+              flexWrap: "wrap",
             },
           ]}
-          labelStyle={[{ color: getTextColor() }, textStyle]}
+          labelStyle={[
+            {
+              color: getTextColor(),
+              flexWrap: "wrap",
+              textAlign: "center",
+              whiteSpace: "normal",
+            },
+            textStyle,
+          ]}
           textColor={getTextColor()}
           icon={renderLeftIcon}
         >
@@ -145,9 +156,21 @@ export const CustomButton = ({
       style={[getButtonColors(), style, { borderRadius: 0 }]}
       contentStyle={[
         getContentStyle(),
-        { flexDirection: "row", alignItems: "center" },
+        {
+          flexDirection: "row",
+          alignItems: "center",
+          flexWrap: "wrap",
+        },
       ]}
-      labelStyle={[{ color: getTextColor() }, textStyle]}
+      labelStyle={[
+        {
+          color: getTextColor(),
+          flexWrap: "wrap",
+          textAlign: "center",
+          whiteSpace: "normal",
+        },
+        textStyle,
+      ]}
       textColor={getTextColor()}
       icon={renderLeftIcon}
     >

@@ -25,6 +25,18 @@ input:autofill, input:-webkit-autofill,input:-internal-autofill-selected {
   transition: background-color 5000s ease-in-out 0s; /* Prevent autofill background from reverting */
 }
 
+/* Updated button selectors to be more comprehensive */
+button > div > div {
+  margin-inline: 0 !important;
+}
+
+/* Additional selectors to catch React Native Paper buttons */
+.react-native-paper__button > div,
+button[class*="Button"] > div,
+button > div {
+  margin-inline: 0 !important;
+}
+
 [style*="background-repeat: repeat-x"] > * {
   background-repeat: repeat-x;
 }

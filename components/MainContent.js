@@ -81,7 +81,7 @@ export const MainContent = ({
         <View style={styles.wallDescriptionsContainer}>
           {/* Wailing Wall description */}
           <View
-            style={styles.wallDescriptionColumn}
+            style={{ flex: 1, marginRight: 10 }}
             accessibilityRole="region"
             accessible={true}
           >
@@ -101,34 +101,25 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText
-                  style={styles.wallTitle}
-                  accessibilityRole="heading"
-                  accessibilityLevel={3}
-                >
-                  Wailing Wall
-                </HeaderText>
+                <CustomButton
+                  title="Wailing Wall"
+                  onPress={navigateToWailingWall}
+                  mode="primary"
+                  backgroundImage={require("../assets/paper.jpg")}
+                  style={styles.wallButton}
+                  accessibilityLabel="Go to Wailing Wall"
+                />
               </View>
             </View>
             <BodyText style={styles.wallDescription}>
               A place to submit the names of loved ones in the LGBTQ community
-              so we can join in interceding for them in love and hope.{" "}
-              <TouchableOpacity
-                onPress={navigateToWailingWall}
-                accessible={true}
-                accessibilityLabel="Visit Wailing Wall"
-              >
-                <Text style={styles.visitLink}>Visit &gt;</Text>
-              </TouchableOpacity>
+              so we can join in interceding for them in love and hope.
             </BodyText>
           </View>
 
-          {/* Vertical Divider */}
-          <View style={styles.wallDescriptionDivider} />
-
           {/* Testimony Wall description */}
           <View
-            style={styles.wallDescriptionColumn}
+            style={{ flex: 1, marginLeft: 10 }}
             accessibilityRole="region"
             accessible={true}
           >
@@ -148,31 +139,23 @@ export const MainContent = ({
                 />
               </TouchableOpacity>
               <View style={styles.wallTitleContainer}>
-                <HeaderText
-                  style={styles.wallTitle}
-                  accessibilityRole="heading"
-                  accessibilityLevel={3}
-                >
-                  Testimony Wall
-                </HeaderText>
+                <CustomButton
+                  title="Testimony Wall"
+                  onPress={navigateToTestimonyWall}
+                  mode="primary"
+                  backgroundImage={require("../assets/paper.jpg")}
+                  style={styles.wallButton}
+                  accessibilityLabel="Go to Testimony Wall"
+                />
               </View>
             </View>
             <BodyText style={styles.wallDescription}>
               We believe these testimonies will reflect the transformative love
-              of God in a real and tangible way.{" "}
-              <TouchableOpacity
-                onPress={navigateToTestimonyWall}
-                accessible={true}
-                accessibilityLabel="Visit Testimony Wall"
-              >
-                <Text style={styles.visitLink}>Visit &gt;</Text>
-              </TouchableOpacity>
+              of God in a real and tangible way.
             </BodyText>
           </View>
         </View>
       </View>
-
-      <Divider style={styles.divider} />
 
       {/* Vision and Mission Section */}
       <View
@@ -264,14 +247,27 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={0}
           />
-          <HeaderText style={styles.iconTitle}>RESOURCE</HeaderText>
+          <CustomButton
+            title="RESOURCE"
+            backgroundImage={require("../assets/paper.jpg")}
+            mode="primary"
+            style={styles.actionButton}
+            accessibilityLabel="Resources Button"
+            disabled={true} // Disable button since parent handles click
+          />
           <Text style={styles.iconSubtitle}>
             Access materials to help be love, and evangelize the LGBTQ+
           </Text>
         </TouchableOpacity>
-        <View style={styles.verticalDivider} />
+
         <TouchableOpacity
-          style={styles.sideIconContainer}
+          style={[
+            styles.sideIconContainer,
+            {
+              marginHorizontal: 10,
+              paddingHorizontal: 10,
+            },
+          ]}
           onPress={() => navigation.navigate("Giving")}
           accessible={true}
           accessibilityLabel="Fund The Movement - Support our mission"
@@ -283,12 +279,19 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={1000}
           />
-          <HeaderText style={styles.iconTitle}>INVEST</HeaderText>
-          <Text style={styles.iconSubtitle}>
+          <CustomButton
+            title="INVEST"
+            backgroundImage={require("../assets/paper.jpg")}
+            mode="primary"
+            style={[styles.actionButton]}
+            accessibilityLabel="Invest Button"
+            disabled={true} // Disable button since parent handles click
+          />
+          <Text style={[styles.iconSubtitle]}>
             Fund Revival-Support Outreach for the LGBTQ+ Community
           </Text>
         </TouchableOpacity>
-        <View style={styles.verticalDivider} />
+
         {/* Bell - Right side */}
         <TouchableOpacity
           style={styles.sideIconContainer}
@@ -303,7 +306,14 @@ export const MainContent = ({
             wobbleDelay={3000}
             startingDelay={2000}
           />
-          <HeaderText style={styles.iconTitle}>INVITE</HeaderText>
+          <CustomButton
+            title="INVITE"
+            backgroundImage={require("../assets/paper.jpg")}
+            mode="primary"
+            style={styles.actionButton}
+            accessibilityLabel="Invite Button"
+            disabled={true} // Disable button since parent handles click
+          />
           <Text style={styles.iconSubtitle}>
             Our team to Preach, Testify, and Release the sound of love and
             liberation
@@ -323,7 +333,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: "100%",
-    marginVertical: 20,
+    marginVertical: 40,
   },
   imagesContainer: {
     flexDirection: "row",
@@ -356,6 +366,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: "justify",
     hyphens: "auto",
+    color: "black",
   },
   verticalDivider: {
     width: 2,
@@ -373,7 +384,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
 
-    padding: 10,
+    paddingVertical: 10,
   },
   sideIcon: {
     width: 40,
@@ -391,7 +402,7 @@ const styles = StyleSheet.create({
     fontSize: fontSizes.xsmall || 12,
     fontWeight: "bold",
     textAlign: "justify", // Justified text alignment
-    fontFamily: "XTypewriter-Regular",
+    fontFamily: "XTypewriter-Bold",
     hyphens: "auto",
   },
   headerImageContainer: {
@@ -404,14 +415,11 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
   },
   introductionSection: {
-    margin: 0,
+    marginVertical: 40,
   },
   wallDescriptionsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  wallDescriptionColumn: {
-    flex: 1,
   },
   wallDescriptionHeader: {
     flexDirection: "column",
@@ -425,6 +433,13 @@ const styles = StyleSheet.create({
   },
   wallTitleContainer: {
     flex: 1,
+    width: "100%",
+  },
+  wallButton: {
+    width: "100%",
+    marginVertical: 5,
+    minHeight: 44, // Ensure minimum height for the button
+    justifyContent: "center",
   },
   wallTitle: {
     fontWeight: "bold",
@@ -434,6 +449,9 @@ const styles = StyleSheet.create({
   wallDescription: {
     fontSize: fontSizes.small,
     textAlign: "justify",
+    fontFamily: "XTypewriter-Bold",
+    hyphens: "auto",
+    color: "black",
   },
   wallDescriptionDivider: {
     width: 1,
@@ -458,10 +476,17 @@ const styles = StyleSheet.create({
   },
   sectionHeaderContainer: {
     alignItems: "center",
+    marginTop: 40,
   },
   sectionHeader: {
     fontSize: fontSizes.medium,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  actionButton: {
+    width: "100%",
+    marginVertical: 5,
+    minHeight: 36, // Smaller than the wall buttons
+    justifyContent: "center",
   },
 });
