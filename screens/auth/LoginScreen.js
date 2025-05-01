@@ -53,8 +53,15 @@ export const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        // Only navigate to Dashboard after successful login
-        navigation.navigate("User");
+        // Use linking to refresh auth state properly
+        if (Platform.OS === "web") {
+          window.location.href = "/user";
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "User" }],
+          });
+        }
       })
       .catch((error) => {
         let errorMessage = "An error occurred during login";
