@@ -272,11 +272,7 @@ export const MainContent = ({
         <View style={styles.verticalDivider} />
         <TouchableOpacity
           style={styles.sideIconContainer}
-          onPress={() =>
-            Linking.openURL(
-              "https://give.tithe.ly/?formId=587270ba-6865-11ee-90fc-1260ab546d11"
-            )
-          }
+          onPress={() => navigation.navigate("Giving")}
           accessible={true}
           accessibilityLabel="Fund The Movement - Support our mission"
         >

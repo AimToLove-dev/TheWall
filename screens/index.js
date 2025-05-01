@@ -8,6 +8,7 @@ export { WailingWallScreen } from "./WailingWallScreen";
 export { TestimonyWallScreen } from "./TestimonyWallScreen";
 export { ResourcesScreen } from "./ResourcesScreen";
 export { InviteUsScreen } from "./InviteUsScreen";
+export { GivingScreen } from "./GivingScreen";
 export { DashboardScreen } from "./user/DashboardScreen";
 export { DashboardAdminScreen } from "./user/DashboardAdminScreen";
 export { MyWallScreen } from "./user/MyWallScreen";

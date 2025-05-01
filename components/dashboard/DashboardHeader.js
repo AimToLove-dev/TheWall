@@ -10,6 +10,7 @@ export const DashboardHeader = ({
   onBackPress,
   onSignOutPress,
   colors,
+  showSignOut = true,
 }) => {
   return (
     <View style={styles.header}>
@@ -23,12 +24,14 @@ export const DashboardHeader = ({
         <HeaderText style={styles.title}>{title}</HeaderText>
         <SubtitleText style={styles.subtitle}>{subtitle}</SubtitleText>
       </View>
-      <TouchableOpacity
-        style={[styles.actionButton, { backgroundColor: colors.card }]}
-        onPress={onSignOutPress}
-      >
-        <Ionicons name="log-out-outline" size={24} color={colors.text} />
-      </TouchableOpacity>
+      {showSignOut && (
+        <TouchableOpacity
+          style={[styles.actionButton, { backgroundColor: colors.card }]}
+          onPress={onSignOutPress}
+        >
+          <Ionicons name="log-out-outline" size={24} color={colors.text} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
