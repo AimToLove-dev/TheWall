@@ -20,8 +20,6 @@ const ButtonState = Object.freeze({
   SIGNUP: "signup",
 });
 
-
-
 // Validation schema for the form
 const soulValidationSchema = Yup.object().shape({
   firstName: Yup.string()
