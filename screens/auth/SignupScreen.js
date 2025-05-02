@@ -55,9 +55,22 @@ export const SignupScreen = ({ navigation }) => {
     setErrorState("");
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        // Navigate to Dashboard after successful signup
-        navigation.navigate("User");
+      .then((result) => {
+        if (
+          result.user.email.toLowerCase().endsWith("@aimtolove.com") &&
+          isVerified &&
+          result.user?.uid
+        ) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "User", params: { screen: "DashboardAdmin" } }],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "User" }],
+          });
+        }
       })
       .catch((error) => {
         // Translate Firebase error messages to user-friendly messages

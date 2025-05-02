@@ -53,9 +53,18 @@ export const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
       .then((result) => {
-        // Use linking to refresh auth state properly
-        if (Platform.OS === "web") {
-          window.location.href = "/user";
+        const isVerified = result.user.emailVerified;
+
+        // Check if user is from aimtolove.com domain and verified
+        if (
+          result.user.email.toLowerCase().endsWith("@aimtolove.com") &&
+          isVerified &&
+          result.user?.uid
+        ) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "User", params: { screen: "DashboardAdmin" } }],
+          });
         } else {
           navigation.reset({
             index: 0,
