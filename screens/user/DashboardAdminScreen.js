@@ -190,6 +190,10 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("ResourceManager");
   };
 
+  const handleConfigurationPress = () => {
+    navigation.navigate("ConfigurationManager");
+  };
+
   const styles = StyleSheet.create({
     content: {
       flex: 1,
@@ -320,6 +324,14 @@ export const DashboardAdminScreen = ({ navigation }) => {
               description="Manage public resources via Google Drive"
               iconName="folder-open"
               onPress={handleResourcesPress}
+              colors={colors}
+            />
+
+            <AdminFunctionButton
+              title="Config"
+              description="Manage app configurations"
+              iconName="construct"
+              onPress={handleConfigurationPress}
               colors={colors}
             />
           </Surface>

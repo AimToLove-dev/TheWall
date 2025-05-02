@@ -15,3 +15,4 @@ export { MyWallScreen } from "./user/MyWallScreen";
 export { TestimonySubmissionScreen } from "./user/TestimonySubmissionScreen";
 export { TestimonyReviewScreen } from "./user/TestimonyReviewScreen";
 export { ResourceManagerScreen } from "./user/ResourceManagerScreen";
+export { ConfigurationManagerScreen } from "./user/ConfigurationManagerScreen";

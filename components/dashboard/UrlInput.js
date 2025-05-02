@@ -4,7 +4,6 @@ import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { SubtitleText } from "components";
 import { spacing } from "styles/theme";
-import { validateGoogleDriveURL } from "utils/resourceUtils";
 
 // Simple state constants for better readability
 const STATE = Object.freeze({
@@ -16,18 +15,38 @@ const STATE = Object.freeze({
   WAIT: "wait",
 });
 
-// Component for handling Google Drive URL input with validation feedback
-const GoogleDriveUrlInput = ({
+// Generic URL validation function
+const validateUrl = (url) => {
+  if (!url) {
+    return { isValid: false, message: "Please enter a URL" };
+  }
+
+  try {
+    const urlObj = new URL(url);
+    if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+      return { isValid: false, message: "URL must start with http:// or https://" };
+    }
+    return { isValid: true, message: "URL is valid" };
+  } catch (e) {
+    return { isValid: false, message: "Please enter a valid URL" };
+  }
+};
+
+// Component for handling URL input with validation feedback
+const UrlInput = ({
   initialUrl = "",
   onUrlChange,
   colors,
   isLoading: externalLoading = false,
+  placeholder = "https://...",
+  label = "URL",
+  iconName = "link"
 }) => {
   // URL and state tracking
   const [currentState, setCurrentState] = useState(
     initialUrl ? STATE.READ : STATE.EDIT
   );
-  const [folderUrl, setFolderUrl] = useState(initialUrl);
+  const [url, setUrl] = useState(initialUrl);
   const [originalUrl, setOriginalUrl] = useState(initialUrl);
   const [urlError, setUrlError] = useState("");
   const [validationMessage, setValidationMessage] = useState("");
@@ -36,12 +55,12 @@ const GoogleDriveUrlInput = ({
   // A valid URL means it's been verified and is working
   const isUrlValid =
     currentState === STATE.SUCCESS ||
-    (currentState === STATE.READ && folderUrl && originalUrl === folderUrl);
+    (currentState === STATE.READ && url && originalUrl === url);
 
   // Update component when external initialUrl changes
   useEffect(() => {
     if (initialUrl !== originalUrl) {
-      setFolderUrl(initialUrl);
+      setUrl(initialUrl);
       setOriginalUrl(initialUrl);
       setCurrentState(initialUrl ? STATE.READ : STATE.EDIT);
 
@@ -75,14 +94,14 @@ const GoogleDriveUrlInput = ({
   }, [currentState]);
 
   // Validate the initial URL when component first loads or URL changes
-  const validateInitialUrl = async (url) => {
+  const validateInitialUrl = async (urlToValidate) => {
     try {
-      const validationResult = await validateGoogleDriveURL(url);
+      const validationResult = validateUrl(urlToValidate);
       setIsValidUrl(validationResult.isValid);
 
       // If URL is not valid, show warning but keep in read mode
       if (!validationResult.isValid) {
-        setValidationMessage("Stored URL may no longer be valid");
+        setValidationMessage("Stored URL may not be valid");
         setTimeout(() => setValidationMessage(""), 3000);
       }
     } catch (err) {
@@ -98,7 +117,7 @@ const GoogleDriveUrlInput = ({
       setCurrentState(STATE.WAIT);
 
       // Validate URL first
-      const validationResult = await validateGoogleDriveURL(folderUrl);
+      const validationResult = validateUrl(url);
 
       if (!validationResult.isValid) {
         setUrlError(validationResult.message);
@@ -108,14 +127,14 @@ const GoogleDriveUrlInput = ({
       }
 
       // If validation passes, update original and notify parent
-      setOriginalUrl(folderUrl);
+      setOriginalUrl(url);
       setIsValidUrl(true);
       setValidationMessage("Settings saved successfully!");
       setCurrentState(STATE.SUCCESS);
 
       // Notify parent component of valid URL change
       if (onUrlChange) {
-        onUrlChange(folderUrl);
+        onUrlChange(url);
       }
     } catch (error) {
       console.error("Error validating URL:", error);
@@ -128,7 +147,7 @@ const GoogleDriveUrlInput = ({
   const toggleEditMode = () => {
     if (currentState === STATE.EDIT) {
       // If we're exiting edit mode without saving, reset to original
-      setFolderUrl(originalUrl);
+      setUrl(originalUrl);
       setUrlError("");
       setIsValidUrl(null);
       setCurrentState(STATE.READ);
@@ -137,16 +156,16 @@ const GoogleDriveUrlInput = ({
     }
   };
 
-  const validateUrl = async () => {
-    if (!folderUrl) {
-      setUrlError("Please enter a Google Drive folder URL");
+  const validateUrlInput = () => {
+    if (!url) {
+      setUrlError("Please enter a URL");
       setIsValidUrl(false);
       setCurrentState(STATE.ERROR);
       return;
     }
 
     try {
-      const validationResult = await validateGoogleDriveURL(folderUrl);
+      const validationResult = validateUrl(url);
       setIsValidUrl(validationResult.isValid);
 
       if (!validationResult.isValid) {
@@ -215,8 +234,8 @@ const GoogleDriveUrlInput = ({
     }
   };
 
-  // Get the folder icon color (green for valid URLs)
-  const getFolderIconColor = () => {
+  // Get the link icon color (green for valid URLs)
+  const getLinkIconColor = () => {
     return isUrlValid ? colors.success : colors.primary;
   };
 
@@ -224,7 +243,7 @@ const GoogleDriveUrlInput = ({
   const getUrlTextColor = () => {
     if (isUrlValid) {
       return colors.success;
-    } else if (!isEditMode() && folderUrl) {
+    } else if (!isEditMode() && url) {
       return "rgba(0, 0, 0, 0.6)"; // Grey for read-only
     }
     return "rgba(0, 0, 0, 0.87)"; // Default text color
@@ -245,25 +264,25 @@ const GoogleDriveUrlInput = ({
         >
           <View style={styles.iconContainer}>
             <Ionicons
-              name="folder-open"
+              name={iconName}
               size={20}
-              color={getFolderIconColor()}
+              color={getLinkIconColor()}
             />
           </View>
 
           <TextInput
             placeholder={
-              isEditMode() ? "https://drive.google.com/drive/folders/..." : ""
+              isEditMode() ? placeholder : ""
             }
             placeholderTextColor={colors.placeholderText}
-            value={folderUrl}
+            value={url}
             onChangeText={(text) => {
               if (!isEditMode()) return;
-              setFolderUrl(text);
+              setUrl(text);
               setUrlError("");
               setIsValidUrl(null);
             }}
-            onBlur={isEditMode() ? validateUrl : null}
+            onBlur={isEditMode() ? validateUrlInput : null}
             editable={isEditMode() && !isLoading()}
             keyboardType="url"
             autoCapitalize="none"
@@ -349,4 +368,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GoogleDriveUrlInput;
+export default UrlInput;
