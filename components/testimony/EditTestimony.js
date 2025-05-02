@@ -30,9 +30,7 @@ const testimonyValidationSchema = Yup.object().shape({
   firstName: Yup.string().required("required"),
   lastName: Yup.string().required("required"),
   city: Yup.string().required("required"),
-  state: Yup.string()
-    .required("required")
-    .matches(/^[A-Za-z]{2}$/, "State code is 2 letters"),
+  state: Yup.string(),
   salvationYear: Yup.number()
     .typeError("Year must be a number")
     .min(1900, "Year must be after 1900")
@@ -272,46 +270,8 @@ export const EditTestimony = ({
             video,
           ]);
 
-          // Debug function to show validation errors when submit is clicked
-          const handleDebugSubmit = async () => {
-            console.log("Submit button clicked");
-
-            // Set formSubmitted to true to show validation errors
-            setFormSubmitted(true);
-
-            // Validate the form manually and check for errors
-            const validationErrors = await validateForm();
-            const errorCount = Object.keys(validationErrors).length;
-
-            if (errorCount > 0) {
-              console.error(
-                `Form has ${errorCount} validation errors:`,
-                validationErrors
-              );
-              alert(
-                `Please fix all required fields (${errorCount} errors found). Check the console for details.`
-              );
-            } else {
-              console.log("Form is valid, proceeding with submission");
-              handleSubmit();
-            }
-          };
-
           return (
             <View style={styles.formContainer}>
-              {/* Debug information at the top of the form */}
-              <View style={styles.debugSection}>
-                <BodyText
-                  style={{
-                    color: "red",
-                    fontWeight: "bold",
-                    marginBottom: spacing.sm,
-                  }}
-                >
-                  Form Debug Info - Required fields must be answered
-                </BodyText>
-              </View>
-
               {isAdmin && (
                 <CustomInput
                   label="Testimony Title"
@@ -629,7 +589,7 @@ export const EditTestimony = ({
                 <CustomButton
                   title={isEdit ? "Save Changes" : "Submit"}
                   variant="primary"
-                  onPress={handleDebugSubmit}
+                  onPress={handleSubmit}
                   loading={loading}
                   style={styles.actionButton}
                 />

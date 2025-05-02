@@ -13,7 +13,10 @@ export const TestimonySubmissionSuccessScreen = () => {
   const navigation = useNavigation();
 
   const handleNavigateToUser = () => {
-    navigation.navigate("Dashboard");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Dashboard" }],
+    });
   };
 
   return (
