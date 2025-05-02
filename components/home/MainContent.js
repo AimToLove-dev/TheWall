@@ -144,16 +144,15 @@ export const MainContent = ({
         </View>
 
         <BodyText style={styles.paragraph}>
-          Monet beltran saw a vision of a Holy Revolution--doors of the Church
-          bursting open as the LGBTQ+ flooded in. She believes the Lord has
-          comissioned her saying{"\n"}
-          <Text style={{ fontWeight: "bold" }}>
-            Prepare a banquet table for the LGBTQ+.
-          </Text>
+          The Wall is a platform dedicated to sharing the transformative power
+          of Jesus within the LGBTQ+ community. Through initiatives like the
+          Wailing Wall and Testimony Wall, we aim to spark change as we pray
+          corporately, share stories of spiritual renewal, and provide resources
+          to support churches evangelists, and individuals.
         </BodyText>
         <BodyText style={styles.paragraph}>
-          <Text style={{ fontWeight: "bold" }}>The wall is that Table</Text>
-          {"\n"}A place to love, pray, and evangilize the LGBTQ+ community.
+          Partner with us in building a movement where everyone is welcomed,
+          valued, and supported in discovering the love and truth of Christ.
         </BodyText>
       </View>
 
