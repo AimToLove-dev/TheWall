@@ -225,10 +225,6 @@ export const TestimonyReviewScreen = ({ navigation }) => {
     }
   };
 
-  const handleCreateTestimony = () => {
-    navigation.navigate("Testimony");
-  };
-
   const handleEditTestimony = () => {
     setIsEditing(true);
   };
@@ -548,19 +544,12 @@ export const TestimonyReviewScreen = ({ navigation }) => {
           {renderHeader()}
 
           {/* Edit button for testimony */}
-          {reviewingSubmission ? (
+          {reviewingSubmission && (
             <TouchableOpacity
               style={[styles.createButton, { backgroundColor: colors.primary }]}
               onPress={handleEditTestimony}
             >
               <Ionicons name="pencil" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={[styles.createButton, { backgroundColor: colors.primary }]}
-              onPress={handleCreateTestimony}
-            >
-              <Ionicons name="add" size={24} color="#FFFFFF" />
             </TouchableOpacity>
           )}
         </View>

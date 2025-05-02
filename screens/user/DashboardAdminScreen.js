@@ -179,6 +179,9 @@ export const DashboardAdminScreen = ({ navigation }) => {
     });
   };
 
+  const handleCreateTestimony = () => {
+    navigation.navigate("Testimony");
+  };
   const handleTestimonyReviewPress = () => {
     navigation.navigate("TestimonyReview");
   };
@@ -297,6 +300,13 @@ export const DashboardAdminScreen = ({ navigation }) => {
             elevation={1}
             style={[styles.adminCard, { backgroundColor: colors.surface }]}
           >
+            <AdminFunctionButton
+              title="Create Testimony"
+              description="Add submission on behalf of a user"
+              iconName="person-add"
+              onPress={handleCreateTestimony}
+              colors={colors}
+            />
             <AdminFunctionButton
               title="Testimony Approval"
               description="Manage pending testimony submissions"
