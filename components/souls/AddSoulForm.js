@@ -1,24 +1,14 @@
 "use client";
 
-import { useState, useContext } from "react";
-import { TextInput, Text, Divider } from "react-native-paper";
+import { useState } from "react";
+import { TextInput, Text } from "react-native-paper";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { getThemeColors } from "styles/theme";
 import { View } from "components";
 import { CustomButton } from "@components/common/CustomButton";
 import { addSoul } from "@utils/soulsUtils";
-import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "config";
 import { createDisplayName } from "@utils/index";
-import { useNavigation } from "@react-navigation/native";
-
-// Button state enum - frozen object for immutability
-const ButtonState = Object.freeze({
-  SUBMIT: "submit",
-  LOGIN: "login",
-  SIGNUP: "signup",
-});
 
 // Validation schema for the form
 const soulValidationSchema = Yup.object().shape({
@@ -59,9 +49,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [buttonState, setButtonState] = useState(ButtonState.SUBMIT);
-
-  const navigation = useNavigation();
 
   const colors = getThemeColors();
 
@@ -78,24 +65,25 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     setLoading(true);
     setError("");
     setSuccessMessage("");
-    setButtonState(ButtonState.SUBMIT); // Reset button state
 
     try {
       const displayName = createDisplayName(
         values.firstName,
         values.lastInitial
       );
-      let soulId;
 
       // Call the soulUtils/addSoul function with proper data
       const soulData = {
         name: displayName,
+        firstName: values.firstName.trim(),
+        lastInitial: values.lastInitial.trim(),
         city: values.city || "",
         state: values.state || "",
         createdAt: new Date().toISOString(),
       };
 
-      soulId = await addSoul(soulData);
+      // Let Firebase auto-generate the document ID
+      const soulId = await addSoul(soulData);
 
       // Reset form after successful submission
       resetForm();
@@ -116,9 +104,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       console.error("Error adding soul:", error);
       // Clear success message if there was one and set error
       setSuccessMessage("");
-
       setError(error.message || "Failed to add soul. Please try again.");
-
       clearMessages(); // Start timeout to clear messages
     } finally {
       setLoading(false);
@@ -136,7 +122,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
         }}
         validationSchema={soulValidationSchema}
         onSubmit={handleSubmit}
-        enableReinitialize={true} // Add this to ensure form reinitializes when auth state changes
       >
         {({
           handleChange,
@@ -147,143 +132,135 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
           touched,
         }) => (
           <>
-            {/* Hide form fields if login/signup button is shown */}
-            {buttonState === ButtonState.SUBMIT && (
-              <>
-                <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-                  LGBTQ+ Friend or Family Member
-                </Text>
+            <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
+              LGBTQ+ Friend or Family Member
+            </Text>
 
-                <View
-                  style={{
-                    flexDirection: "row",
-                    gap: 8,
-                    marginBottom:
-                      (touched.firstName && errors.firstName) ||
-                      (touched.lastInitial && errors.lastInitial)
-                        ? 0
-                        : 8,
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 8,
+                marginBottom:
+                  (touched.firstName && errors.firstName) ||
+                  (touched.lastInitial && errors.lastInitial)
+                    ? 0
+                    : 8,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="First Name*"
+                  value={values.firstName}
+                  onChangeText={handleChange("firstName")}
+                  onBlur={handleBlur("firstName")}
+                  mode="outlined"
+                  left={<TextInput.Icon icon="account" />}
+                  error={touched.firstName && errors.firstName}
+                />
+                {touched.firstName && errors.firstName && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.firstName}
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="Last Initial*"
+                  value={values.lastInitial}
+                  onChangeText={(text) => {
+                    // Only allow a single letter and automatically convert to uppercase
+                    if (text.length <= 1) {
+                      handleChange("lastInitial")(text.toUpperCase());
+                    }
                   }}
-                >
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="First Name*"
-                      value={values.firstName}
-                      onChangeText={handleChange("firstName")}
-                      onBlur={handleBlur("firstName")}
-                      mode="outlined"
-                      left={<TextInput.Icon icon="account" />}
-                      error={touched.firstName && errors.firstName}
-                    />
-                    {touched.firstName && errors.firstName && (
-                      <Text
-                        style={{
-                          color: colors.error,
-                          fontSize: 12,
-                          marginBottom: 12,
-                        }}
-                      >
-                        {errors.firstName}
-                      </Text>
-                    )}
-                  </View>
+                  onBlur={handleBlur("lastInitial")}
+                  mode="outlined"
+                  maxLength={1}
+                  placeholder="D"
+                  left={<TextInput.Icon icon="account" />}
+                  error={touched.lastInitial && errors.lastInitial}
+                />
+                {touched.lastInitial && errors.lastInitial && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.lastInitial}
+                  </Text>
+                )}
+              </View>
+            </View>
 
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="Last Initial*"
-                      value={values.lastInitial}
-                      onChangeText={(text) => {
-                        // Only allow a single letter and automatically convert to uppercase
-                        if (text.length <= 1) {
-                          handleChange("lastInitial")(text.toUpperCase());
-                        }
-                      }}
-                      onBlur={handleBlur("lastInitial")}
-                      mode="outlined"
-                      maxLength={1}
-                      placeholder="D"
-                      left={<TextInput.Icon icon="account" />}
-                      error={touched.lastInitial && errors.lastInitial}
-                    />
-                    {touched.lastInitial && errors.lastInitial && (
-                      <Text
-                        style={{
-                          color: colors.error,
-                          fontSize: 12,
-                          marginBottom: 12,
-                        }}
-                      >
-                        {errors.lastInitial}
-                      </Text>
-                    )}
-                  </View>
-                </View>
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="City"
+                  value={values.city}
+                  onChangeText={handleChange("city")}
+                  onBlur={handleBlur("city")}
+                  mode="outlined"
+                  left={
+                    <TextInput.Icon icon="city" forceTextInputFocus={false} />
+                  }
+                  style={{ flex: 1 }}
+                />
+              </View>
 
-                <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="City"
-                      value={values.city}
-                      onChangeText={handleChange("city")}
-                      onBlur={handleBlur("city")}
-                      mode="outlined"
-                      left={
-                        <TextInput.Icon
-                          icon="city"
-                          forceTextInputFocus={false}
-                        />
-                      }
-                      style={{ flex: 1 }}
-                    />
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      label="State"
-                      value={values.state}
-                      onChangeText={(text) => {
-                        handleChange("state")(text.toUpperCase());
-                      }}
-                      onBlur={handleBlur("state")}
-                      mode="outlined"
-                      placeholder="CA"
-                      placeholderTextColor={colors.placeholderText}
-                      error={touched.state && errors.state}
-                      left={
-                        <TextInput.Icon
-                          icon="map-marker"
-                          forceTextInputFocus={false}
-                        />
-                      }
-                      style={{ flex: 1 }}
-                    />
-                    {touched.state && errors.state && (
-                      <Text
-                        style={{
-                          color: colors.error,
-                          fontSize: 12,
-                          marginBottom: 12,
-                        }}
-                      >
-                        {errors.state}
-                      </Text>
-                    )}
-                  </View>
-                </View>
-
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: colors.text,
-                    marginBottom: 16,
-                    fontStyle: "italic",
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  label="State"
+                  value={values.state}
+                  onChangeText={(text) => {
+                    handleChange("state")(text.toUpperCase());
                   }}
-                >
-                  Adding location information allows this tribute to appear on
-                  local walls
-                </Text>
-              </>
-            )}
+                  onBlur={handleBlur("state")}
+                  mode="outlined"
+                  placeholder="CA"
+                  placeholderTextColor={colors.placeholderText}
+                  error={touched.state && errors.state}
+                  left={
+                    <TextInput.Icon
+                      icon="map-marker"
+                      forceTextInputFocus={false}
+                    />
+                  }
+                  style={{ flex: 1 }}
+                />
+                {touched.state && errors.state && (
+                  <Text
+                    style={{
+                      color: colors.error,
+                      fontSize: 12,
+                      marginBottom: 12,
+                    }}
+                  >
+                    {errors.state}
+                  </Text>
+                )}
+              </View>
+            </View>
+
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.text,
+                marginBottom: 16,
+                fontStyle: "italic",
+              }}
+            >
+              Adding location information allows this tribute to appear on local
+              walls
+            </Text>
 
             {error ? (
               <Text style={{ color: colors.error, marginBottom: 16 }}>
@@ -306,32 +283,14 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
                 onPress={onCancel}
                 style={{ flex: 1, marginRight: 8 }}
               />
-              {buttonState === ButtonState.LOGIN ? (
-                <CustomButton
-                  title="Login"
-                  variant="primary"
-                  onPress={() => navigation.navigate("login")}
-                  style={{ flex: 1 }}
-                />
-              ) : buttonState === ButtonState.SIGNUP ? (
-                <CustomButton
-                  title="Sign Up"
-                  variant="primary"
-                  onPress={() =>
-                    navigation.navigate("Auth", { screen: "Signup" })
-                  }
-                  style={{ flex: 1 }}
-                />
-              ) : (
-                <CustomButton
-                  title="Submit"
-                  variant="primary"
-                  onPress={() => handleSubmit()} // Explicitly call it as a function
-                  loading={loading}
-                  disabled={loading}
-                  style={{ flex: 1 }}
-                />
-              )}
+              <CustomButton
+                title="Submit"
+                variant="primary"
+                onPress={() => handleSubmit()}
+                loading={loading}
+                disabled={loading}
+                style={{ flex: 1 }}
+              />
             </View>
           </>
         )}
