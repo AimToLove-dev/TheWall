@@ -108,7 +108,6 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
               isLoading={isSaving}
               label="Google Form URL"
               placeholder="https://forms.google.com/..."
-              iconName="document-text"
             />
           </View>
 

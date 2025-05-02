@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Linking,
+  Platform,
+} from "react-native";
 import { TextInput } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { SubtitleText } from "components";
@@ -32,6 +38,17 @@ const validateUrl = (url) => {
     return { isValid: true, message: "URL is valid" };
   } catch (e) {
     return { isValid: false, message: "Please enter a valid URL" };
+  }
+};
+
+// Function to open URL in a new browser tab
+const openUrlInBrowser = (url) => {
+  if (Platform.OS === "web") {
+    window.open(url, "_blank");
+  } else {
+    Linking.openURL(url).catch((err) =>
+      console.error("Failed to open URL:", err)
+    );
   }
 };
 
@@ -223,7 +240,7 @@ export const UrlInput = ({
     } else if (currentState === STATE.SUCCESS) {
       return "checkmark-circle";
     } else {
-      return "pencil";
+      return "create";
     }
   };
 
@@ -268,9 +285,16 @@ export const UrlInput = ({
             },
           ]}
         >
-          <View style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={() => {
+              if (isUrlValid && url) {
+                openUrlInBrowser(url);
+              }
+            }}
+          >
             <Ionicons name={iconName} size={20} color={getLinkIconColor()} />
-          </View>
+          </TouchableOpacity>
 
           <TextInput
             placeholder={isEditMode() ? placeholder : ""}
