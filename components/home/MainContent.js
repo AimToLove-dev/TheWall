@@ -1,24 +1,9 @@
 import React from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Text,
-  View,
-  Dimensions,
-  Linking,
-} from "react-native";
-import {
-  HeaderText,
-  BodyText,
-  CustomButton,
-  CaptionText,
-  WobblingBell,
-} from "components";
-import { Divider } from "react-native-paper";
+import { StyleSheet, Image, Text, View, Dimensions } from "react-native";
+import { HeaderText, BodyText, WobblingBell } from "components";
 import { fontSizes } from "styles/theme";
-import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { PageLinkBlock } from "./PageLinkBlock";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -39,8 +24,6 @@ export const MainContent = ({
   return (
     <View
       style={{
-        paddingHorizontal: 20,
-        paddingTop: 20,
         marginHorizontal: "auto",
         width: "100%",
       }}
@@ -51,7 +34,7 @@ export const MainContent = ({
       {/* Header Image - Main Page Title (H1 equivalent) */}
       <View style={styles.headerImageContainer} accessibilityRole="header">
         <Image
-          source={require("../assets/header.png")}
+          source={require("assets/header.png")}
           style={styles.headerImage}
           resizeMode="contain"
           accessible={true}
@@ -80,80 +63,28 @@ export const MainContent = ({
         {/* Two wall descriptions */}
         <View style={styles.wallDescriptionsContainer}>
           {/* Wailing Wall description */}
-          <View
-            style={{ flex: 1, marginRight: 10 }}
-            accessibilityRole="region"
-            accessible={true}
-          >
-            <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity
-                onPress={navigateToWailingWall}
-                accessible={true}
-                accessibilityLabel="Go to Wailing Wall"
-                accessibilityHint="Navigate to the Wailing Wall page"
-              >
-                <WobblingBell
-                  imageSrc={require("../assets/megaphone.png")}
-                  style={styles.wallIcon}
-                  size={100}
-                  wobbleDelay={3000}
-                  startingDelay={0}
-                />
-              </TouchableOpacity>
-              <View style={styles.wallTitleContainer}>
-                <CustomButton
-                  title="Wailing Wall"
-                  onPress={navigateToWailingWall}
-                  mode="primary"
-                  backgroundImage={require("../assets/paper.jpg")}
-                  style={styles.wallButton}
-                  accessibilityLabel="Go to Wailing Wall"
-                />
-              </View>
-            </View>
-            <BodyText style={styles.wallDescription}>
-              A place to submit the names of loved ones in the LGBTQ community
-              so we can join in interceding for them in love and hope.
-            </BodyText>
-          </View>
+          <PageLinkBlock
+            title="Wailing Wall"
+            onPress={navigateToWailingWall}
+            imageSrc={require("assets/megaphone.png")}
+            description="Submit names of loved ones in the LGBTQ+ community so we can intercede for them together in love and hope."
+            style={{ marginRight: 10 }}
+            startingDelay={0}
+            accessibilityLabel="Go to Wailing Wall"
+            accessibilityHint="Navigate to the Wailing Wall page"
+          />
 
           {/* Testimony Wall description */}
-          <View
-            style={{ flex: 1, marginLeft: 10 }}
-            accessibilityRole="region"
-            accessible={true}
-          >
-            <View style={styles.wallDescriptionHeader}>
-              <TouchableOpacity
-                onPress={navigateToTestimonyWall}
-                accessible={true}
-                accessibilityLabel="Go to Testimony Wall"
-                accessibilityHint="Navigate to the Testimony Wall page"
-              >
-                <WobblingBell
-                  imageSrc={require("../assets/bell.png")}
-                  style={styles.wallIcon}
-                  size={100}
-                  wobbleDelay={3000}
-                  startingDelay={1500}
-                />
-              </TouchableOpacity>
-              <View style={styles.wallTitleContainer}>
-                <CustomButton
-                  title="Testimony Wall"
-                  onPress={navigateToTestimonyWall}
-                  mode="primary"
-                  backgroundImage={require("../assets/paper.jpg")}
-                  style={styles.wallButton}
-                  accessibilityLabel="Go to Testimony Wall"
-                />
-              </View>
-            </View>
-            <BodyText style={styles.wallDescription}>
-              We believe these testimonies will reflect the transformative love
-              of God in a real and tangible way.
-            </BodyText>
-          </View>
+          <PageLinkBlock
+            title="Testimony Wall"
+            onPress={navigateToTestimonyWall}
+            imageSrc={require("assets/bell.png")}
+            description="Share testimonies that reveal the real and tangible transformation brought by God’s love."
+            style={{ marginLeft: 10 }}
+            startingDelay={1500}
+            accessibilityLabel="Go to Testimony Wall"
+            accessibilityHint="Navigate to the Testimony Wall page"
+          />
         </View>
       </View>
 
@@ -174,21 +105,26 @@ export const MainContent = ({
         <View style={styles.imagesContainer}>
           <View style={styles.imageWrapper}>
             <Image
-              source={require("../assets/before.png")}
-              style={[styles.columnImage, { scale: "none" }]}
+              source={require("assets/before.png")}
+              style={[
+                styles.columnImage,
+                { filter: "grayscale(100%)", scale: "none" },
+              ]}
               resizeMode="cover"
               accessible={true}
               accessibilityLabel="Before transformation image"
             />
+            <Text style={styles.imageCaptionText}>MONET BEFORE CHRIST</Text>
           </View>
           <View style={styles.imageWrapper}>
             <Image
-              source={require("../assets/after.png")}
+              source={require("assets/after.png")}
               style={[styles.columnImage, { scale: "none" }]}
               resizeMode="cover"
               accessible={true}
               accessibilityLabel="After transformation image"
             />
+            <Text style={styles.imageCaptionText}>MONET AFTER ADOPTION</Text>
           </View>
         </View>
 
@@ -199,7 +135,7 @@ export const MainContent = ({
           accessibilityLevel={3}
         >
           <Image
-            source={require("../assets/p2p.png")}
+            source={require("assets/p2p.png")}
             style={styles.p2pImage}
             resizeMode="contain"
             accessible={true}
@@ -221,104 +157,72 @@ export const MainContent = ({
         </BodyText>
       </View>
 
-      {/* Navigation Section */}
-      <View style={styles.sectionHeaderContainer} accessibilityRole="header">
-        <HeaderText style={styles.sectionHeader}>
-          OTHER WAYS TO JOIN:
-        </HeaderText>
-      </View>
+      {/* First row: RESOURCE and INVEST */}
       <View
-        style={styles.logoWithIconsContainer}
+        style={styles.wallDescriptionsContainer}
         accessibilityRole="navigation"
         accessible={true}
-        accessibilityLabel="Quick Navigation"
+        accessibilityLabel="Quick Navigation - Row 1"
       >
-        {/* Resources - Left side */}
-        <TouchableOpacity
-          style={styles.sideIconContainer}
+        {/* Resources */}
+        <PageLinkBlock
+          title="RESOURCE"
           onPress={navigateToResources}
-          accessible={true}
+          imageSrc={require("assets/flame.png")}
+          description="Access materials to help be love, and evangelize the LGBTQ+"
+          style={{ marginRight: 10 }}
+          startingDelay={0}
           accessibilityLabel="Go to Resources"
-        >
-          <WobblingBell
-            imageSrc={require("../assets/flame.png")}
-            style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={0}
-          />
-          <CustomButton
-            title="RESOURCE"
-            backgroundImage={require("../assets/paper.jpg")}
-            mode="primary"
-            style={styles.actionButton}
-            accessibilityLabel="Resources Button"
-            disabled={true} // Disable button since parent handles click
-          />
-          <Text style={styles.iconSubtitle}>
-            Access materials to help be love, and evangelize the LGBTQ+
-          </Text>
-        </TouchableOpacity>
+          accessibilityHint="Navigate to the Resources page"
+          iconInButton={true}
+        />
 
-        <TouchableOpacity
-          style={[
-            styles.sideIconContainer,
-            {
-              marginHorizontal: 10,
-              paddingHorizontal: 10,
-            },
-          ]}
+        {/* Invest */}
+        <PageLinkBlock
+          title="INVEST"
           onPress={() => navigation.navigate("Giving")}
-          accessible={true}
-          accessibilityLabel="Fund The Movement - Support our mission"
-        >
-          <WobblingBell
-            imageSrc={require("../assets/give.png")}
-            style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={1000}
-          />
-          <CustomButton
-            title="INVEST"
-            backgroundImage={require("../assets/paper.jpg")}
-            mode="primary"
-            style={[styles.actionButton]}
-            accessibilityLabel="Invest Button"
-            disabled={true} // Disable button since parent handles click
-          />
-          <Text style={[styles.iconSubtitle]}>
-            Fund Revival-Support Outreach for the LGBTQ+ Community
-          </Text>
-        </TouchableOpacity>
+          imageSrc={require("assets/give.png")}
+          description="Fund Revival-Support Outreach for the LGBTQ+ Community"
+          style={{ marginLeft: 10 }}
+          startingDelay={1500}
+          accessibilityLabel="Go to Giving"
+          accessibilityHint="Navigate to the Giving page"
+          iconInButton={true}
+        />
+      </View>
 
-        {/* Bell - Right side */}
-        <TouchableOpacity
-          style={styles.sideIconContainer}
+      {/* Second row: INVITE and VISION */}
+      <View
+        style={[styles.wallDescriptionsContainer, { marginTop: 40 }]}
+        accessibilityRole="navigation"
+        accessible={true}
+        accessibilityLabel="Quick Navigation - Row 2"
+      >
+        {/* Invite */}
+        <PageLinkBlock
+          title="INVITE"
           onPress={navigateToInviteUs}
-          accessible={true}
+          imageSrc={require("assets/connect.png")}
+          description="Welcome our team to Preach, Testify, and Release the sound of love and liberation"
+          style={{ marginRight: 10 }}
+          startingDelay={3000}
           accessibilityLabel="Go to Invite Us"
-        >
-          <WobblingBell
-            imageSrc={require("../assets/connect.png")}
-            style={styles.sideIcon}
-            size={40}
-            wobbleDelay={3000}
-            startingDelay={2000}
-          />
-          <CustomButton
-            title="INVITE"
-            backgroundImage={require("../assets/paper.jpg")}
-            mode="primary"
-            style={styles.actionButton}
-            accessibilityLabel="Invite Button"
-            disabled={true} // Disable button since parent handles click
-          />
-          <Text style={styles.iconSubtitle}>
-            Our team to Preach, Testify, and Release the sound of love and
-            liberation
-          </Text>
-        </TouchableOpacity>
+          accessibilityHint="Navigate to the Invite Us page"
+          iconInButton={true}
+        />
+
+        {/* Vision */}
+        <PageLinkBlock
+          title="VISION"
+          onPress={() => navigation.navigate("Vision")}
+          imageSrc={require("assets/eye.png")}
+          description="Learn about our Holy Revolution and God's vision for the LGBTQ+ community"
+          style={{ marginLeft: 10 }}
+          startingDelay={4500}
+          accessibilityLabel="Go to Vision"
+          accessibilityHint="Navigate to the Vision page"
+          iconInButton={true}
+        />
       </View>
     </View>
   );
@@ -333,7 +237,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     width: "100%",
-    marginVertical: 40,
+    marginVertical: 20,
   },
   imagesContainer: {
     flexDirection: "row",
@@ -346,10 +250,25 @@ const styles = StyleSheet.create({
     aspectRatio: 1, // This ensures a square shape
     marginHorizontal: 5,
     overflow: "hidden", // This ensures the image doesn't overflow the wrapper
+    alignItems: "center", // Center the caption text
   },
   columnImage: {
     width: "100%",
     height: "100%",
+  },
+  imageCaptionText: {
+    textAlign: "center",
+    fontSize: 12,
+    color: "white",
+    margin: 2,
+    marginTop: -36,
+    width: "97%",
+    padding: 10,
+    backgroundColor: "black",
+    borderRadius: 8,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    fontFamily: "XTypewriter-Bold",
   },
   sectionTitle: {
     fontWeight: "bold",
@@ -407,7 +326,7 @@ const styles = StyleSheet.create({
   },
   headerImageContainer: {
     width: "100%",
-    marginBottom: 40,
+    marginBottom: 20,
   },
   headerImage: {
     width: "100%",
@@ -415,7 +334,7 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
   },
   introductionSection: {
-    marginVertical: 40,
+    marginVertical: 20,
   },
   wallDescriptionsContainer: {
     flexDirection: "row",
@@ -467,16 +386,17 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
   p2pImageContainer: {
-    alignItems: "center",
+    width: "100%",
     marginVertical: 0,
   },
   p2pImage: {
     width: "100%",
-    height: 32,
+    height: "100%",
+    aspectRatio: 7.5, // Adjust this based on actual image aspect ratio
   },
   sectionHeaderContainer: {
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 20,
   },
   sectionHeader: {
     fontSize: fontSizes.medium,

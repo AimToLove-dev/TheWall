@@ -8,10 +8,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { ComingSoon, ScrollableScreenView } from "components";
-import { DashboardHeader } from "../components/dashboard";
+import { ComingSoon } from "components/ComingSoon";
+import { ScrollableScreenView } from "components/views/ScrollableScreenView";
+import { DashboardHeader } from "components/dashboard/DashboardHeader";
 import { useNavigation } from "@react-navigation/native";
-import { fetchResourcesFromGoogleScript } from "../utils/resourceUtils";
+import { fetchResourcesFromGoogleScript } from "utils/resourceUtils";
 import { getThemeColors } from "styles/theme";
 
 export const ResourcesScreen = () => {
@@ -40,7 +41,7 @@ export const ResourcesScreen = () => {
   }, []);
 
   const handleBackPress = () => {
-    navigation.goBack();
+    navigation.navigate("Home");
   };
 
   const handleOpenResource = (url) => {

@@ -39,7 +39,7 @@ import { TextAreaInput } from "./inputs/TextAreaInput";
 import { ConfirmationPage } from "./testimony/ConfirmationPage";
 import { ReadTestimony } from "./testimony/ReadTestimony";
 import { EditTestimony } from "./testimony/EditTestimony";
-import { MainContent } from "./MainContent";
+import { MainContent } from "./home/MainContent";
 
 export {
   View,

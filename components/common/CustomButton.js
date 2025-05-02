@@ -92,8 +92,10 @@ export const CustomButton = ({
     }
   };
 
-  // Create a render function for the left icon to avoid button nesting issues
-  const renderLeftIcon = leftIcon ? () => leftIcon : undefined;
+  // Enhanced render function for left icon to provide better spacing and aesthetic
+  const renderLeftIcon = leftIcon
+    ? () => <View style={styles.leftIconContainer}>{leftIcon}</View>
+    : undefined;
 
   // If we have a background image, wrap the button in an ImageBackground
   if (backgroundImage) {
@@ -133,6 +135,7 @@ export const CustomButton = ({
               flexWrap: "wrap",
               textAlign: "center",
               whiteSpace: "normal",
+              marginLeft: leftIcon ? 8 : 0, // Add margin when there's a left icon
             },
             textStyle,
           ]}
@@ -140,7 +143,9 @@ export const CustomButton = ({
           icon={renderLeftIcon}
         >
           {title}
-          {rightIcon && <View style={{ marginLeft: 8 }}>{rightIcon}</View>}
+          {rightIcon && (
+            <View style={styles.rightIconContainer}>{rightIcon}</View>
+          )}
         </Button>
       </ImageBackground>
     );
@@ -168,6 +173,7 @@ export const CustomButton = ({
           flexWrap: "wrap",
           textAlign: "center",
           whiteSpace: "normal",
+          marginLeft: leftIcon ? 8 : 0, // Add margin when there's a left icon
         },
         textStyle,
       ]}
@@ -175,7 +181,22 @@ export const CustomButton = ({
       icon={renderLeftIcon}
     >
       {title}
-      {rightIcon && <View style={{ marginLeft: 8 }}>{rightIcon}</View>}
+      {rightIcon && <View style={styles.rightIconContainer}>{rightIcon}</View>}
     </Button>
   );
 };
+
+const styles = StyleSheet.create({
+  leftIconContainer: {
+    marginRight: 4,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  rightIconContainer: {
+    marginLeft: 8,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
