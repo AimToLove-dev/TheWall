@@ -204,7 +204,7 @@ export const WailingWallScreen = () => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/brickSeamless.png")}
+        source={require("assets/brickSeamless.png")}
         style={styles.backgroundImage}
         resizeMode="repeat"
       >

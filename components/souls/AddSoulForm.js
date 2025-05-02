@@ -8,7 +8,6 @@ import { getThemeColors } from "styles/theme";
 import { View } from "components";
 import { CustomButton } from "@components/common/CustomButton";
 import { addSoul } from "@utils/soulsUtils";
-import { AuthenticatedUserContext } from "providers";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { db } from "config";
 import { createDisplayName } from "@utils/index";
@@ -21,32 +20,33 @@ const ButtonState = Object.freeze({
   SIGNUP: "signup",
 });
 
-// Hash email function to create consistent anonymous IDs
-const hashEmail = (email) => {
-  // Simple string hashing function that creates a consistent hash
-  let hash = 0;
-  if (!email || email.length === 0) return hash;
 
-  for (let i = 0; i < email.length; i++) {
-    const char = email.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  // Prefix with 'anon_' to identify as anonymous submission
-  return `anon_${Math.abs(hash).toString(16)}`;
-};
 
 // Validation schema for the form
 const soulValidationSchema = Yup.object().shape({
-  submitterEmail: Yup.string().when("isAuthenticated", {
-    is: false,
-    then: Yup.string()
-      .email("Please enter a valid email")
-      .required("Email is required")
-      .trim(),
-    otherwise: Yup.string().notRequired(), // Explicitly make it not required when authenticated
-  }),
-  firstName: Yup.string().required("First name is required"),
+  firstName: Yup.string()
+    .required("First name is required")
+    .test("no-profanity", "Inappropriate language is not allowed", (value) => {
+      if (!value) return true;
+      // List of common swear words to check against
+      const swearWords = [
+        "fuck",
+        "shit",
+        "bitch",
+        "cunt",
+        "damn",
+        "dick",
+        "pussy",
+      ];
+
+      // Check for standalone "ass" using word boundary regex
+      const containsAss = /\bass\b/i.test(value);
+
+      return (
+        !swearWords.some((word) => value.toLowerCase().includes(word)) &&
+        !containsAss
+      );
+    }),
   lastInitial: Yup.string()
     .required("Last initial is required")
     .matches(/^[A-Za-z]$/, "Only enter a single letter")
@@ -58,16 +58,12 @@ const soulValidationSchema = Yup.object().shape({
 });
 
 export const AddSoulForm = ({ onSuccess, onCancel }) => {
-  const { user, isEmailVerified } = useContext(AuthenticatedUserContext);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [buttonState, setButtonState] = useState(ButtonState.SUBMIT);
 
   const navigation = useNavigation();
-
-  // Check if user is authenticated and email is verified
-  const isAuthenticated = user && isEmailVerified;
 
   const colors = getThemeColors();
 
@@ -93,57 +89,15 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       );
       let soulId;
 
-      // Path 1: User is logged in and email is verified
-      if (isAuthenticated) {
-        // Call the soulUtils/addSoul function with proper data
-        const soulData = {
-          name: displayName,
-          userId: user.uid,
-          city: values.city || "",
-          state: values.state || "",
-          createdAt: new Date().toISOString(),
-        };
+      // Call the soulUtils/addSoul function with proper data
+      const soulData = {
+        name: displayName,
+        city: values.city || "",
+        state: values.state || "",
+        createdAt: new Date().toISOString(),
+      };
 
-        soulId = await addSoul(soulData);
-      }
-      // Path 2: Anonymous submission or user's email not verified
-      else {
-        // Ensure we have a valid email
-        if (!values.submitterEmail || values.submitterEmail.trim() === "") {
-          setError("Email is required for anonymous submissions");
-          setLoading(false);
-          return;
-        }
-
-        // Hash the email to create a consistent document ID for this email
-        const emailHash = hashEmail(values.submitterEmail.toLowerCase().trim());
-
-        // Store only necessary data (no PII)
-        const soulData = {
-          name: displayName,
-          city: values.city || "",
-          state: values.state || "",
-          createdAt: new Date().toISOString(),
-          testimonyId: null,
-        };
-
-        // Use the hashed email as document ID to enforce one submission per email
-        const soulRef = doc(db, "souls", emailHash);
-
-        // Check if this email has already submitted
-        const existingDoc = await getDoc(soulRef);
-        if (existingDoc.exists()) {
-          setError(
-            "Only one submission per email address is allowed. Please create an account to add more."
-          );
-          setButtonState(ButtonState.SIGNUP);
-          setLoading(false);
-          return;
-        }
-
-        await setDoc(soulRef, soulData);
-        soulId = emailHash;
-      }
+      soulId = await addSoul(soulData);
 
       // Reset form after successful submission
       resetForm();
@@ -165,12 +119,7 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
       // Clear success message if there was one and set error
       setSuccessMessage("");
 
-      if (error.message.toLowerCase().includes("permission")) {
-        setError("Only 1 anonymous submission allowed. Please login.");
-        setButtonState(ButtonState.LOGIN);
-      } else {
-        setError(error.message || "Failed to add soul. Please try again.");
-      }
+      setError(error.message || "Failed to add soul. Please try again.");
 
       clearMessages(); // Start timeout to clear messages
     } finally {
@@ -182,12 +131,10 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
     <View style={{ width: "100%" }}>
       <Formik
         initialValues={{
-          submitterEmail: "",
           firstName: "",
           lastInitial: "",
           state: "",
           city: "",
-          isAuthenticated: isAuthenticated, // Used for conditional validation
         }}
         validationSchema={soulValidationSchema}
         onSubmit={handleSubmit}
@@ -205,44 +152,6 @@ export const AddSoulForm = ({ onSuccess, onCancel }) => {
             {/* Hide form fields if login/signup button is shown */}
             {buttonState === ButtonState.SUBMIT && (
               <>
-                {!isAuthenticated && (
-                  <>
-                    <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
-                      Submitter Information
-                    </Text>
-                    <TextInput
-                      label="Your Email*"
-                      value={values.submitterEmail}
-                      onChangeText={handleChange("submitterEmail")}
-                      onBlur={handleBlur("submitterEmail")}
-                      mode="outlined"
-                      left={
-                        <TextInput.Icon
-                          icon="email"
-                          forceTextInputFocus={false}
-                        />
-                      }
-                      style={{ marginBottom: 16 }}
-                      keyboardType="email-address"
-                      error={touched.submitterEmail && errors.submitterEmail}
-                    />
-                    {touched.submitterEmail && errors.submitterEmail && (
-                      <Text
-                        style={{
-                          color: colors.error,
-                          fontSize: 12,
-                          marginTop: -14,
-                          marginBottom: 12,
-                        }}
-                      >
-                        {errors.submitterEmail}
-                      </Text>
-                    )}
-
-                    <Divider style={{ width: "100%", marginBottom: "2em" }} />
-                  </>
-                )}
-
                 <Text style={{ fontWeight: "bold", marginBottom: 8 }}>
                   LGBTQ+ Friend or Family Member
                 </Text>
