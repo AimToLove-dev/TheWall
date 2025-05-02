@@ -24,9 +24,8 @@ export const VisionScreen = () => {
   };
 
   return (
-    
-      <ScrollableScreenView>
-        <View style={styles.container}>
+    <ScrollableScreenView>
+      <View style={styles.container}>
         <DashboardHeader
           title="Our Vision"
           subtitle="A Holy Revolution for the LGBTQ+ Community"
@@ -107,9 +106,9 @@ export const VisionScreen = () => {
               and transformation.
             </BodyText>
           </View>
-        </View></View>
-      </ScrollableScreenView>
-    
+        </View>
+      </View>
+    </ScrollableScreenView>
   );
 };
 
