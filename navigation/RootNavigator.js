@@ -18,6 +18,7 @@ import {
   ResourcesScreen,
   InviteUsScreen,
   GivingScreen,
+  VisionScreen,
 } from "../screens";
 import { AuthenticatedUserContext } from "../providers";
 // import { Header } from "components";
@@ -75,6 +76,7 @@ export const RootNavigator = () => {
         TestimonyWall: "testimonies",
         Resources: "resources",
         InviteUs: "invite-us",
+        Vision: "vision",
         Auth: {
           screens: {
             Login: "login",
@@ -102,6 +104,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Resources" component={ResourcesScreen} />
         <Stack.Screen name="InviteUs" component={InviteUsScreen} />
         <Stack.Screen name="Giving" component={GivingScreen} />
+        <Stack.Screen name="Vision" component={VisionScreen} />
 
         {/* Auth stack for login/signup */}
         <Stack.Screen name="Auth" component={AuthStack} />
