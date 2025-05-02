@@ -10,8 +10,8 @@ import {
   BodyText,
   FormContainer,
   DashboardHeader,
-  CustomInput,
   CustomButton,
+  UrlInput, // Added UrlInput import
 } from "components";
 import { getThemeColors, spacing } from "styles/theme";
 import { getConfigSettings, updateConfigSettings } from "utils/configUtils";
@@ -25,6 +25,7 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
     inviteFormUrl: "",
   });
   const [isSaving, setIsSaving] = useState(false);
+  const [updatedUrl, setUpdatedUrl] = useState("");
 
   // Load config settings when component mounts
   useEffect(() => {
@@ -50,12 +51,22 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
-  const handleSaveInviteForm = async () => {
+  const handleSaveInviteForm = async (url) => {
     try {
       setIsSaving(true);
+      setUpdatedUrl(url); // Store the URL being updated
+
+      // Call the actual update function
       await updateConfigSettings({
-        inviteFormUrl: config.inviteFormUrl,
+        inviteFormUrl: url,
       });
+
+      // Update our local state to reflect the change
+      setConfig((prevConfig) => ({
+        ...prevConfig,
+        inviteFormUrl: url,
+      }));
+
       Alert.alert("Success", "Invite Form URL saved successfully");
     } catch (error) {
       console.error("Error saving configuration:", error);
@@ -90,22 +101,14 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
               link will be used in the app for users to request invitations.
             </BodyText>
 
-            <CustomInput
+            <UrlInput
+              initialUrl={config.inviteFormUrl}
+              onUrlChange={handleSaveInviteForm}
+              colors={colors}
+              isLoading={isSaving}
               label="Google Form URL"
-              value={config.inviteFormUrl}
-              onChangeText={(text) =>
-                setConfig({ ...config, inviteFormUrl: text })
-              }
               placeholder="https://forms.google.com/..."
-              keyboardType="url"
-              autoCapitalize="none"
-            />
-
-            <CustomButton
-              title={isSaving ? "Saving..." : "Save Invite Form URL"}
-              onPress={handleSaveInviteForm}
-              disabled={isLoading || isSaving}
-              style={styles.actionButton}
+              iconName="document-text"
             />
           </View>
 
@@ -114,13 +117,10 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
               Using Google Forms
             </SubtitleText>
             <BodyText style={styles.infoText}>
-              To create a new Google Form, visit forms.google.com and design
-              your invitation request form. Once created, copy the form's URL
-              and paste it above.
-            </BodyText>
-            <BodyText style={styles.infoText}>
-              Make sure your form is set to "Anyone with the link can view" for
-              proper access from the app.
+              Create a Google Form for invitation requests, then copy the
+              shareable link from Google Forms and paste it here. Make sure the
+              form is set to "Anyone with the link can view" in the sharing
+              settings.
             </BodyText>
           </View>
         </ScrollView>

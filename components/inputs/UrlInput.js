@@ -36,7 +36,7 @@ const validateUrl = (url) => {
 };
 
 // Component for handling URL input with validation feedback
-const UrlInput = ({
+export const UrlInput = ({
   initialUrl = "",
   onUrlChange,
   colors,
@@ -129,15 +129,18 @@ const UrlInput = ({
         return;
       }
 
-      // If validation passes, update original and notify parent
+      // If validation passes, notify parent to update configuration
+      // But don't set success state yet - that should come from the parent after successful update
       setOriginalUrl(url);
       setIsValidUrl(true);
-      setValidationMessage("Settings saved successfully!");
-      setCurrentState(STATE.SUCCESS);
 
       // Notify parent component of valid URL change
       if (onUrlChange) {
+        // Only change to WAIT state, parent component will need to update initialUrl prop to trigger SUCCESS state
         onUrlChange(url);
+        setValidationMessage(
+          "URL format is valid. Configuration update in progress..."
+        );
       }
     } catch (error) {
       console.error("Error validating URL:", error);

@@ -36,6 +36,7 @@ import { CustomInput } from "./inputs/CustomInput";
 import { MediaUpload } from "./inputs/MediaUpload";
 import { VideoUpload } from "./inputs/VideoUpload";
 import { TextAreaInput } from "./inputs/TextAreaInput";
+import { UrlInput } from "./inputs/UrlInput";
 import { ConfirmationPage } from "./testimony/ConfirmationPage";
 import { ReadTestimony } from "./testimony/ReadTestimony";
 import { EditTestimony } from "./testimony/EditTestimony";
@@ -68,6 +69,7 @@ export {
   MediaUpload,
   VideoUpload,
   TextAreaInput,
+  UrlInput,
   ConfirmationPage,
   ReadTestimony,
   EditTestimony,
