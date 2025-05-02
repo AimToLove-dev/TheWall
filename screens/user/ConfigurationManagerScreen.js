@@ -79,27 +79,28 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
           style={styles.formContainer}
           showsVerticalScrollIndicator={false}
         >
-          <HeaderText style={styles.sectionTitle}>
-            Invite Form
-          </HeaderText>
+          <HeaderText style={styles.sectionTitle}>Invite Form</HeaderText>
 
           <View style={styles.infoCard}>
             <SubtitleText style={styles.infoTitle}>
               Invitation Form URL
             </SubtitleText>
             <BodyText style={styles.infoText}>
-              Enter the Google Form URL for the invitation request form. This link will be used in the app for users to request invitations.
+              Enter the Google Form URL for the invitation request form. This
+              link will be used in the app for users to request invitations.
             </BodyText>
-            
+
             <CustomInput
               label="Google Form URL"
               value={config.inviteFormUrl}
-              onChangeText={(text) => setConfig({ ...config, inviteFormUrl: text })}
+              onChangeText={(text) =>
+                setConfig({ ...config, inviteFormUrl: text })
+              }
               placeholder="https://forms.google.com/..."
               keyboardType="url"
               autoCapitalize="none"
             />
-            
+
             <CustomButton
               title={isSaving ? "Saving..." : "Save Invite Form URL"}
               onPress={handleSaveInviteForm}
@@ -113,10 +114,13 @@ export const ConfigurationManagerScreen = ({ navigation }) => {
               Using Google Forms
             </SubtitleText>
             <BodyText style={styles.infoText}>
-              To create a new Google Form, visit forms.google.com and design your invitation request form. Once created, copy the form's URL and paste it above.
+              To create a new Google Form, visit forms.google.com and design
+              your invitation request form. Once created, copy the form's URL
+              and paste it above.
             </BodyText>
             <BodyText style={styles.infoText}>
-              Make sure your form is set to "Anyone with the link can view" for proper access from the app.
+              Make sure your form is set to "Anyone with the link can view" for
+              proper access from the app.
             </BodyText>
           </View>
         </ScrollView>

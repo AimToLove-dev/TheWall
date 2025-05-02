@@ -23,8 +23,11 @@ const validateUrl = (url) => {
 
   try {
     const urlObj = new URL(url);
-    if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
-      return { isValid: false, message: "URL must start with http:// or https://" };
+    if (urlObj.protocol !== "http:" && urlObj.protocol !== "https:") {
+      return {
+        isValid: false,
+        message: "URL must start with http:// or https://",
+      };
     }
     return { isValid: true, message: "URL is valid" };
   } catch (e) {
@@ -40,7 +43,7 @@ const UrlInput = ({
   isLoading: externalLoading = false,
   placeholder = "https://...",
   label = "URL",
-  iconName = "link"
+  iconName = "link",
 }) => {
   // URL and state tracking
   const [currentState, setCurrentState] = useState(
@@ -263,17 +266,11 @@ const UrlInput = ({
           ]}
         >
           <View style={styles.iconContainer}>
-            <Ionicons
-              name={iconName}
-              size={20}
-              color={getLinkIconColor()}
-            />
+            <Ionicons name={iconName} size={20} color={getLinkIconColor()} />
           </View>
 
           <TextInput
-            placeholder={
-              isEditMode() ? placeholder : ""
-            }
+            placeholder={isEditMode() ? placeholder : ""}
             placeholderTextColor={colors.placeholderText}
             value={url}
             onChangeText={(text) => {
