@@ -20,6 +20,7 @@ export const CustomInput = ({
   onLeftIconPress,
   disabled,
   readOnly,
+  showErrors = false, // New prop to control when to show errors
   ...props
 }) => {
   const colors = getThemeColors();
@@ -30,6 +31,9 @@ export const CustomInput = ({
     if (onChangeText) onChangeText(text);
   };
 
+  // Only show errors if showErrors flag is true
+  const shouldShowError = showErrors && !!error;
+
   return (
     <View style={styles.inputContainer}>
       <TextInput
@@ -38,7 +42,7 @@ export const CustomInput = ({
         onChangeText={handleChangeText}
         onBlur={onBlur}
         placeholder={placeholder}
-        error={!!error}
+        error={shouldShowError}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
@@ -67,8 +71,8 @@ export const CustomInput = ({
         placeholderTextColor={"rgb(73 69 79 / 40%)"}
         {...props}
       />
-      {error && (
-        <HelperText type="error" visible={!!error} style={styles.errorText}>
+      {shouldShowError && (
+        <HelperText type="error" visible={true} style={styles.errorText}>
           {error}
         </HelperText>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -136,6 +136,9 @@ export const EditTestimony = ({
     "I'm not sure.",
   ];
 
+  // Add state to track if form has been submitted
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
   const handleSubmit = (values) => {
     // Generate display name using the utility function
     const displayName = createDisplayName(values.firstName, values.lastName);
@@ -192,9 +195,29 @@ export const EditTestimony = ({
             initialTestimony?.videoUrl ||
             initialTestimony?.videoUri ||
             null,
+          // Add all faith and sexuality question values to Formik's initial values
+          believeJesusSonOfGod:
+            initialTestimony?.believeJesusSonOfGod || "NotSet",
+          believeJesusResurrection:
+            initialTestimony?.believeJesusResurrection || "NotSet",
+          repentedFromSins: initialTestimony?.repentedFromSins || "NotSet",
+          confessJesusLord: initialTestimony?.confessJesusLord || "NotSet",
+          bornAgain: initialTestimony?.bornAgain || "NotSet",
+          baptizedHolySpirit: initialTestimony?.baptizedHolySpirit || "NotSet",
+          struggleSameSexAttraction:
+            initialTestimony?.struggleSameSexAttraction || "NotSet",
+          identifyAsLGBTQ: initialTestimony?.identifyAsLGBTQ || "NotSet",
+          vowPurity: initialTestimony?.vowPurity || "NotSet",
+          emotionallyDependentSameSex:
+            initialTestimony?.emotionallyDependentSameSex || "NotSet",
+          healedFromHomosexuality:
+            initialTestimony?.healedFromHomosexuality || "NotSet",
+          repentedHomosexuality:
+            initialTestimony?.repentedHomosexuality || "NotSet",
         }}
         validationSchema={testimonyValidationSchema}
         onSubmit={handleSubmit}
+        validateOnMount={false}
       >
         {({
           values,
@@ -203,312 +226,417 @@ export const EditTestimony = ({
           handleChange,
           handleSubmit,
           handleBlur,
-        }) => (
-          <View style={styles.formContainer}>
-            {isAdmin && (
-              <CustomInput
-                label="Testimony Title"
-                value={values.title}
-                onChangeText={handleChange("title")}
-                onBlur={handleBlur("title")}
-                placeholder="Enter a title for this testimony"
-                style={{ marginBottom: spacing.md }}
-              />
-            )}
+          isSubmitting,
+          validateForm,
+          setFieldValue, // Add setFieldValue to update Formik form values
+        }) => {
+          // Use React.useEffect to sync local state with Formik state
+          useEffect(() => {
+            // Sync local state values to Formik whenever they change
+            setFieldValue("believeJesusSonOfGod", believeJesusSonOfGod);
+            setFieldValue("believeJesusResurrection", believeJesusResurrection);
+            setFieldValue("repentedFromSins", repentedFromSins);
+            setFieldValue("confessJesusLord", confessJesusLord);
+            setFieldValue("bornAgain", bornAgain);
+            setFieldValue("baptizedHolySpirit", baptizedHolySpirit);
+            setFieldValue(
+              "struggleSameSexAttraction",
+              struggleSameSexAttraction
+            );
+            setFieldValue("identifyAsLGBTQ", identifyAsLGBTQ);
+            setFieldValue("vowPurity", vowPurity);
+            setFieldValue(
+              "emotionallyDependentSameSex",
+              emotionallyDependentSameSex
+            );
+            setFieldValue("healedFromHomosexuality", healedFromHomosexuality);
+            setFieldValue("repentedHomosexuality", repentedHomosexuality);
+            setFieldValue("beforeImage", beforeImage);
+            setFieldValue("afterImage", afterImage);
+            setFieldValue("video", video);
+          }, [
+            believeJesusSonOfGod,
+            believeJesusResurrection,
+            repentedFromSins,
+            confessJesusLord,
+            bornAgain,
+            baptizedHolySpirit,
+            struggleSameSexAttraction,
+            identifyAsLGBTQ,
+            vowPurity,
+            emotionallyDependentSameSex,
+            healedFromHomosexuality,
+            repentedHomosexuality,
+            beforeImage,
+            afterImage,
+            video,
+          ]);
 
-            {/* Profile section */}
-            <View style={styles.profileSection}>
-              <BodyText style={styles.mediaSectionTitle}>
-                Profile Information
-              </BodyText>
-              <BodyText style={styles.faithInstructions}>
-                Please provide your personal information. This helps us verify
-                and connect with you.
-              </BodyText>
+          // Debug function to show validation errors when submit is clicked
+          const handleDebugSubmit = async () => {
+            console.log("Submit button clicked");
 
-              {/* Name fields */}
-              <View style={styles.fieldRow}>
-                <View style={styles.fieldRowItem}>
-                  <CustomInput
-                    label="First Name"
-                    value={values.firstName}
-                    onChangeText={handleChange("firstName")}
-                    onBlur={handleBlur("firstName")}
-                    placeholder="Your first name"
-                    error={touched.firstName && errors.firstName}
-                    style={styles.inputField}
-                  />
+            // Set formSubmitted to true to show validation errors
+            setFormSubmitted(true);
+
+            // Validate the form manually and check for errors
+            const validationErrors = await validateForm();
+            const errorCount = Object.keys(validationErrors).length;
+
+            if (errorCount > 0) {
+              console.error(
+                `Form has ${errorCount} validation errors:`,
+                validationErrors
+              );
+              alert(
+                `Please fix all required fields (${errorCount} errors found). Check the console for details.`
+              );
+            } else {
+              console.log("Form is valid, proceeding with submission");
+              handleSubmit();
+            }
+          };
+
+          return (
+            <View style={styles.formContainer}>
+              {/* Debug information at the top of the form */}
+              <View style={styles.debugSection}>
+                <BodyText
+                  style={{
+                    color: "red",
+                    fontWeight: "bold",
+                    marginBottom: spacing.sm,
+                  }}
+                >
+                  Form Debug Info - Required fields must be answered
+                </BodyText>
+              </View>
+
+              {isAdmin && (
+                <CustomInput
+                  label="Testimony Title"
+                  value={values.title}
+                  onChangeText={handleChange("title")}
+                  onBlur={handleBlur("title")}
+                  placeholder="Enter a title for this testimony"
+                  style={{ marginBottom: spacing.md }}
+                />
+              )}
+
+              {/* Profile section */}
+              <View style={styles.profileSection}>
+                <BodyText style={styles.mediaSectionTitle}>
+                  Profile Information
+                </BodyText>
+                <BodyText style={styles.faithInstructions}>
+                  Please provide your personal information. This helps us verify
+                  and connect with you.
+                </BodyText>
+
+                {/* Name fields */}
+                <View style={styles.fieldRow}>
+                  <View style={styles.fieldRowItem}>
+                    <CustomInput
+                      label="First Name"
+                      value={values.firstName}
+                      onChangeText={handleChange("firstName")}
+                      onBlur={handleBlur("firstName")}
+                      placeholder="Your first name"
+                      error={touched.firstName && errors.firstName}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
+                  <View style={styles.fieldRowItem}>
+                    <CustomInput
+                      label="Last Name"
+                      value={values.lastName}
+                      onChangeText={handleChange("lastName")}
+                      onBlur={handleBlur("lastName")}
+                      placeholder="Your last name"
+                      error={touched.lastName && errors.lastName}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
                 </View>
-                <View style={styles.fieldRowItem}>
-                  <CustomInput
-                    label="Last Name"
-                    value={values.lastName}
-                    onChangeText={handleChange("lastName")}
-                    onBlur={handleBlur("lastName")}
-                    placeholder="Your last name"
-                    error={touched.lastName && errors.lastName}
-                    style={styles.inputField}
-                  />
+
+                {/* Location and salvation year fields */}
+                <View style={styles.fieldRow}>
+                  <View style={styles.fieldRowItemLarge}>
+                    <CustomInput
+                      label="City"
+                      value={values.city}
+                      onChangeText={handleChange("city")}
+                      onBlur={handleBlur("city")}
+                      placeholder="Your city"
+                      error={touched.city && errors.city}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
+                  <View style={styles.fieldRowItemSmall}>
+                    <CustomInput
+                      label="State Code"
+                      value={values.state}
+                      onChangeText={(text) => {
+                        // Convert to uppercase immediately
+                        handleChange("state")(text.toUpperCase());
+                      }}
+                      onBlur={handleBlur("state")}
+                      placeholder="CA"
+                      error={touched.state && errors.state}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
+                  <View style={styles.fieldRowItemSmall}>
+                    <CustomInput
+                      label="Salvation Year"
+                      value={values.salvationYear}
+                      onChangeText={handleChange("salvationYear")}
+                      onBlur={handleBlur("salvationYear")}
+                      placeholder="YYYY"
+                      keyboardType="numeric"
+                      error={touched.salvationYear && errors.salvationYear}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
+                </View>
+
+                {/* Contact information fields */}
+                <View style={styles.fieldRow}>
+                  <View style={styles.fieldRowItem}>
+                    <CustomInput
+                      label="Email"
+                      value={values.email}
+                      onChangeText={handleChange("email")}
+                      onBlur={handleBlur("email")}
+                      placeholder="Your email address"
+                      keyboardType="email-address"
+                      error={touched.email && errors.email}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
+                  <View style={styles.fieldRowItem}>
+                    <CustomInput
+                      label="Phone Number (Optional)"
+                      value={values.phoneNumber}
+                      onChangeText={handleChange("phoneNumber")}
+                      onBlur={handleBlur("phoneNumber")}
+                      placeholder="Your phone number"
+                      keyboardType="phone-pad"
+                      error={touched.phoneNumber && errors.phoneNumber}
+                      style={styles.inputField}
+                      showErrors={formSubmitted}
+                    />
+                  </View>
                 </View>
               </View>
 
-              {/* Location and salvation year fields */}
-              <View style={styles.fieldRow}>
-                <View style={styles.fieldRowItemLarge}>
-                  <CustomInput
-                    label="City"
-                    value={values.city}
-                    onChangeText={handleChange("city")}
-                    onBlur={handleBlur("city")}
-                    placeholder="Your city"
-                    error={touched.city && errors.city}
-                    style={styles.inputField}
-                  />
-                </View>
-                <View style={styles.fieldRowItemSmall}>
-                  <CustomInput
-                    label="State Code"
-                    value={values.state}
-                    onChangeText={(text) => {
-                      // Convert to uppercase immediately
-                      handleChange("state")(text.toUpperCase());
-                    }}
-                    onBlur={handleBlur("state")}
-                    placeholder="CA"
-                    error={touched.state && errors.state}
-                    style={styles.inputField}
-                  />
-                </View>
-                <View style={styles.fieldRowItemSmall}>
-                  <CustomInput
-                    label="Salvation Year"
-                    value={values.salvationYear}
-                    onChangeText={handleChange("salvationYear")}
-                    onBlur={handleBlur("salvationYear")}
-                    placeholder="YYYY"
-                    keyboardType="numeric"
-                    error={touched.salvationYear && errors.salvationYear}
-                    style={styles.inputField}
-                  />
-                </View>
-              </View>
+              {/* Faith questions section */}
+              <View style={styles.faithSection}>
+                <BodyText style={styles.mediaSectionTitle}>
+                  Faith Questions
+                </BodyText>
+                <BodyText style={styles.faithInstructions}>
+                  Please answer the following questions about your faith. You
+                  may leave questions unanswered if you prefer.
+                </BodyText>
 
-              {/* Contact information fields */}
-              <View style={styles.fieldRow}>
-                <View style={styles.fieldRowItem}>
-                  <CustomInput
-                    label="Email"
-                    value={values.email}
-                    onChangeText={handleChange("email")}
-                    onBlur={handleBlur("email")}
-                    placeholder="Your email address"
-                    keyboardType="email-address"
-                    error={touched.email && errors.email}
-                    style={styles.inputField}
-                  />
-                </View>
-                <View style={styles.fieldRowItem}>
-                  <CustomInput
-                    label="Phone Number (Optional)"
-                    value={values.phoneNumber}
-                    onChangeText={handleChange("phoneNumber")}
-                    onBlur={handleBlur("phoneNumber")}
-                    placeholder="Your phone number"
-                    keyboardType="phone-pad"
-                    error={touched.phoneNumber && errors.phoneNumber}
-                    style={styles.inputField}
-                  />
-                </View>
-              </View>
-            </View>
-
-            {/* Faith questions section */}
-            <View style={styles.faithSection}>
-              <BodyText style={styles.mediaSectionTitle}>
-                Faith Questions
-              </BodyText>
-              <BodyText style={styles.faithInstructions}>
-                Please answer the following questions about your faith. You may
-                leave questions unanswered if you prefer.
-              </BodyText>
-
-              <CheckboxInput
-                label="Do you believe that Jesus is the Son of God?"
-                value={believeJesusSonOfGod}
-                onChange={setBelieveJesusSonOfGod}
-                error={errors.believeJesusSonOfGod}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you believe that Jesus was crucified on the cross and rose from the dead?"
-                value={believeJesusResurrection}
-                onChange={setBelieveJesusResurrection}
-                error={errors.believeJesusResurrection}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Have you repented from your sins? (sin referring to actions, thoughts, or behaviors that go against God's will and commands)"
-                value={repentedFromSins}
-                onChange={setRepentedFromSins}
-                error={errors.repentedFromSins}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you confess Jesus as your Lord and Savior?"
-                value={confessJesusLord}
-                onChange={setConfessJesusLord}
-                error={errors.confessJesusLord}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you consider yourself born again?"
-                value={bornAgain}
-                onChange={setBornAgain}
-                error={errors.bornAgain}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you consider yourself as baptized with the Holy Spirit?"
-                value={baptizedHolySpirit}
-                onChange={setBaptizedHolySpirit}
-                error={errors.baptizedHolySpirit}
-                required={true}
-              />
-            </View>
-
-            {/* Sexuality questions section */}
-            <View style={styles.sexualitySection}>
-              <BodyText style={styles.mediaSectionTitle}>
-                Sexuality Questions
-              </BodyText>
-              <BodyText style={styles.faithInstructions}>
-                These questions help us understand your journey. You may leave
-                questions unanswered if you prefer.
-              </BodyText>
-
-              <RadioInput
-                label="Do you claim to still struggle with same-sex attraction?"
-                options={sameSexAttractionOptions}
-                value={struggleSameSexAttraction}
-                onChange={setStruggleSameSexAttraction}
-                error={errors.struggleSameSexAttraction}
-                required={true}
-                longOptions={true}
-              />
-
-              <CheckboxInput
-                label="Do you identify as part of the LGBTQ+ community?"
-                value={identifyAsLGBTQ}
-                onChange={setIdentifyAsLGBTQ}
-                error={errors.identifyAsLGBTQ}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you vow purity and holiness over your body?"
-                value={vowPurity}
-                onChange={setVowPurity}
-                error={errors.vowPurity}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Do you have any emotionally dependent relationships with the same sex?"
-                value={emotionallyDependentSameSex}
-                onChange={setEmotionallyDependentSameSex}
-                error={errors.emotionallyDependentSameSex}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Have you been delivered and/or healed from homosexuality?"
-                value={healedFromHomosexuality}
-                onChange={setHealedFromHomosexuality}
-                error={errors.healedFromHomosexuality}
-                required={true}
-              />
-
-              <CheckboxInput
-                label="Have you repented and renounced homosexuality?"
-                value={repentedHomosexuality}
-                onChange={setRepentedHomosexuality}
-                error={errors.repentedHomosexuality}
-                required={true}
-              />
-            </View>
-
-            <TextAreaInput
-              label="Your Testimony"
-              placeholder="Share your story here (minimum 50 characters)"
-              value={values.testimony}
-              onChangeText={handleChange("testimony")}
-              onBlur={handleBlur("testimony")}
-              error={errors.testimony}
-              touched={touched.testimony}
-              numberOfLines={8}
-              maxLength={2000}
-            />
-
-            <View style={styles.mediaSection}>
-              <BodyText style={styles.mediaSectionTitle}>
-                Add Media (Optional)
-              </BodyText>
-
-              <View style={styles.imageRow}>
-                <MediaUpload
-                  label="Before Image"
-                  initialImage={beforeImage}
-                  onImageSelect={setBeforeImage}
-                  style={styles.imageUpload}
-                  propertyName="before"
-                  isAdmin={isAdmin}
+                <CheckboxInput
+                  label="Do you believe that Jesus is the Son of God?"
+                  value={believeJesusSonOfGod}
+                  onChange={setBelieveJesusSonOfGod}
+                  error={errors.believeJesusSonOfGod}
+                  required={true}
+                  showErrors={formSubmitted}
                 />
 
-                <MediaUpload
-                  label="After Image"
-                  initialImage={afterImage}
-                  onImageSelect={setAfterImage}
-                  style={styles.imageUpload}
-                  propertyName="after"
+                <CheckboxInput
+                  label="Do you believe that Jesus was crucified on the cross and rose from the dead?"
+                  value={believeJesusResurrection}
+                  onChange={setBelieveJesusResurrection}
+                  error={errors.believeJesusResurrection}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Have you repented from your sins? (sin referring to actions, thoughts, or behaviors that go against God's will and commands)"
+                  value={repentedFromSins}
+                  onChange={setRepentedFromSins}
+                  error={errors.repentedFromSins}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you confess Jesus as your Lord and Savior?"
+                  value={confessJesusLord}
+                  onChange={setConfessJesusLord}
+                  error={errors.confessJesusLord}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you consider yourself born again?"
+                  value={bornAgain}
+                  onChange={setBornAgain}
+                  error={errors.bornAgain}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you consider yourself as baptized with the Holy Spirit?"
+                  value={baptizedHolySpirit}
+                  onChange={setBaptizedHolySpirit}
+                  error={errors.baptizedHolySpirit}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+              </View>
+
+              {/* Sexuality questions section */}
+              <View style={styles.sexualitySection}>
+                <BodyText style={styles.mediaSectionTitle}>
+                  Sexuality Questions
+                </BodyText>
+                <BodyText style={styles.faithInstructions}>
+                  These questions help us understand your journey. You may leave
+                  questions unanswered if you prefer.
+                </BodyText>
+
+                <RadioInput
+                  label="Do you claim to still struggle with same-sex attraction?"
+                  options={sameSexAttractionOptions}
+                  value={struggleSameSexAttraction}
+                  onChange={setStruggleSameSexAttraction}
+                  error={errors.struggleSameSexAttraction}
+                  required={true}
+                  longOptions={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you identify as part of the LGBTQ+ community?"
+                  value={identifyAsLGBTQ}
+                  onChange={setIdentifyAsLGBTQ}
+                  error={errors.identifyAsLGBTQ}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you vow purity and holiness over your body?"
+                  value={vowPurity}
+                  onChange={setVowPurity}
+                  error={errors.vowPurity}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Do you have any emotionally dependent relationships with the same sex?"
+                  value={emotionallyDependentSameSex}
+                  onChange={setEmotionallyDependentSameSex}
+                  error={errors.emotionallyDependentSameSex}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Have you been delivered and/or healed from homosexuality?"
+                  value={healedFromHomosexuality}
+                  onChange={setHealedFromHomosexuality}
+                  error={errors.healedFromHomosexuality}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+
+                <CheckboxInput
+                  label="Have you repented and renounced homosexuality?"
+                  value={repentedHomosexuality}
+                  onChange={setRepentedHomosexuality}
+                  error={errors.repentedHomosexuality}
+                  required={true}
+                  showErrors={formSubmitted}
+                />
+              </View>
+
+              <TextAreaInput
+                label="Your Testimony"
+                placeholder="Share your story here (minimum 50 characters)"
+                value={values.testimony}
+                onChangeText={handleChange("testimony")}
+                onBlur={handleBlur("testimony")}
+                error={errors.testimony}
+                touched={touched.testimony}
+                numberOfLines={8}
+                maxLength={2000}
+                showErrors={formSubmitted}
+              />
+
+              <View style={styles.mediaSection}>
+                <BodyText style={styles.mediaSectionTitle}>
+                  Add Media (Optional)
+                </BodyText>
+
+                <View style={styles.imageRow}>
+                  <MediaUpload
+                    label="Before Image"
+                    initialImage={beforeImage}
+                    onImageSelect={setBeforeImage}
+                    style={styles.imageUpload}
+                    propertyName="before"
+                    isAdmin={isAdmin}
+                  />
+
+                  <MediaUpload
+                    label="After Image"
+                    initialImage={afterImage}
+                    onImageSelect={setAfterImage}
+                    style={styles.imageUpload}
+                    propertyName="after"
+                    isAdmin={isAdmin}
+                  />
+                </View>
+
+                <VideoUpload
+                  label="Your Story Video"
+                  initialVideo={video}
+                  onVideoSelect={setVideo}
+                  placeholder="Share a short video of your story"
+                  maxDuration={120} // 2 minutes
+                  propertyName="video"
                   isAdmin={isAdmin}
                 />
               </View>
 
-              <VideoUpload
-                label="Your Story Video"
-                initialVideo={video}
-                onVideoSelect={setVideo}
-                placeholder="Share a short video of your story"
-                maxDuration={120} // 2 minutes
-                propertyName="video"
-                isAdmin={isAdmin}
-              />
-            </View>
+              {errorState ? <ErrorText>{errorState}</ErrorText> : null}
 
-            {errorState ? <ErrorText>{errorState}</ErrorText> : null}
-
-            <View style={styles.actionsContainer}>
-              <CustomButton
-                title="Cancel"
-                variant="outline"
-                onPress={onCancel}
-                style={styles.actionButton}
-              />
-              <CustomButton
-                title={isEdit ? "Save Changes" : "Submit"}
-                variant="primary"
-                onPress={handleSubmit}
-                loading={loading}
-                style={styles.actionButton}
-              />
+              <View style={styles.actionsContainer}>
+                <CustomButton
+                  title="Cancel"
+                  variant="outline"
+                  onPress={onCancel}
+                  style={styles.actionButton}
+                />
+                <CustomButton
+                  title={isEdit ? "Save Changes" : "Submit"}
+                  variant="primary"
+                  onPress={handleDebugSubmit}
+                  loading={loading}
+                  style={styles.actionButton}
+                />
+              </View>
             </View>
-          </View>
-        )}
+          );
+        }}
       </Formik>
     </ScrollView>
   );
@@ -607,5 +735,10 @@ const styles = StyleSheet.create({
   inputField: {
     height: 56, // Consistent height for all input fields
     maxHeight: 56,
+  },
+  debugSection: {
+    marginBottom: spacing.md,
+    padding: spacing.md,
+    backgroundColor: "rgba(255,0,0,0.1)",
   },
 });

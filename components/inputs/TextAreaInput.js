@@ -16,9 +16,13 @@ export const TextAreaInput = ({
   numberOfLines = 6,
   maxLength,
   style,
+  showErrors = false, // New prop to control when to show errors
   ...props
 }) => {
   const colors = getThemeColors();
+
+  // Only show errors if showErrors flag is true
+  const shouldShowError = showErrors && !!error;
 
   return (
     <>
@@ -28,7 +32,7 @@ export const TextAreaInput = ({
         onChangeText={onChangeText}
         onBlur={onBlur}
         placeholder={placeholder}
-        error={!!error}
+        error={shouldShowError}
         multiline
         numberOfLines={numberOfLines}
         maxLength={maxLength}
@@ -36,8 +40,8 @@ export const TextAreaInput = ({
         style={{ backgroundColor: colors.surface }}
         {...props}
       />
-      {error && (
-        <HelperText type="error" visible={!!error}>
+      {shouldShowError && (
+        <HelperText type="error" visible={true}>
           {error}
         </HelperText>
       )}

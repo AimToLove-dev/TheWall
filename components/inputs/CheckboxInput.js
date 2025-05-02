@@ -16,12 +16,14 @@ export const CheckboxInput = ({
   error,
   required = false,
   style,
+  showErrors = false, // New prop to control when to show errors
   ...props
 }) => {
   const colors = getThemeColors();
 
-  // Check if we should show an error (only show if required, has an error, and no value selected)
-  const showError = !!error && required && (!value || value === "NotSet");
+  // Check if we should show an error (only show if required, has an error, no value selected, and showErrors is true)
+  const showError =
+    showErrors && !!error && required && (!value || value === "NotSet");
 
   return (
     <View style={[styles.container, style]}>
@@ -63,7 +65,7 @@ export const CheckboxInput = ({
 
       {showError && (
         <HelperText type="error" visible={true} style={styles.errorText}>
-          {error}
+          Required
         </HelperText>
       )}
     </View>

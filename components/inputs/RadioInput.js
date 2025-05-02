@@ -16,12 +16,14 @@ export const RadioInput = ({
   required = false,
   style,
   longOptions = false,
+  showErrors = false, // New prop to control when to show errors
   ...props
 }) => {
   const colors = getThemeColors();
 
   // Check if we should show an error (only show if required, has an error, and no value selected)
-  const showError = !!error && required && (!value || value === "NotSet");
+  const showError =
+    showErrors && !!error && required && (!value || value === "NotSet");
 
   const renderOptions = () => {
     return options.map((option, index) => (
