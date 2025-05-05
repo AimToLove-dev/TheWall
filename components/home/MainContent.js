@@ -1,24 +1,88 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Image, Text, View, Dimensions } from "react-native";
 import { HeaderText, BodyText, WobblingBell } from "components";
 import { fontSizes } from "styles/theme";
 import { useNavigation } from "@react-navigation/native";
 import { PageLinkBlock } from "./PageLinkBlock";
-
-const screenWidth = Dimensions.get("window").width;
+import { getAllMorePages } from "utils/configUtils";
 
 export const MainContent = ({
   navigateToWailingWall,
   navigateToTestimonyWall,
 }) => {
   const navigation = useNavigation();
+  const [morePages, setMorePages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load the configured more pages on component mount
+  useEffect(() => {
+    loadMorePages();
+  }, []);
+
+  const loadMorePages = async () => {
+    try {
+      const pages = await getAllMorePages();
+      setMorePages(pages);
+    } catch (error) {
+      console.error("Error loading more pages:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const navigateToResources = () => {
     navigation.navigate("Resources");
   };
 
-  const navigateToInviteUs = () => {
-    navigation.navigate("InviteUs");
+  // Navigate to a specific More page with its ID
+  const navigateToMorePage = (pageId) => {
+    navigation.navigate("More", { pageId });
+  };
+
+  // Get icon based on name
+  const getIconByName = (iconName) => {
+    return iconMap[iconName] || connectIcon;
+  };
+
+  // Dynamically render more page links
+  const renderMorePageBlocks = () => {
+    // Create chunks of 2 pages each
+    const chunkedPages = [];
+    for (let i = 0; i < morePages.length; i += 2) {
+      chunkedPages.push(morePages.slice(i, i + 2));
+    }
+
+    // Return the dynamically configured blocks in rows of 2
+    return chunkedPages.map((row, rowIndex) => (
+      <View
+        key={`row-${rowIndex}`}
+        style={[
+          styles.wallDescriptionsContainer,
+          rowIndex > 0 ? { marginTop: 20 } : {},
+        ]}
+      >
+        {row.map((page, index) => (
+          <PageLinkBlock
+            key={page.id}
+            title={page.title.toUpperCase()}
+            onPress={() => navigateToMorePage(page.id, page)}
+            imageSrc={page.iconName}
+            description={page.description || ""}
+            style={{
+              hidden: page.id === "empty" ? true : false,
+              marginRight: index === 0 && row.length > 1 ? 10 : 0,
+              marginLeft: index === 1 ? 10 : 0,
+              flex: 1,
+            }}
+            accessibilityLabel={`Go to ${page.title}`}
+            accessibilityHint={`Navigate to the ${page.title} page`}
+            iconInButton={true}
+          />
+        ))}
+        {/* If the row has only one element, add an empty view to maintain layout */}
+        {row.length === 1 && <View style={{ flex: 1, marginLeft: 10 }} />}
+      </View>
+    ));
   };
 
   return (
@@ -79,7 +143,7 @@ export const MainContent = ({
             title="Testimony Wall"
             onPress={navigateToTestimonyWall}
             imageSrc={require("assets/bell.png")}
-            description="Share testimonies that reveal the real and tangible transformation brought by God’s love."
+            description="Share testimonies that reveal the real and tangible transformation brought by God's love."
             style={{ marginLeft: 10 }}
             startingDelay={1500}
             accessibilityLabel="Go to Testimony Wall"
@@ -156,72 +220,15 @@ export const MainContent = ({
         </BodyText>
       </View>
 
-      {/* First row: RESOURCE and INVEST */}
+      {/* Dynamic "More" pages*/}
       <View
-        style={styles.wallDescriptionsContainer}
+        style={{ marginTop: 40 }}
         accessibilityRole="navigation"
         accessible={true}
-        accessibilityLabel="Quick Navigation - Row 1"
+        accessibilityLabel="Quick Navigation"
       >
-        {/* Resources */}
-        <PageLinkBlock
-          title="RESOURCE"
-          onPress={navigateToResources}
-          imageSrc={require("assets/flame.png")}
-          description="Access materials to help be love, and evangelize the LGBTQ+"
-          style={{ marginRight: 10 }}
-          startingDelay={0}
-          accessibilityLabel="Go to Resources"
-          accessibilityHint="Navigate to the Resources page"
-          iconInButton={true}
-        />
-
-        {/* Invest */}
-        <PageLinkBlock
-          title="INVEST"
-          onPress={() => navigation.navigate("Giving")}
-          imageSrc={require("assets/give.png")}
-          description="Fund Revival-Support Outreach for the LGBTQ+ Community"
-          style={{ marginLeft: 10 }}
-          startingDelay={1500}
-          accessibilityLabel="Go to Giving"
-          accessibilityHint="Navigate to the Giving page"
-          iconInButton={true}
-        />
-      </View>
-
-      {/* Second row: INVITE and VISION */}
-      <View
-        style={[styles.wallDescriptionsContainer, { marginTop: 40 }]}
-        accessibilityRole="navigation"
-        accessible={true}
-        accessibilityLabel="Quick Navigation - Row 2"
-      >
-        {/* Invite */}
-        <PageLinkBlock
-          title="INVITE"
-          onPress={navigateToInviteUs}
-          imageSrc={require("assets/connect.png")}
-          description="Welcome our team to Preach, Testify, and Release the sound of love and liberation"
-          style={{ marginRight: 10 }}
-          startingDelay={3000}
-          accessibilityLabel="Go to Invite Us"
-          accessibilityHint="Navigate to the Invite Us page"
-          iconInButton={true}
-        />
-
-        {/* Vision */}
-        <PageLinkBlock
-          title="VISION"
-          onPress={() => navigation.navigate("Vision")}
-          imageSrc={require("assets/eye.png")}
-          description="Learn about our Holy Revolution and God's vision for the LGBTQ+ community"
-          style={{ marginLeft: 10 }}
-          startingDelay={4500}
-          accessibilityLabel="Go to Vision"
-          accessibilityHint="Navigate to the Vision page"
-          iconInButton={true}
-        />
+        {/* Dynamic More Pages */}
+        {renderMorePageBlocks()}
       </View>
     </View>
   );

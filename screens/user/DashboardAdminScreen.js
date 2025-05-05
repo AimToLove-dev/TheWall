@@ -186,10 +186,6 @@ export const DashboardAdminScreen = ({ navigation }) => {
     navigation.navigate("TestimonyReview");
   };
 
-  const handleResourcesPress = () => {
-    navigation.navigate("ResourceManager");
-  };
-
   const handleConfigurationPress = () => {
     navigation.navigate("ConfigurationManager");
   };
@@ -318,19 +314,11 @@ export const DashboardAdminScreen = ({ navigation }) => {
               onPress={handleTestimonyReviewPress}
               colors={colors}
             />
-
+            {/*database: collections/config/[myCustomPageId]*/}
             <AdminFunctionButton
-              title="Resources"
-              description="Manage public resources via Google Drive"
-              iconName="folder-open"
-              onPress={handleResourcesPress}
-              colors={colors}
-            />
-
-            <AdminFunctionButton
-              title="Config"
-              description="Manage app configurations"
-              iconName="construct"
+              title="Custom Pages"
+              description="Manage home page links and page embeds"
+              iconName="link"
               onPress={handleConfigurationPress}
               colors={colors}
             />

@@ -16,7 +16,7 @@ import {
   WailingWallScreen,
   TestimonyWallScreen,
   ResourcesScreen,
-  InviteUsScreen,
+  MoreScreen,
   GivingScreen,
   VisionScreen,
 } from "../screens";
@@ -66,7 +66,7 @@ export const RootNavigator = () => {
     return unsubscribeAuthStateChanged;
   }, []);
 
-  // Simple deep linking configuration
+  // Deep linking configuration with support for dynamic more pages
   const linking = {
     prefixes: ["thewall://", "https://thewall.app"],
     config: {
@@ -75,7 +75,13 @@ export const RootNavigator = () => {
         WailingWall: "wailing-wall",
         TestimonyWall: "testimonies",
         Resources: "resources",
-        InviteUs: "invite-us",
+        More: {
+          path: "more/:pageId",
+          parse: {
+            pageId: (pageId) => pageId,
+          },
+        },
+        Giving: "giving",
         Vision: "vision",
         Auth: {
           screens: {
@@ -101,10 +107,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="TestimonyWall" component={TestimonyWallScreen} />
 
         {/* Our new screens */}
-        <Stack.Screen name="Resources" component={ResourcesScreen} />
-        <Stack.Screen name="InviteUs" component={InviteUsScreen} />
-        <Stack.Screen name="Giving" component={GivingScreen} />
-        <Stack.Screen name="Vision" component={VisionScreen} />
+        <Stack.Screen name="More" component={MoreScreen} />
 
         {/* Auth stack for login/signup */}
         <Stack.Screen name="Auth" component={AuthStack} />

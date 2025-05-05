@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import { Video } from "expo-av";
@@ -20,6 +20,11 @@ export const VideoUpload = ({
   const [video, setVideo] = useState(initialVideo);
   const [uploading, setUploading] = useState(false);
   const theme = useTheme();
+
+  // Update video state when initialVideo prop changes
+  useEffect(() => {
+    setVideo(initialVideo);
+  }, [initialVideo]);
 
   const pickVideo = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

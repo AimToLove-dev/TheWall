@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Surface, IconButton, Text, useTheme } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
@@ -18,6 +18,11 @@ export const MediaUpload = ({
   const [image, setImage] = useState(initialImage);
   const [uploading, setUploading] = useState(false);
   const theme = useTheme();
+
+  // Update image state when initialImage prop changes
+  useEffect(() => {
+    setImage(initialImage);
+  }, [initialImage]);
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

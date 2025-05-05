@@ -6,8 +6,8 @@ export { EmailVerificationScreen } from "./auth/EmailVerification";
 
 export { WailingWallScreen } from "./WailingWallScreen";
 export { TestimonyWallScreen } from "./TestimonyWallScreen";
-export { ResourcesScreen } from "./ResourcesScreen";
-export { InviteUsScreen } from "./InviteUsScreen";
+
+export { MoreScreen } from "./MoreScreen";
 export { GivingScreen } from "./GivingScreen";
 export { VisionScreen } from "./VisionScreen";
 export { DashboardScreen } from "./user/DashboardScreen";
@@ -15,5 +15,4 @@ export { DashboardAdminScreen } from "./user/DashboardAdminScreen";
 export { MyWallScreen } from "./user/MyWallScreen";
 export { TestimonySubmissionScreen } from "./user/TestimonySubmissionScreen";
 export { TestimonyReviewScreen } from "./user/TestimonyReviewScreen";
-export { ResourceManagerScreen } from "./user/ResourceManagerScreen";
 export { ConfigurationManagerScreen } from "./user/ConfigurationManagerScreen";
