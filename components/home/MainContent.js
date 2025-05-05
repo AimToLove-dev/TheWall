@@ -165,64 +165,83 @@ export const MainContent = ({
           </Text>
         </View>
 
-        {/* 2 images side by side */}
-        <View style={styles.imagesContainer}>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require("assets/before.png")}
-              style={[
-                styles.columnImage,
-                { filter: "grayscale(100%)", scale: "none" },
-              ]}
-              resizeMode="cover"
-              accessible={true}
-              accessibilityLabel="Before transformation image"
-            />
-            <Text style={styles.imageCaptionText}>MONET BEFORE CHRIST</Text>
-          </View>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require("assets/after.png")}
-              style={[styles.columnImage, { scale: "none" }]}
-              resizeMode="cover"
-              accessible={true}
-              accessibilityLabel="After transformation image"
-            />
-            <Text style={styles.imageCaptionText}>MONET AFTER ADOPTION</Text>
-          </View>
+        <View style={styles.contentContainer}>
+          <HeaderText style={styles.sectionHeader}>
+            What is The Wall?
+          </HeaderText>
+
+          <BodyText style={styles.paragraph}>
+            The Wall is a virtual expression of a prophetic timeline inspired by
+            words from Bob Jones, Lou Engle Ministries, and Monet Beltran
+            (founder of AIM TO LOVE). Simply put, it's a website featuring two
+            powerful spaces:
+          </BodyText>
+
+          <BodyText style={styles.paragraph}>
+            <Text style={{ fontWeight: "bold" }}>The Wailing Wall</Text> – a
+            place to submit the names of loved ones in the LGBTQ community so we
+            can join in interceding for them in love and hope.
+          </BodyText>
+
+          <BodyText style={styles.paragraph}>
+            <Text style={{ fontWeight: "bold" }}>The Testimony Wall</Text> – a
+            place where we share the faces, names, and powerful stories of those
+            who have come out of the LGBTQ+ lifestyle and are now walking with
+            Jesus.
+          </BodyText>
+
+          <BodyText style={styles.paragraph}>
+            We believe these testimonies will reflect the transformative love of
+            God in a real and tangible way.
+          </BodyText>
         </View>
 
-        {/* Title - Replaced text with image */}
-        <View
-          style={styles.p2pImageContainer}
-          accessibilityRole="heading"
-          accessibilityLevel={3}
-        >
-          <Image
-            source={require("assets/p2p.png")}
-            style={styles.p2pImage}
-            resizeMode="contain"
-            accessible={true}
-            accessibilityLabel="Pain to Purpose"
-          />
+        <View style={styles.contentContainer}>
+          {/* Title - Replaced text with image */}
+          <View
+            style={styles.p2pImageContainer}
+            accessibilityRole="heading"
+            accessibilityLevel={3}
+          >
+            <Image
+              source={require("assets/p2p.png")}
+              style={styles.p2pImage}
+              resizeMode="contain"
+              accessible={true}
+              accessibilityLabel="Pain to Purpose"
+            />
+          </View>
+          {/* 2 images side by side */}
+          <View style={styles.imagesContainer}>
+            <View style={styles.imageWrapper}>
+              <Image
+                source={require("assets/before.png")}
+                style={[
+                  styles.columnImage,
+                  { filter: "grayscale(100%)", scale: "none" },
+                ]}
+                resizeMode="cover"
+                accessible={true}
+                accessibilityLabel="Before transformation image"
+              />
+              <Text style={styles.imageCaptionText}>MONET BEFORE CHRIST</Text>
+            </View>
+            <View style={styles.imageWrapper}>
+              <Image
+                source={require("assets/after.png")}
+                style={[styles.columnImage, { scale: "none" }]}
+                resizeMode="cover"
+                accessible={true}
+                accessibilityLabel="After transformation image"
+              />
+              <Text style={styles.imageCaptionText}>MONET AFTER ADOPTION</Text>
+            </View>
+          </View>
         </View>
-
-        <BodyText style={styles.paragraph}>
-          The Wall is a platform dedicated to sharing the transformative power
-          of Jesus within the LGBTQ+ community. Through initiatives like the
-          Wailing Wall and Testimony Wall, we aim to spark change as we pray
-          corporately, share stories of spiritual renewal, and provide resources
-          to support churches evangelists, and individuals.
-        </BodyText>
-        <BodyText style={styles.paragraph}>
-          Partner with us in building a movement where everyone is welcomed,
-          valued, and supported in discovering the love and truth of Christ.
-        </BodyText>
       </View>
 
       {/* Dynamic "More" pages*/}
       <View
-        style={{ marginTop: 40 }}
         accessibilityRole="navigation"
         accessible={true}
         accessibilityLabel="Quick Navigation"
@@ -248,7 +267,6 @@ const styles = StyleSheet.create({
   imagesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 15,
     width: "100%",
   },
   imageWrapper: {
