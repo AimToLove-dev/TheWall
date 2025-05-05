@@ -26,9 +26,7 @@ export const ResourcesScreen = () => {
 
   const windowWidth = Dimensions.get("window").width;
   // Updated column logic: 2 columns by default, 3 on large screens
-  const numColumns = Platform.OS === "web" 
-    ? (windowWidth >= 1200 ? 3 : 2) 
-    : 2;
+  const numColumns = Platform.OS === "web" ? (windowWidth >= 1200 ? 3 : 2) : 2;
 
   useEffect(() => {
     const loadResources = async () => {
