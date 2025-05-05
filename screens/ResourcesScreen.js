@@ -7,6 +7,8 @@ import {
   Linking,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
+  Dimensions,
 } from "react-native";
 import { ComingSoon } from "components/ComingSoon";
 import { ScrollableScreenView } from "components/views/ScrollableScreenView";
@@ -21,6 +23,12 @@ export const ResourcesScreen = () => {
   const [resources, setResources] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const windowWidth = Dimensions.get("window").width;
+  // Updated column logic: 2 columns by default, 3 on large screens
+  const numColumns = Platform.OS === "web" 
+    ? (windowWidth >= 1200 ? 3 : 2) 
+    : 2;
 
   useEffect(() => {
     const loadResources = async () => {
@@ -44,6 +52,16 @@ export const ResourcesScreen = () => {
     navigation.navigate("Home");
   };
 
+  const extractGoogleDriveFileId = (url) => {
+    const fileIdRegex = /[-\w]{25,}/;
+    const match = url.match(fileIdRegex);
+    return match ? match[0] : null;
+  };
+
+  const isGoogleDriveUrl = (url) => {
+    return url && url.includes("drive.google.com");
+  };
+
   const handleOpenResource = (url) => {
     Linking.openURL(url).catch((err) => {
       console.error("Failed to open URL:", err);
@@ -54,8 +72,11 @@ export const ResourcesScreen = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
       backgroundColor: colors.background || "#fff",
+    },
+    contentContainer: {
+      flex: 1,
+      padding: 20,
     },
     centerContainer: {
       flex: 1,
@@ -64,22 +85,34 @@ export const ResourcesScreen = () => {
       padding: 20,
       backgroundColor: colors.background || "#fff",
     },
-    listContainer: {
+    gridContainer: {
       paddingBottom: 20,
     },
-    resourceItem: {
+    resourceCard: {
+      borderWidth: 1,
+      borderColor: colors.border || "#e0e0e0",
+      borderRadius: 8,
+      overflow: "hidden",
+      backgroundColor: colors.cardBackground || "#f9f9f9",
+      marginBottom: 16,
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      flex: 1,
+      margin: 8,
+    },
+    resourceHeader: {
       flexDirection: "row",
-      padding: 15,
+      padding: 12,
       borderBottomWidth: 1,
       borderBottomColor: colors.border || "#e0e0e0",
       alignItems: "center",
-      backgroundColor: colors.cardBackground || "#f9f9f9",
-      borderRadius: 8,
-      marginBottom: 10,
     },
     resourceIcon: {
       fontSize: 24,
-      marginRight: 15,
+      marginRight: 12,
     },
     resourceDetails: {
       flex: 1,
@@ -88,10 +121,39 @@ export const ResourcesScreen = () => {
       fontSize: 16,
       fontWeight: "600",
       color: colors.text,
-      marginBottom: 5,
+      marginBottom: 4,
     },
     resourceDate: {
       fontSize: 12,
+      color: colors.textSecondary || "#666",
+    },
+    previewContainer: {
+      width: "100%",
+      aspectRatio: 1 / 1,
+      backgroundColor: "#f0f0f0",
+    },
+    previewButton: {
+      backgroundColor: colors.primary || "#3e477d",
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      borderRadius: 4,
+    },
+    previewButtonText: {
+      color: "#fff",
+      fontWeight: "600",
+      fontSize: 14,
+      textAlign: "center",
+    },
+    cardActions: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      padding: 12,
+      borderTopWidth: 1,
+      borderTopColor: colors.border || "#e0e0e0",
+    },
+    noPreviewText: {
+      padding: 16,
+      textAlign: "center",
       color: colors.textSecondary || "#666",
     },
     loadingText: {
@@ -121,7 +183,6 @@ export const ResourcesScreen = () => {
   });
 
   const renderResourceItem = ({ item }) => {
-    // Define icon based on mime type
     const getFileIcon = (mimeType) => {
       if (mimeType.includes("spreadsheet")) return "📊";
       if (mimeType.includes("document")) return "📄";
@@ -133,25 +194,94 @@ export const ResourcesScreen = () => {
       return "📁";
     };
 
+    const isPreviewable = isGoogleDriveUrl(item.url);
+    const fileId = isPreviewable ? extractGoogleDriveFileId(item.url) : null;
+
     return (
-      <TouchableOpacity
-        style={styles.resourceItem}
-        onPress={() => handleOpenResource(item.url)}
-        accessible={true}
-        accessibilityLabel={`Open ${item.name}`}
-        accessibilityHint={`Opens ${item.name} in your browser`}
-      >
-        <Text style={styles.resourceIcon}>{getFileIcon(item.mimeType)}</Text>
-        <View style={styles.resourceDetails}>
-          <Text style={styles.resourceName}>{item.name}</Text>
-          <Text style={styles.resourceDate}>
-            Last updated: {new Date(item.lastUpdated).toLocaleDateString()}
-          </Text>
-        </View>
-      </TouchableOpacity>
+      <View style={styles.resourceCard}>
+        <TouchableOpacity
+          style={styles.resourceHeader}
+          onPress={() => handleOpenResource(item.url)}
+          accessible={true}
+          accessibilityLabel={`Open ${item.name} resource in browser`}
+        >
+          <View style={styles.resourceDetails}>
+            <Text style={styles.resourceName}>{item.name}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <>
+          {isPreviewable && fileId ? (
+            <View style={styles.previewContainer}>
+              {Platform.OS === "web" ? (
+                <iframe
+                  src={`https://drive.google.com/file/d/${fileId}/preview`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                  }}
+                  title={item.name}
+                  allow="autoplay"
+                />
+              ) : (
+                (() => {
+                  try {
+                    const { WebView } = require("react-native-webview");
+                    return (
+                      <WebView
+                        source={{
+                          uri: `https://drive.google.com/file/d/${fileId}/preview`,
+                        }}
+                        style={{ flex: 1 }}
+                        startInLoadingState={true}
+                        javaScriptEnabled={true}
+                        domStorageEnabled={true}
+                        renderLoading={() => (
+                          <View
+                            style={{
+                              flex: 1,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <ActivityIndicator
+                              size="large"
+                              color={colors.primary}
+                            />
+                          </View>
+                        )}
+                      />
+                    );
+                  } catch (error) {
+                    return (
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={styles.noPreviewText}>
+                          Preview not available on this device
+                        </Text>
+                      </View>
+                    );
+                  }
+                })()
+              )}
+            </View>
+          ) : (
+            <Text style={styles.noPreviewText}>
+              Preview not available for this file type
+            </Text>
+          )}
+        </>
+      </View>
     );
   };
 
+  // If loading show loading indicator
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -161,6 +291,7 @@ export const ResourcesScreen = () => {
     );
   }
 
+  // If error show error message
   if (error) {
     return (
       <View style={styles.centerContainer}>
@@ -187,30 +318,37 @@ export const ResourcesScreen = () => {
     );
   }
 
-  // If resources are available, show the resource list
+  // Default view - resource grid
   return (
     <View style={styles.container}>
-      <DashboardHeader
-        title="Resources"
-        subtitle="Available materials and documents"
-        onBackPress={handleBackPress}
-        colors={colors}
-        showSignOut={false}
-      />
-
-      <ScrollableScreenView>
-        <FlatList
-          data={resources}
-          renderItem={renderResourceItem}
-          keyExtractor={(item) => item.name}
-          contentContainerStyle={styles.listContainer}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              No resources currently available.
-            </Text>
-          }
+      <View style={styles.contentContainer}>
+        <DashboardHeader
+          title="Resources"
+          subtitle="Available materials and documents"
+          onBackPress={handleBackPress}
+          colors={colors}
+          showSignOut={false}
         />
-      </ScrollableScreenView>
+
+        <ScrollableScreenView>
+          <FlatList
+            data={resources}
+            renderItem={renderResourceItem}
+            keyExtractor={(item) => item.name}
+            contentContainerStyle={styles.gridContainer}
+            key={numColumns}
+            numColumns={numColumns}
+            columnWrapperStyle={
+              numColumns > 1 ? { justifyContent: "space-between" } : null
+            }
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>
+                No resources currently available.
+              </Text>
+            }
+          />
+        </ScrollableScreenView>
+      </View>
     </View>
   );
 };
