@@ -22,26 +22,17 @@ import {
   CaptionText,
   FormContainer,
   WobblingBell,
+  Footer,
 } from "components";
 import { getThemeColors } from "../styles/theme";
 import { AuthenticatedUserContext } from "providers";
 import { Surface } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainContent, ScrollableScreenView } from "components";
-import { Linking } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Added for social icons
 
 export const HomeScreen = ({ navigation }) => {
   const { user } = useContext(AuthenticatedUserContext);
   const colors = getThemeColors();
-
-  // Social media URLs
-  const socialLinks = {
-    facebook: "https://www.facebook.com/AIM2LOVE1",
-    tiktok: "https://www.tiktok.com/@aimtolove",
-    instagram: "https://www.instagram.com/aim_tolove",
-    twitter: "https://twitter.com/aimtolove_?",
-  };
 
   const handleLoginPress = () => {
     navigation.navigate("Auth", { screen: "Login" });
@@ -220,51 +211,7 @@ export const HomeScreen = ({ navigation }) => {
             )}
           </View>
 
-          {/* Footer */}
-          <View
-            style={[
-              styles.pageFooter,
-              { maxWidth: "min(100vw,800px)", alignSelf: "center" },
-            ]}
-          >
-            <CaptionText>
-              © {new Date().getFullYear()} The Wall. All rights reserved.
-            </CaptionText>
-            <TouchableOpacity></TouchableOpacity>
-            <View style={styles.socialIconsContainer}>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(socialLinks.facebook)}
-              >
-                <Ionicons name="logo-facebook" size={24} color="#4267B2" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(socialLinks.twitter)}
-              >
-                <Ionicons name="logo-twitter" size={24} color="#1DA1F2" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(socialLinks.tiktok)}
-              >
-                <Ionicons name="logo-tiktok" size={24} color="#000000" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => Linking.openURL(socialLinks.instagram)}
-              >
-                <Ionicons name="logo-instagram" size={24} color="#FF0000" />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <Image
-            source={require("../assets/pillars.png")}
-            style={{
-              width: 120,
-              height: 20,
-              marginLeft: 20,
-              marginTop: "auto",
-              alignSelf: "flex-start",
-            }}
-            resizeMode="cover"
-          />
+          <Footer />
         </ScrollableScreenView>
       </ImageBackground>
     </SafeAreaView>
@@ -336,35 +283,12 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 10,
   },
-  // Page footer styles
-  pageFooter: {
-    marginTop: 20,
-    alignItems: "center",
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#000",
-    marginHorizontal: 20,
-  },
-  link: {
-    textDecorationLine: "underline",
-    color: "#0066cc",
-  },
-  pageNumber: {
-    textAlign: "center",
-    marginTop: 15,
-    fontStyle: "italic",
-  },
-  socialIconsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 10,
-    gap: 15,
-  },
   // Original styles
   authContainer: {
     gap: 10,
     width: "-webkit-fill-available",
     marginHorizontal: 20,
+    marginBottom: 20,
   },
   backgroundImage: {
     flex: 1,

@@ -21,6 +21,7 @@ import {
 import BottomSheet from "./common/BottomSheet";
 import { ScrollableScreenView } from "./views/ScrollableScreenView";
 import { VerticalMarquee } from "./souls/VerticalMarquee";
+import Footer from "./common/Footer"; // Fixed to use default import
 
 // Import animation components
 import { WobblingBell } from "./animations/WobblingBell";
@@ -79,4 +80,5 @@ export {
   DashboardHeader,
   AdminFunctionButton,
   ComingSoon,
+  Footer,
 };

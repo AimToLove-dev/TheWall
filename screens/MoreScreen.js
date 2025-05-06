@@ -7,10 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Image,
+  ImageBackground,
 } from "react-native";
 import { ComingSoon } from "../components/ComingSoon";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { HeaderText } from "components";
+import { HeaderText, Footer } from "components";
 import { getThemeColors } from "styles/theme";
 import { getMorePageById } from "utils/configUtils";
 
@@ -86,16 +87,23 @@ export const MoreScreen = () => {
   const renderHeader = () => {
     return (
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={handleBackPress}
-          style={styles.logoContainer}
+        <ImageBackground
+          source={require("assets/brickSeamless.png")}
+          style={styles.headerBackground}
+          imageStyle={styles.headerBackgroundImage}
+          resizeMode="repeat"
         >
-          <Image
-            source={require("../assets/TheWall.png")}
-            style={styles.mastheadImage}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleBackPress}
+            style={styles.logoContainer}
+          >
+            <Image
+              source={require("../assets/TheWall.png")}
+              style={styles.mastheadImage}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        </ImageBackground>
       </View>
     );
   };
@@ -108,6 +116,7 @@ export const MoreScreen = () => {
         <View style={styles.centeredContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
+        <Footer />
       </View>
     );
   }
@@ -138,6 +147,7 @@ export const MoreScreen = () => {
           }}
           title={pageData.title}
         />
+        <Footer />
       </View>
     );
   }
@@ -155,6 +165,7 @@ export const MoreScreen = () => {
           javaScriptEnabled={true}
           domStorageEnabled={true}
         />
+        <Footer />
       </View>
     );
   } catch (error) {
@@ -190,7 +201,6 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingTop: 12,
     paddingBottom: 6,
-    paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(0,0,0,0.1)",
     backgroundColor: "#FFF",
@@ -201,6 +211,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
+    height: 60, // Total header height
+    overflow: "hidden",
+    borderBottomWidth: 1,
+    borderBottomColor: "#000",
+  },
+  headerBackground: {
+    width: "100%",
+    height: 200, // Background image is 200px tall (same as footer)
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  headerBackgroundImage: {
+    width: "100%",
+    height: 200, // Ensure background image is 200px tall
   },
   logoContainer: {
     width: "100%",
@@ -209,6 +233,6 @@ const styles = StyleSheet.create({
   mastheadImage: {
     width: "100%",
     maxWidth: 250,
-    height: 60,
+    height: 40,
   },
 });
