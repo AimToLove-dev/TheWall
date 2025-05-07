@@ -68,7 +68,6 @@ export const RootNavigator = () => {
 
   // Deep linking configuration with support for dynamic more pages
   const linking = {
-    prefixes: ["thewall://", "https://thewall.app"],
     config: {
       screens: {
         Home: "",
