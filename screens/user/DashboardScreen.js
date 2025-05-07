@@ -33,11 +33,14 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Surface, Card, Divider, useTheme } from "react-native-paper";
 
 export const DashboardScreen = ({ navigation }) => {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser, isEmailVerified } = useContext(
+    AuthenticatedUserContext
+  );
   const colors = getThemeColors();
   const { width } = useWindowDimensions();
   const isLargeScreen = width > 768;
   const [signOutDialogVisible, setSignOutDialogVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
   const [greeting, setGreeting] = useState("Welcome");
 
@@ -45,14 +48,26 @@ export const DashboardScreen = ({ navigation }) => {
   const isAdmin = user?.isAdmin || false;
 
   useEffect(() => {
-    if (!user?.emailVerified) {
-      navigation.replace("Home");
+    // If no user, redirect to login
+    if (!user || !user.uid) {
+      navigation.replace("Auth", { screen: "Login" });
+      return;
     }
+
+    // Email verification should be handled by UserStack already,
+    // but adding a safety check here
+    if (!isEmailVerified) {
+      return; // Let UserStack handle showing the EmailVerificationScreen
+    }
+
     // Redirect to admin dashboard if user is an admin
     if (isAdmin) {
       navigation.replace("DashboardAdmin");
+      return;
     }
-  }, [isAdmin, navigation]);
+
+    setIsLoading(false);
+  }, [user, isAdmin, isEmailVerified, navigation]);
 
   // Set greeting based on time of day
   useEffect(() => {
@@ -151,54 +166,60 @@ export const DashboardScreen = ({ navigation }) => {
 
   return (
     <FormContainer style={{ backgroundColor: colors.background }}>
-      <View style={styles.content}>
-        <DashboardHeader
-          title="Dashboard"
-          subtitle={greeting}
-          onBackPress={handleBackPress}
-          onSignOutPress={handleSignOut}
-          colors={colors}
-        />
+      {isLoading ? (
+        <View style={[styles.content, styles.loadingContainer]}>
+          {/* You can add a loading indicator here if desired */}
+        </View>
+      ) : (
+        <View style={styles.content}>
+          <DashboardHeader
+            title="Dashboard"
+            subtitle={greeting}
+            onBackPress={handleBackPress}
+            onSignOutPress={handleSignOut}
+            colors={colors}
+          />
 
-        {/* Quick actions section */}
-        <View style={styles.quickActionsSection}>
-          <HeaderText style={styles.sectionTitle}>Quick Actions</HeaderText>
-          <View
-            style={[
-              styles.quickActions,
-              isLargeScreen && styles.quickActionsLarge,
-            ]}
-          >
-            <CardGrid
-              cards={[
-                {
-                  text: "Manage\nLoved Ones",
-                  onPress: handleMyWallPress,
-                  icon: (
-                    <Image
-                      source={require("../../assets/megaphone.png")}
-                      style={{ width: 28, height: 28, marginBottom: 8 }}
-                      resizeMode="contain"
-                    />
-                  ),
-                },
-                {
-                  text: "Submit\nTestimony",
-                  onPress: handleTestimonyPress,
-                  icon: (
-                    <Image
-                      source={require("../../assets/bell.png")}
-                      style={{ width: 28, height: 28, marginBottom: 8 }}
-                      resizeMode="contain"
-                    />
-                  ),
-                },
+          {/* Quick actions section */}
+          <View style={styles.quickActionsSection}>
+            <HeaderText style={styles.sectionTitle}>Quick Actions</HeaderText>
+            <View
+              style={[
+                styles.quickActions,
+                isLargeScreen && styles.quickActionsLarge,
               ]}
-              gap={spacing.md}
-            />
+            >
+              <CardGrid
+                cards={[
+                  {
+                    text: "Manage\nLoved Ones",
+                    onPress: handleMyWallPress,
+                    icon: (
+                      <Image
+                        source={require("../../assets/megaphone.png")}
+                        style={{ width: 28, height: 28, marginBottom: 8 }}
+                        resizeMode="contain"
+                      />
+                    ),
+                  },
+                  {
+                    text: "Submit\nTestimony",
+                    onPress: handleTestimonyPress,
+                    icon: (
+                      <Image
+                        source={require("../../assets/bell.png")}
+                        style={{ width: 28, height: 28, marginBottom: 8 }}
+                        resizeMode="contain"
+                      />
+                    ),
+                  },
+                ]}
+                gap={spacing.md}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      )}
 
       <CustomDialog
         visible={signOutDialogVisible}
@@ -251,5 +272,9 @@ const styles = StyleSheet.create({
   emptyStateText: {
     marginTop: spacing.sm,
     opacity: 0.7,
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

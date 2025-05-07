@@ -105,7 +105,7 @@ export const TestimonyWallScreen = () => {
           <CustomButton
             title="Add Testimony"
             variant="primary"
-            onPress={() => navigation.navigate("Testimony")}
+            onPress={() => navigation.navigate("User", { screen: "Dashboard" })}
             style={{ flex: 1 }}
           />
         </View>
