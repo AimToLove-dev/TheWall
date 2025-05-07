@@ -173,8 +173,6 @@ export const TestimonyWall = ({ testimonies: initialTestimonies = [] }) => {
         renderItem={renderItem}
         keyExtractor={(item, index) => `testimony-${index}`}
         contentContainerStyle={styles.listContent}
-        onEndReached={_loadMoreContentAsync}
-        onEndReachedThreshold={0.5}
         ListFooterComponent={renderFooter}
         showsVerticalScrollIndicator={false}
         style={{ maxWidth: 800, alignSelf: "center", width: "100%" }}

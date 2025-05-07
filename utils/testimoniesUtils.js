@@ -126,7 +126,6 @@ export const getAllTestimonies = async (
       [[sortBy, sortDirection]],
       100
     );
-    console.log("Fetched testimonies:", testimonies);
     return testimonies;
   } catch (error) {
     console.error("Error getting all testimonies:", error);
