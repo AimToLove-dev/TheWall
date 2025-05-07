@@ -224,11 +224,7 @@ export const TestimonyCard = ({ item, index, onPress }) => {
                     <TouchableOpacity
                       style={styles.playButtonContainer}
                       onPress={toggleVideoPlayback}
-                    >
-                      <View style={styles.playButton}>
-                        <Ionicons name="play" size={24} color="white" />
-                      </View>
-                    </TouchableOpacity>
+                    ></TouchableOpacity>
                   )}
                 </View>
               ) : (

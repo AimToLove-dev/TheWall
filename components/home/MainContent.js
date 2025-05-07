@@ -218,7 +218,11 @@ export const MainContent = ({
                 source={require("assets/before.png")}
                 style={[
                   styles.columnImage,
-                  { filter: "grayscale(100%)", scale: "none" },
+                  {
+                    filter: "grayscale(100%)",
+                    scale: "none",
+                    transform: "rotate(-2deg)",
+                  },
                 ]}
                 resizeMode="cover"
                 accessible={true}
@@ -229,7 +233,10 @@ export const MainContent = ({
             <View style={styles.imageWrapper}>
               <Image
                 source={require("assets/after.png")}
-                style={[styles.columnImage, { scale: "none" }]}
+                style={[
+                  styles.columnImage,
+                  { scale: "none", transform: "rotate(-2deg)" },
+                ]}
                 resizeMode="cover"
                 accessible={true}
                 accessibilityLabel="After transformation image"
@@ -273,7 +280,7 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1, // This ensures a square shape
     marginHorizontal: 5,
-    overflow: "hidden", // This ensures the image doesn't overflow the wrapper
+
     alignItems: "center", // Center the caption text
   },
   columnImage: {
@@ -285,8 +292,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "white",
     margin: 2,
-    marginTop: -36,
-    width: "97%",
+    marginTop: -32,
+    width: "100%",
     padding: 10,
     backgroundColor: "black",
     borderRadius: 8,

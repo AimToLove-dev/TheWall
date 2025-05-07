@@ -105,9 +105,7 @@ export const TestimonyWallScreen = () => {
           <CustomButton
             title="Add Testimony"
             variant="primary"
-            onPress={() =>
-              Linking.openURL("https://mailchi.mp/aimtolove/welcome")
-            }
+            onPress={() => navigation.navigate("Testimony")}
             style={{ flex: 1 }}
           />
         </View>

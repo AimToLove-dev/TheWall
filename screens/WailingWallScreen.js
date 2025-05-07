@@ -349,6 +349,7 @@ const styles = StyleSheet.create({
     height: 30, // Fixed row height
     lineHeight: 30, // Aligns text vertically in the center
     marginVertical: 2, // Small spacing between names
+    overflow: "hidden",
   },
   rightColumnName: {
     textAlign: "left",
@@ -360,6 +361,7 @@ const styles = StyleSheet.create({
     height: 30, // Fixed row height
     lineHeight: 30, // Aligns text vertically in the center
     marginVertical: 2, // Small spacing between names
+    overflow: "hidden",
   },
   soulNameWithTestimony: {
     color: "red", // Render names with testimony IDs in red
