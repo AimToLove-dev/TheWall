@@ -104,7 +104,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   description: {
-    fontSize: 12, // Using a specific value instead of fontSizes.small for simplicity
     textAlign: "justify",
     fontFamily: "XTypewriter-Bold",
     hyphens: "auto",

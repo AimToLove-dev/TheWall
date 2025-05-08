@@ -341,7 +341,6 @@ const styles = StyleSheet.create({
   },
   imageCaptionText: {
     textAlign: "center",
-    fontSize: 12,
     color: "white",
     margin: 2,
     marginTop: -18,
@@ -381,7 +380,6 @@ const styles = StyleSheet.create({
     columnGap: 16,
   },
   testimonyContent: {
-    fontSize: 14,
     lineHeight: 20,
     color: "#333",
     textAlign: "justify",

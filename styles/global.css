@@ -8,7 +8,75 @@ body{
   position: relative;
 }
 
+:root {
+  --breakpoint-xs: 0px;
+  --breakpoint-sm: 576px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 992px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-xxl: 1400px;
+  
+  /* Base font sizes for different breakpoints */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+  --font-size-xxxl: 28px;
+  
+  /* Responsive heading font sizes */
+  --heading-font-size: var(--font-size-xl);
+  --subheading-font-size: var(--font-size-lg);
+  --body-font-size: var(--font-size-md);
+  --caption-font-size: var(--font-size-sm);
+}
 
+/* Responsive font size adjustments based on screen width */
+@media screen and (max-width: 576px) {
+  :root {
+    --heading-font-size: var(--font-size-lg);
+    --subheading-font-size: var(--font-size-md);
+    --body-font-size: var(--font-size-sm);
+    --caption-font-size: var(--font-size-xs);
+  }
+}
+
+@media screen and (min-width: 577px) and (max-width: 768px) {
+  :root {
+    --heading-font-size: var(--font-size-xl);
+    --subheading-font-size: var(--font-size-lg);
+    --body-font-size: var(--font-size-md);
+    --caption-font-size: var(--font-size-sm);
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 992px) {
+  :root {
+    --heading-font-size: var(--font-size-xl);
+    --subheading-font-size: var(--font-size-lg);
+    --body-font-size: var(--font-size-md);
+    --caption-font-size: var(--font-size-sm);
+  }
+}
+
+@media screen and (min-width: 993px) and (max-width: 1200px) {
+  :root {
+    --heading-font-size: var(--font-size-xxl);
+    --subheading-font-size: var(--font-size-xl);
+    --body-font-size: var(--font-size-lg);
+    --caption-font-size: var(--font-size-md);
+  }
+}
+
+@media screen and (min-width: 1201px) {
+  :root {
+    --heading-font-size: var(--font-size-xxxl);
+    --subheading-font-size: var(--font-size-xxl);
+    --body-font-size: var(--font-size-xl);
+    --caption-font-size: var(--font-size-lg);
+  }
+}
 
 body::-webkit-scrollbar {
   display: none; /* Hides the scrollbar in webkit browsers (Chrome, Safari) */

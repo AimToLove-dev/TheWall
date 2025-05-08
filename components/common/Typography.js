@@ -12,11 +12,13 @@ import { getThemeColors, fonts } from "styles/theme";
 // Base text style with XTypewriter font
 const baseTextStyle = {
   fontFamily: "XTypewriter-Regular",
+  fontSize: "var(--body-font-size)",
 };
 
 // Base heading style with XTypewriter Bold font
 const baseHeadingStyle = {
   fontFamily: "XTypewriter-Bold",
+  fontSize: "var(--heading-font-size)",
 };
 
 export const HeaderText = ({ children, style, numberOfLines, onPress }) => (
@@ -31,7 +33,11 @@ export const HeaderText = ({ children, style, numberOfLines, onPress }) => (
 
 export const SubtitleText = ({ children, style, numberOfLines, onPress }) => (
   <Subheading
-    style={[baseHeadingStyle, style]}
+    style={[
+      baseHeadingStyle,
+      { fontSize: "var(--subheading-font-size)" },
+      style,
+    ]}
     numberOfLines={numberOfLines}
     onPress={onPress}
   >
@@ -51,7 +57,7 @@ export const BodyText = ({ children, style, numberOfLines, onPress }) => (
 
 export const CaptionText = ({ children, style, numberOfLines, onPress }) => (
   <Caption
-    style={[baseTextStyle, style]}
+    style={[baseTextStyle, { fontSize: "var(--caption-font-size)" }, style]}
     numberOfLines={numberOfLines}
     onPress={onPress}
   >

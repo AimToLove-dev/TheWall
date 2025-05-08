@@ -44,7 +44,6 @@ export const CustomButton = ({
         };
     }
   };
-
   // Get text color based on variant
   const getTextColor = () => {
     switch (variant) {
@@ -58,6 +57,20 @@ export const CustomButton = ({
         return colors.text;
       default:
         return "white";
+    }
+  };
+
+  // Get appropriate font size based on button size
+  const getFontSize = () => {
+    switch (size) {
+      case "small":
+        return "var(--caption-font-size)";
+      case "medium":
+        return "var(--body-font-size)";
+      case "large":
+        return "var(--subheading-font-size)";
+      default:
+        return "var(--body-font-size)";
     }
   };
 
@@ -114,6 +127,7 @@ export const CustomButton = ({
         imageStyle={imageStyle}
         resizeMode="cover"
       >
+        {" "}
         <Button
           mode={getMode()}
           onPress={onPress}
@@ -132,6 +146,7 @@ export const CustomButton = ({
           labelStyle={[
             {
               color: getTextColor(),
+              fontSize: getFontSize(),
               flexWrap: "wrap",
               textAlign: "center",
               whiteSpace: "normal",
@@ -170,6 +185,7 @@ export const CustomButton = ({
       labelStyle={[
         {
           color: getTextColor(),
+          fontSize: getFontSize(),
           flexWrap: "wrap",
           textAlign: "center",
           whiteSpace: "normal",
