@@ -103,22 +103,6 @@ const Footer = () => {
       >
         <View style={styles.pageFooter}>
           <View style={styles.footerContent}>
-            {/* About Section */}
-            <View style={styles.footerSection}>
-              <Image
-                source={require("assets/pillars.png")}
-                style={{
-                  width: 120,
-                  height: 20,
-                  marginLeft: 10,
-                  marginTop: "auto",
-                  marginBottom: -8,
-                  alignSelf: "flex-start",
-                }}
-                resizeMode="cover"
-              />
-            </View>
-
             {/* Social Media Section */}
             <View style={styles.footerSection}>
               <View style={styles.socialIconsContainer}>
@@ -146,12 +130,12 @@ const Footer = () => {
             </View>
 
             {/* Subscribe Section */}
-            <View style={styles.footerSection}>
+            <View style={[styles.footerSection, { alignItems: "flex-end" }]}>
               <TouchableOpacity
                 style={styles.subscribeButton}
                 onPress={() => setModalVisible(true)}
               >
-                <Text style={styles.subscribeText}>Subscribe</Text>
+                <Text style={styles.subscribeText}>Stay Connected</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -178,7 +162,7 @@ const Footer = () => {
         >
           <View style={styles.modalView}>
             <ScrollView contentContainerStyle={styles.modalContent}>
-              <Text style={styles.modalTitle}>Subscribe</Text>
+              <Text style={styles.modalTitle}>Stay Connected</Text>
               <Text style={styles.requiredText}>* indicates required</Text>
 
               <View style={styles.formGroup}>
@@ -232,7 +216,7 @@ const Footer = () => {
                   disabled={isSubmitting}
                 >
                   <Text style={styles.submitText}>
-                    {isSubmitting ? "Submitting..." : "Subscribe"}
+                    {isSubmitting ? "Submitting..." : "Stay Connected"}
                   </Text>
                 </TouchableOpacity>
 
@@ -271,7 +255,7 @@ const Footer = () => {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 50, // Section height is 50px
+    height: 70, // Section height is 50px
     overflow: "hidden", // This prevents content from overflowing
   },
   backgroundImage: {
@@ -282,7 +266,7 @@ const styles = StyleSheet.create({
     height: 200, // Ensure background image is 200px tall
   },
   pageFooter: {
-    height: 50, // Keep the footer content at 50px height
+    height: 70, // Keep the footer content at 50px height
     justifyContent: "center", // Center content vertically
     width: "100%",
     borderTopWidth: 1,
@@ -295,12 +279,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   footerSection: {
     flex: 1,
-    minWidth: 100,
-    alignItems: "center",
+
+    justifyContent: "space-around",
   },
   sectionTitle: {
     fontWeight: "bold",
@@ -308,11 +292,11 @@ const styles = StyleSheet.create({
   },
   socialIconsContainer: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "left",
     gap: 15,
   },
   subscribeButton: {
-    backgroundColor: "#0074D9",
+    backgroundColor: "#23c201",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 5,
@@ -378,11 +362,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-end",
     marginTop: 10,
     marginBottom: 20,
   },
   submitButton: {
-    backgroundColor: "#0074D9",
+    backgroundColor: "#23c201",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -390,6 +375,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   submitText: {
+    fontSize: 12,
     color: "white",
     fontWeight: "bold",
     textAlign: "center",

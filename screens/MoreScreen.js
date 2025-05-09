@@ -199,8 +199,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     width: "100%",
-    paddingTop: 12,
-    paddingBottom: 6,
+    paddingTop: 20,
+    paddingBottom: 14,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(0,0,0,0.1)",
     backgroundColor: "#FFF",
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    height: 60, // Total header height
+    height: 80, // Total header height
     overflow: "hidden",
     borderBottomWidth: 1,
     borderBottomColor: "#000",
